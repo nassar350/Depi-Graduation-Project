@@ -1,10 +1,4 @@
-using Eventify.Repository.Data.Contexts;
-using Microsoft.EntityFrameworkCore;
-using System;
-
 var builder = WebApplication.CreateBuilder(args);
-
-var ConnectionString = builder.Configuration.GetConnectionString("OnlineDbConnectionString");
 
 // Add services to the container.
 
@@ -12,11 +6,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<EventifyContext>(options =>
-{
-    options.UseSqlServer(ConnectionString);
-});
 
 var app = builder.Build();
 
