@@ -1,0 +1,34 @@
+﻿using Eventify.Core.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Eventify.Repository.Data.Configurations
+{
+    public class TicketConfigurations : IEntityTypeConfiguration<Ticket>
+    {
+        public void Configure(EntityTypeBuilder<Ticket> builder)
+        {
+            builder.ToTable("Tickets");
+
+            builder.HasKey(t => t.ID);
+
+            builder.Property(t => t.Place).HasMaxLength(225).IsRequired();
+            builder.Property(t => t.Type).HasMaxLength(50).IsRequired();
+
+            builder.HasOne(t => t.Booking)
+                .WithMany(b => b.Tickets)
+                .HasForeignKey(t => t.BookingId)
+                .IsRequired();
+
+            //Foreign Key => EventId
+            //Foreign Key => CategoryId
+
+        }
+    }
+
+}
