@@ -17,15 +17,33 @@ namespace Eventify.Repository.Data.Configurations
 
             builder.HasKey(p => p.BookingId);
 
-            builder.Property(p => p.TotalPrice).HasColumnType("decimal(5,2").IsRequired();
-            builder.Property(p => p.PaymentMethod).HasMaxLength(50).IsRequired();
-            builder.Property(p => p.Status).HasMaxLength(50).IsRequired();
-            builder.Property(p => p.DateTime).IsRequired();
+            builder.Property(p => p.TotalPrice)
+                .HasColumnType("decimal(10,2")
+                .IsRequired(true); 
+            
+            
+            
+            builder.Property(p => p.PaymentMethod)
+                .HasMaxLength(50)
+                .IsRequired(true);
 
+
+            builder.Property(p => p.Status)
+                .HasMaxLength(50)
+                .IsRequired(true)
+                .HasConversion<string>();
+            
+            
+            builder.Property(p => p.DateTime)
+                .IsRequired(true);
+
+           
+            
             builder.HasOne(p => p.Booking)
-                .WithOne(b => b.Payment).
-                HasForeignKey<Payment>(p => p.BookingId)
-                .IsRequired();
+                .WithOne(b => b.Payment)
+                .HasForeignKey<Payment>(p => p.BookingId)
+                .OnDelete(DeleteBehavior.NoAction);
+
 
 
         }
