@@ -17,8 +17,14 @@ namespace Eventify.Repository.Data.Configurations
 
             builder.HasKey(b => b.Id);
 
-            builder.Property(b => b.Status).HasMaxLength(50).IsRequired();
-            builder.Property(p => p.CreatedDate).IsRequired();
+            builder.Property(b => b.Status)
+                .HasMaxLength(50)
+                .HasConversion<string>()
+                .IsRequired(true);
+            
+            
+            builder.Property(p => p.CreatedDate)
+                .IsRequired();
             builder.Property(p => p.TicketsNum).IsRequired();
 
             builder.HasMany(b => b.Tickets)

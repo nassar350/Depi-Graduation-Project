@@ -17,8 +17,18 @@ namespace Eventify.Repository.Data.Configurations
 
             builder.HasKey(t => t.ID);
 
-            builder.Property(t => t.Place).HasMaxLength(225).IsRequired();
-            builder.Property(t => t.Type).HasMaxLength(50).IsRequired();
+            builder.Property(t => t.Place)
+                .HasMaxLength(70)
+                .IsRequired(true)
+                .HasColumnType("varchar");
+
+            
+            
+            builder.Property(t => t.Type)
+                .HasMaxLength(50)
+                .IsRequired(true)
+                .HasColumnType("varchar");
+
 
             builder.HasOne(t => t.Booking)
                 .WithMany(b => b.Tickets)
