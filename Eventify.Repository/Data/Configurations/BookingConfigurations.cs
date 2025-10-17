@@ -29,8 +29,7 @@ namespace Eventify.Repository.Data.Configurations
 
             builder.HasMany(b => b.Tickets)
                 .WithOne(t => t.Booking)
-                .HasForeignKey(t => t.BookingId)
-                .IsRequired();
+                .HasForeignKey(t => t.BookingId);
 
             builder.HasOne(b => b.Payment)
                 .WithOne(p => p.Booking)
