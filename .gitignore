@@ -1,3 +1,62 @@
 bin/
 obj/
 .vs/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Rider caches (optional)
+# .idea/.idea.Rider/
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Visual Studio Code settings (optional, if you're using VS Code too)
+.vscode/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# macOS files
+.DS_Store
+
+# Rider plugin sandbox (optional)
+.idea-sandbox/
+
+# Unity-specific (if using Unity with Rider)
+Library/
+Temp/
+Build/
+Builds/
+obj/
+*.csproj
+*.unityproj
+*.sln
+*.user
+*.pidb
+*.booproj
+*.svd
+
+# Rider’s coverage and solution-wide analysis results (optional)
+.idea/.idea.Rider/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries/
+.idea/shelf/

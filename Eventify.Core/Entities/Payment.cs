@@ -4,17 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
+
 namespace Eventify.Core.Entities
 {
+    public enum PaymentStatus
+    {
+        Payed, 
+        Cancelled, 
+        Rejected,
+        Pending
+    }
     public class Payment
     {
         public int BookingId { get; set; }
 
         public decimal TotalPrice { get; set; }
         public string PaymentMethod { get; set; }
-        public string Status { get; set; }
+        public PaymentStatus Status { get; set; }
         public DateTime DateTime { get; set; }
-
+        
         public Booking Booking { get; set; }
     }
 }
