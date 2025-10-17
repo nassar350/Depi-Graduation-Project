@@ -46,7 +46,7 @@ public class EventConfigurations : IEntityTypeConfiguration<Event>
         builder.HasMany(ev => ev.Tickets)
             .WithOne(ticket =>  ticket.Event)
             .HasForeignKey(ticket => ticket.EventId )
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasMany(ev => ev.Bookings)
             .WithOne(booking =>  booking.Event)

@@ -18,7 +18,7 @@ namespace Eventify.Repository.Data.Configurations
             builder.HasKey(p => p.BookingId);
 
             builder.Property(p => p.TotalPrice)
-                .HasColumnType("decimal(10,2")
+                .HasColumnType("decimal(10,2)")
                 .IsRequired(true); 
             
             
