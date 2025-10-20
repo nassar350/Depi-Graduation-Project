@@ -1,3 +1,5 @@
+using AutoMapper;
+using Eventify.APIs.DTOs.Users;
 using Eventify.Core.Entities;
 using Eventify.Repository.Data.Contexts;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +13,7 @@ var ConnectionString = builder.Configuration.GetConnectionString("OnlineDbConnec
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {
     options.Password.RequireDigit = true;
@@ -19,6 +22,7 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 })
 .AddEntityFrameworkStores<EventifyContext>()
 .AddDefaultTokenProviders();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -27,6 +31,8 @@ builder.Services.AddDbContext<EventifyContext>(options =>
 {
     options.UseSqlServer(ConnectionString);
 });
+
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
