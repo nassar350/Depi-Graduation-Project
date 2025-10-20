@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 
+using Eventify.Core.Enums;
+
 namespace Eventify.Core.Entities;
 
-public enum Role 
-{
-    User , Admin 
-}
+
 public class User : IdentityUser<int>
 {
     public string Name { get; set; }

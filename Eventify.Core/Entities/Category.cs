@@ -7,10 +7,6 @@ public class Category
     public int Seats { get; set; }
     public int  Booked { get; set; } 
     public Event Event { get; set; }
-    
     public ICollection<Ticket> Tickets { get; set; }
         = new HashSet<Ticket>();
-
-
-
 }
