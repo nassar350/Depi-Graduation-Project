@@ -15,8 +15,7 @@ public class Event
     public User Organizer { get; set; } 
     public ICollection<Category> Categories { get; set; }
         = new HashSet<Category>();  
-    public ICollection<Booking> Bookings { get; set; }
-        = new HashSet<Booking>(); 
+    
     public ICollection<Ticket> Tickets { get; set; }
         = new HashSet<Ticket>(); 
 }
