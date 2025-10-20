@@ -8,7 +8,7 @@ public class EventConfigurations : IEntityTypeConfiguration<Event>
 {
     public void Configure(EntityTypeBuilder<Event> builder)
     {
-        builder.ToTable("buildervents");
+        builder.ToTable("Events");
         builder.HasKey(e => e.Id);
 
         builder.Property(ev => ev.Name)
@@ -40,18 +40,12 @@ public class EventConfigurations : IEntityTypeConfiguration<Event>
         // Event => Categories (One TO Many)
         builder.HasMany(u => u.Categories)
             .WithOne(cat => cat.Event)
-            .HasForeignKey(cat => cat.Id)
+            .HasForeignKey(cat => cat.EventId)
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.HasMany(ev => ev.Tickets)
             .WithOne(ticket =>  ticket.Event)
-            .HasForeignKey(ticket => ticket.EventId )
-            .OnDelete(DeleteBehavior.Restrict);
-        
-        builder.HasMany(ev => ev.Bookings)
-            .WithOne(booking =>  booking.Event)
-            .HasForeignKey(ticket => ticket.EventId )
-            .OnDelete(DeleteBehavior.Cascade);
-
+            .HasForeignKey(ticket => ticket.EventId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

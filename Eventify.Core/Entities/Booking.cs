@@ -14,10 +14,10 @@ namespace Eventify.Core.Entities
         public TicketStatus Status { get; set; }
         public int TicketsNum { get; set; }
         public int UserId { get; set; }
-        public int EventId { get; set; }
+
         public Payment Payment { get; set; }
         public User User { get; set; }
-        public Event Event { get; set; }
+
         public ICollection<Ticket> Tickets { get; set; }
     }
 }

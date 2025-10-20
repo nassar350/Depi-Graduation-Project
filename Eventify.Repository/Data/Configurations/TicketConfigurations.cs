@@ -32,7 +32,8 @@ namespace Eventify.Repository.Data.Configurations
 
             builder.HasOne(t => t.Booking)
                 .WithMany(b => b.Tickets)
-                .HasForeignKey(t => t.BookingId);
+                .HasForeignKey(t => t.BookingId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             //Foreign Key => EventId
             //Foreign Key => CategoryId
