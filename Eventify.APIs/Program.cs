@@ -13,6 +13,7 @@ var ConnectionString = builder.Configuration.GetConnectionString("OnlineDbConnec
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {
     options.Password.RequireDigit = true;
@@ -21,6 +22,7 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 })
 .AddEntityFrameworkStores<EventifyContext>()
 .AddDefaultTokenProviders();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
