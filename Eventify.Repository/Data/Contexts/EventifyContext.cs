@@ -1,4 +1,6 @@
 ﻿using Eventify.Core.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Eventify.Repository.Data.Contexts
 {
-    public class EventifyContext : DbContext
+    public class EventifyContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
         public EventifyContext (DbContextOptions<EventifyContext> options) : base(options)
         {
@@ -26,7 +28,6 @@ namespace Eventify.Repository.Data.Contexts
         public DbSet<Event> Events { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
-        public DbSet<User> Users { get; set; }
         public DbSet<UserAttendEvent> UserAttendEvents { get; set; }
     }
 }

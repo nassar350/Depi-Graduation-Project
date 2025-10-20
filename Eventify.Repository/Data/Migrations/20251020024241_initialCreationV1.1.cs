@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Eventify.Repository.Migrations
+namespace Eventify.Repository.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class intialCreationV1 : Migration
+    public partial class initialCreationV11 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,7 +29,29 @@ namespace Eventify.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "buildervents",
+                name: "Bookings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TicketsNum = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Events",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -44,83 +66,11 @@ namespace Eventify.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_buildervents", x => x.Id);
+                    table.PrimaryKey("PK_Events", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_buildervents_Users_OrganizerID",
+                        name: "FK_Events_Users_OrganizerID",
                         column: x => x.OrganizerID,
                         principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Bookings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    TicketsNum = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Bookings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Bookings_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Bookings_buildervents_EventId",
-                        column: x => x.EventId,
-                        principalTable: "buildervents",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Categories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
-                    Seats = table.Column<int>(type: "int", nullable: false),
-                    Booked = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Categories_buildervents_Id",
-                        column: x => x.Id,
-                        principalTable: "buildervents",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserAttendEvents",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Event_Id = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserAttendEvents", x => new { x.Event_Id, x.UserId });
-                    table.ForeignKey(
-                        name: "FK_UserAttendEvents_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserAttendEvents_buildervents_Event_Id",
-                        column: x => x.Event_Id,
-                        principalTable: "buildervents",
                         principalColumn: "Id");
                 });
 
@@ -145,6 +95,51 @@ namespace Eventify.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EventId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
+                    Seats = table.Column<int>(type: "int", nullable: false),
+                    Booked = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Categories_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserAttendEvents",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Event_Id = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAttendEvents", x => new { x.Event_Id, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_UserAttendEvents_Events_Event_Id",
+                        column: x => x.Event_Id,
+                        principalTable: "Events",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserAttendEvents_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tickets",
                 columns: table => new
                 {
@@ -163,7 +158,8 @@ namespace Eventify.Repository.Migrations
                         name: "FK_Tickets_Bookings_BookingId",
                         column: x => x.BookingId,
                         principalTable: "Bookings",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Tickets_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -171,17 +167,11 @@ namespace Eventify.Repository.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Tickets_buildervents_EventId",
+                        name: "FK_Tickets_Events_EventId",
                         column: x => x.EventId,
-                        principalTable: "buildervents",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalTable: "Events",
+                        principalColumn: "Id");
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Bookings_EventId",
-                table: "Bookings",
-                column: "EventId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_UserId",
@@ -189,8 +179,13 @@ namespace Eventify.Repository.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_buildervents_OrganizerID",
-                table: "buildervents",
+                name: "IX_Categories_EventId",
+                table: "Categories",
+                column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Events_OrganizerID",
+                table: "Events",
                 column: "OrganizerID");
 
             migrationBuilder.CreateIndex(
@@ -233,7 +228,7 @@ namespace Eventify.Repository.Migrations
                 name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "buildervents");
+                name: "Events");
 
             migrationBuilder.DropTable(
                 name: "Users");
