@@ -6,6 +6,4 @@ public class UserAttendEvent
     public int  Event_Id { get; set; }
     public User User { get; set; }
     public Event Event { get; set; }
-
-
 }
