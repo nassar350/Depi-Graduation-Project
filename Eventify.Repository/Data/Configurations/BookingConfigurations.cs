@@ -29,7 +29,8 @@ namespace Eventify.Repository.Data.Configurations
 
             builder.HasMany(b => b.Tickets)
                 .WithOne(t => t.Booking)
-                .HasForeignKey(t => t.BookingId);
+                .HasForeignKey(t => t.BookingId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(b => b.Payment)
                 .WithOne(p => p.Booking)

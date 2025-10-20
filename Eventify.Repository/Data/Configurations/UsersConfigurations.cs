@@ -24,15 +24,6 @@ public class UsersConfigurations : IEntityTypeConfiguration<User>
             .HasColumnType("varchar");
 
 
-        builder.Property(user => user.Phone)
-            .IsRequired(true)
-            .HasMaxLength(20)
-            .HasColumnType("varchar");
-
-        builder.Property(user => user.Password)
-            .HasMaxLength(100)
-            .HasColumnType("varchar");
-
         builder.Property(user => user.Role)
             .IsRequired()
             .HasConversion<string>();
@@ -49,7 +40,7 @@ public class UsersConfigurations : IEntityTypeConfiguration<User>
         builder.HasMany(user  => user.Bookings)
             .WithOne(book => book.User)
             .HasForeignKey(book => book.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
         
         
     }
