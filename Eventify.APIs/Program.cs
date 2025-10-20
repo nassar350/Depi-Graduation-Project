@@ -1,3 +1,6 @@
+using AutoMapper;
+using Eventify.APIs.DTOs.Users;
+using Eventify.Core.Entities;
 using Eventify.Repository.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,6 +20,8 @@ builder.Services.AddDbContext<EventifyContext>(options =>
 {
     options.UseSqlServer(ConnectionString);
 });
+
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
