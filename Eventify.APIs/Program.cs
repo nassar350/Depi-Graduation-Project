@@ -33,7 +33,8 @@ builder.Services.AddDbContext<EventifyContext>(options =>
 });
 
 builder.Services.AddAutoMapper(typeof(Program));
-
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<IEventService, EventService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
