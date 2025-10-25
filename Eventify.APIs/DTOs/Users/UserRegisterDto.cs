@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Eventify.Core.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Eventify.APIs.DTOs.Users
 {
