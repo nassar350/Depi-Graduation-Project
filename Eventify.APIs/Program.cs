@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Eventify.API.Services.Auth;
 using Eventify.APIs.DTOs.Users;
 using Eventify.Core.Entities;
@@ -7,50 +7,57 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var ConnectionString = builder.Configuration.GetConnectionString("OnlineDbConnectionString");
-
-// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("OfflineDbConnectionString");
 
 builder.Services.AddControllers();
+
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        ClockSkew = TimeSpan.Zero
-    };
-});
-builder.Services.AddScoped<JwtTokenGenerator>();
-builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddIdentityCore<User>(options =>
 {
     options.Password.RequireDigit = true;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 6;
 })
+.AddRoles<IdentityRole<int>>()
 .AddEntityFrameworkStores<EventifyContext>()
+.AddSignInManager<SignInManager<User>>()
 .AddDefaultTokenProviders();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddScoped<JwtTokenGenerator>();
+
+builder.Services.AddDbContext<EventifyContext>(options =>
+{
+    options.UseSqlServer(connectionString);
+});
+
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -80,16 +87,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddDbContext<EventifyContext>(options =>
-{
-    options.UseSqlServer(ConnectionString);
-});
-
-builder.Services.AddAutoMapper(typeof(Program));
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -99,7 +98,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();

@@ -2,6 +2,8 @@
 using Eventify.APIs.DTOs.Users;
 using Eventify.Core.Entities;
 using Eventify.Core.Enums;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +21,6 @@ namespace Eventify.API.Controllers
             _userManager = userManager;
             _jwt = jwt;
         }
-
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
         {
