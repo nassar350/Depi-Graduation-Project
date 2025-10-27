@@ -11,7 +11,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("OfflineDbConnectionString");
+var connectionString = builder.Configuration.GetConnectionString("OnlineDbConnectionString");
 
 builder.Services.AddControllers();
 
