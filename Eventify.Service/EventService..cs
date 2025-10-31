@@ -1,4 +1,10 @@
-﻿public class EventService : IEventService
+﻿
+using AutoMapper;
+using Eventify.APIs.DTOs.Events;
+using Eventify.Core.Entities;
+using Eventify.Repository.Data.Contexts;
+
+public class EventService : IEventService
 {
     private readonly IEventRepository _repo;
     private readonly IMapper _mapper;

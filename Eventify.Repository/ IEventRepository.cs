@@ -1,4 +1,6 @@
-﻿public interface IEventRepository
+﻿using Eventify.Core.Entities;
+
+public interface IEventRepository
 {
     Task<IEnumerable<Event>> GetAllAsync();
     Task<Event> GetByIdAsync(int id);

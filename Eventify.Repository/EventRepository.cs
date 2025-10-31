@@ -1,4 +1,9 @@
-﻿public class EventRepository : IEventRepository
+﻿using Eventify.Core.Entities;
+using Eventify.Repository.Data.Contexts;
+using Microsoft.EntityFrameworkCore;
+
+
+public class EventRepository : IEventRepository
 {
     private readonly EventifyContext _context;
     public EventRepository(EventifyContext context) => _context = context;
@@ -7,9 +12,11 @@
         => await _context.Events.AsNoTracking().ToListAsync();
 
     public async Task<Event> GetByIdAsync(int id)
-        => await _context.Events
-                         .Include(e => e.TicketTypes) // لو مرتبط
-                         .FirstOrDefaultAsync(e => e.EventID == id);
+    {
+                          var entity = await _context.Events
+                             .FirstOrDefaultAsync(e => e.Id == id);
+        return entity?? throw new KeyNotFoundException($"Event with id {id} not found.");
+    }
 
     public async Task AddAsync(Event entity)
     {
@@ -27,5 +34,7 @@
     }
 
     public async Task<bool> ExistsAsync(int id)
-        => await _context.Events.AnyAsync(e => e.EventID == id);
+    {
+        return await _context.Events.AnyAsync(e =>e.Id == id);
+    }
 }
