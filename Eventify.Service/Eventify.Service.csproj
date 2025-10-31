@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Eventify.Core\Eventify.Core.csproj" />
+    <ProjectReference Include="..\Eventify.Repository\Eventify.Repository.csproj" />
+  </ItemGroup>
+
 </Project>

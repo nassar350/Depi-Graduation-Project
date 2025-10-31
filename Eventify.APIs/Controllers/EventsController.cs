@@ -1,4 +1,7 @@
-﻿[ApiController]
+﻿using Microsoft.AspNetCore.Mvc;
+using Eventify.APIs.DTOs.Events;
+namespace Eventify.APIs.Controllers;
+[ApiController]
 [Route("api/[controller]")]
 public class EventsController : ControllerBase
 {
@@ -31,12 +34,12 @@ public class EventsController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        int organizerId = 1;
-        var created = await _eventService.CreateAsync(dto, organizerId);
-        return CreatedAtAction(nameof(Get), new { id = created.EventID }, created);
+        int Id = 1;
+        var created = await _eventService.CreateAsync(dto);
+        return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
 
-    //[Authorize(Roles = "Organizer,Admin")]
+    //[Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateEventDto dto)
     {
@@ -45,7 +48,7 @@ public class EventsController : ControllerBase
         return NoContent();
     }
 
-    //[Authorize(Roles = "Organizer,Admin")]
+    //[Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
