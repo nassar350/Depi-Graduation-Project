@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Eventify.APIs.DTOs.Events;
+﻿using Eventify.APIs.DTOs.Events;
+using Microsoft.AspNetCore.Mvc;
 namespace Eventify.APIs.Controllers;
 [ApiController]
 [Route("api/[controller]")]
