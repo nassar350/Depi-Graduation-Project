@@ -4,7 +4,11 @@ using Eventify.APIs.DTOs.Users;
 using Eventify.Core.Entities;
 using Eventify.Repository;
 using Eventify.Repository.Data.Contexts;
+using Eventify.Repository.Interfaces;
+using Eventify.Repository.Repositories;
 using Eventify.Service;
+using Eventify.Service.Interfaces;
+using Eventify.Service.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -67,6 +71,8 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

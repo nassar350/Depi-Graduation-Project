@@ -9,6 +9,5 @@ public class Category
     public Event Event { get; set; }
     public ICollection<Ticket> Tickets { get; set; }
         = new HashSet<Ticket>();
-    public object Description { get; set; }
-    public object Name { get; set; }
+    
 }

@@ -40,8 +40,8 @@ namespace Eventify.Repository
             var existing = await _context.Categories.FindAsync(id);
             if (existing == null) return false;
 
-            existing.Name = category.Name;
-            existing.Description = category.Description;
+            existing.Title = category.Title;
+            existing.Seats = category.Seats;
             await _context.SaveChangesAsync();
             return true;
         }

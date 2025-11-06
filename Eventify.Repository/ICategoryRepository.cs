@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Eventify.Core.Entities;
+﻿using Eventify.Core.Entities;
 
 namespace Eventify.Repository
-
 {
     public interface ICategoryRepository
     {
@@ -18,3 +11,4 @@ namespace Eventify.Repository
         Task<bool> DeleteAsync(int id);
     }
 }
+
