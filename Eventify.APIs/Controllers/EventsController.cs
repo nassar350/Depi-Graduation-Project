@@ -1,4 +1,5 @@
 ﻿using Eventify.APIs.DTOs.Events;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace Eventify.APIs.Controllers;
 [ApiController]
@@ -39,7 +40,7 @@ public class EventsController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateEventDto dto)
     {
@@ -48,7 +49,7 @@ public class EventsController : ControllerBase
         return NoContent();
     }
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
