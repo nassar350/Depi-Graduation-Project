@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Eventify.API.Services.Auth;
-using Eventify.APIs.DTOs.Users;
+using Eventify.Service.DTOs.Users;
 using Eventify.Core.Entities;
 using Eventify.Repository.Data.Contexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -51,12 +51,15 @@ builder.Services.AddIdentityCore<User>(options =>
 
 builder.Services.AddScoped<JwtTokenGenerator>();
 
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<IEventService, EventService>();
+
 builder.Services.AddDbContext<EventifyContext>(options =>
 {
     options.UseSqlServer(connectionString);
 });
 
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapperDependency();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
