@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Eventify.APIs.DTOs.Tickets
+namespace Eventify.Service.DTOs.Tickets
 {
     public class CreateTicketDto
     {

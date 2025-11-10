@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Eventify.APIs.DTOs.Bookings;
+using Eventify.Service.DTOs.Bookings;
 using Eventify.Core.Entities;
 
-namespace Eventify.APIs.Mappings
+namespace Eventify.Service.Mappings
 {
     public class BookingProfile : Profile
     {

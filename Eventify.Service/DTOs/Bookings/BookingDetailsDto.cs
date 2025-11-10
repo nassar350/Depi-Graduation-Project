@@ -1,10 +1,10 @@
-﻿using Eventify.APIs.DTOs.Events;
-using Eventify.APIs.DTOs.Payments;
-using Eventify.APIs.DTOs.Tickets;
-using Eventify.APIs.DTOs.Users;
+﻿using Eventify.Service.DTOs.Events;
+using Eventify.Service.DTOs.Payments;
+using Eventify.Service.DTOs.Tickets;
+using Eventify.Service.DTOs.Users;
 using Eventify.Core.Enums;
 
-namespace Eventify.APIs.DTOs.Bookings
+namespace Eventify.Service.DTOs.Bookings
 {
     public class BookingDetailsDto
     {

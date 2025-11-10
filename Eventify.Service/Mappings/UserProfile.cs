@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using Eventify.APIs.DTOs.Users;
+using Eventify.Service.DTOs.Users;
 using Eventify.Core.Entities;
 using Eventify.Core.Enums;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Eventify.APIs.Mappings
+namespace Eventify.Service.Mappings
 {
     public class UserProfile : Profile
     {

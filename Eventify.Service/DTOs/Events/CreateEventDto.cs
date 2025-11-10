@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
-namespace Eventify.APIs.DTOs.Events
+namespace Eventify.Service.DTOs.Events
 {
     public class CreateEventDto
     {
@@ -22,7 +23,7 @@ namespace Eventify.APIs.DTOs.Events
         [Required]
         public int OrganizerID { get; set; }
 
-        public byte[] Photo { get; set; }
+        public IFormFile Photo { get; set; }
 
         public List<int> CategoryIds { get; set; } = new();
     }

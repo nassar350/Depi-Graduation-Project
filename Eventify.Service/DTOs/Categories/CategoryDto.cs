@@ -1,4 +1,4 @@
-﻿namespace Eventify.APIs.DTOs.Categories
+﻿namespace Eventify.Service.DTOs.Categories
 {
     public class CategoryDto
     {
