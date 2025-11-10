@@ -1,7 +1,5 @@
 ﻿using Eventify.Service.DTOs.Events;
 using Microsoft.AspNetCore.Mvc;
-
-
 namespace Eventify.APIs.Controllers;
 
 

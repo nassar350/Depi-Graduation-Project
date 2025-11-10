@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Eventify.Repository.Repositories;
+using Eventify.Repository.Interfaces;
+using Eventify.Service.Services;
+using Eventify.Service.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,15 +55,20 @@ builder.Services.AddIdentityCore<User>(options =>
 
 builder.Services.AddScoped<JwtTokenGenerator>();
 
-builder.Services.AddScoped<IEventRepository, EventRepository>();
-builder.Services.AddScoped<IEventService, EventService>();
-
 builder.Services.AddDbContext<EventifyContext>(options =>
 {
     options.UseSqlServer(connectionString);
 });
 
 builder.Services.AddAutoMapperDependency();
+
+
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<IEventService, EventService>();
+
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
