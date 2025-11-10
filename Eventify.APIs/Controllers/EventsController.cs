@@ -1,6 +1,10 @@
-﻿using Eventify.APIs.DTOs.Events;
+﻿using Eventify.Service.DTOs.Events;
 using Microsoft.AspNetCore.Mvc;
+
+
 namespace Eventify.APIs.Controllers;
+
+
 [ApiController]
 [Route("api/[controller]")]
 public class EventsController : ControllerBase
@@ -30,18 +34,17 @@ public class EventsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateEventDto dto)
+    public async Task<IActionResult> Create([FromForm] CreateEventDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        int Id = 1;
         var created = await _eventService.CreateAsync(dto);
         return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
 
     //[Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateEventDto dto)
+    public async Task<IActionResult> Update(int id, [FromForm] UpdateEventDto dto)
     {
         var ok = await _eventService.UpdateAsync(id, dto);
         if (!ok) return NotFound();
