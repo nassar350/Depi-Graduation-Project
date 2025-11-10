@@ -8,12 +8,10 @@ namespace Eventify.APIs.Controllers;
 public class EventsController : ControllerBase
 {
     private readonly IEventService _eventService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public EventsController(IEventService eventService, IHttpContextAccessor httpContextAccessor)
+    public EventsController(IEventService eventService)
     {
         _eventService = eventService;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     [HttpGet]

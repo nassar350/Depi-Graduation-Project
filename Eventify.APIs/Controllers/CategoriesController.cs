@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Eventify.Service.Services;
+using Eventify.Service.Interfaces;
 
 namespace Eventify.APIs.Controllers
 {
@@ -9,9 +10,9 @@ namespace Eventify.APIs.Controllers
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
     {
-        private readonly CategoryService _service;
+        private readonly ICategoryService _service;
 
-        public CategoriesController(CategoryService service)
+        public CategoriesController(ICategoryService service)
         {
             _service = service;
         }
