@@ -15,7 +15,7 @@ using Eventify.Service.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("OnlineDbConnectionString");
+var connectionString = builder.Configuration.GetConnectionString("OfflineDbConnectionString");
 
 builder.Services.AddControllers();
 
