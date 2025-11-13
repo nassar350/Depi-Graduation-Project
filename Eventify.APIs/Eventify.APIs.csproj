@@ -20,10 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Eventify.Core\Eventify.Core.csproj" />
     <ProjectReference Include="..\Eventify.Repository\Eventify.Repository.csproj" />
     <ProjectReference Include="..\Eventify.Service\Eventify.Service.csproj" />

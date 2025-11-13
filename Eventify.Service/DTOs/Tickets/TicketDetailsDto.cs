@@ -1,8 +1,8 @@
-﻿using Eventify.APIs.DTOs.Bookings;
-using Eventify.APIs.DTOs.Categories;
-using Eventify.APIs.DTOs.Events;
+﻿using Eventify.Service.DTOs.Bookings;
+using Eventify.Service.DTOs.Categories;
+using Eventify.Service.DTOs.Events;
 
-namespace Eventify.APIs.DTOs.Tickets
+namespace Eventify.Service.DTOs.Tickets
 {
     public class TicketDetailsDto
     {

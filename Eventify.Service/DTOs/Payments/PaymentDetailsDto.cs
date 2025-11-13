@@ -1,6 +1,6 @@
-﻿using Eventify.APIs.DTOs.Bookings;
+﻿using Eventify.Service.DTOs.Bookings;
 
-namespace Eventify.APIs.DTOs.Payments
+namespace Eventify.Service.DTOs.Payments
 {
     public class PaymentDetailsDto
     {

@@ -1,4 +1,4 @@
-﻿using Eventify.APIs.DTOs.Events;
+﻿using Eventify.Service.DTOs.Events;
 using Eventify.Core.Entities;
 
 

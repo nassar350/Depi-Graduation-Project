@@ -1,4 +1,4 @@
-﻿namespace Eventify.APIs.DTOs.Payments
+﻿namespace Eventify.Service.DTOs.Payments
 {
     public class PaymentDto
     {

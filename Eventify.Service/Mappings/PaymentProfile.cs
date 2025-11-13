@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Eventify.APIs.DTOs.Payments;
+using Eventify.Service.DTOs.Payments;
 using Eventify.Core.Entities;
 
-namespace Eventify.APIs.Mappings
+namespace Eventify.Service.Mappings
 {
     public class PaymentProfile : Profile
     {

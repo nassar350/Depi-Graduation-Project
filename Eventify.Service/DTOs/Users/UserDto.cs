@@ -1,4 +1,4 @@
-﻿namespace Eventify.APIs.DTOs.Users
+﻿namespace Eventify.Service.DTOs.Users
 {
     public class UserDto
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Eventify.APIs.DTOs.Users
+namespace Eventify.Service.DTOs.Users
 {
     public class UserLoginDto
     {

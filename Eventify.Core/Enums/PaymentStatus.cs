@@ -8,9 +8,10 @@ namespace Eventify.Core.Enums
 {
     public enum PaymentStatus
     {
-        Payed = 0,
+        Paid = 0,
         Pending = 1,
         Cancelled = 2,
-        Rejected = 3
+        Rejected = 3,
+        Refunded = 4
     }
 }

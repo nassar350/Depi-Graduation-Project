@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Eventify.APIs.DTOs.Categories;
+using Eventify.Service.DTOs.Categories;
 using Eventify.Core.Entities;
 
-namespace Eventify.APIs.Mappings
+namespace Eventify.Service.Mappings
 {
     public class CategoryProfile : Profile
     {

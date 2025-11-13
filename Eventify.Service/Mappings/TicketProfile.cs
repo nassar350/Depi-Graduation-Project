@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Eventify.APIs.DTOs.Tickets;
+using Eventify.Service.DTOs.Tickets;
 using Eventify.Core.Entities;
 
-namespace Eventify.APIs.Mappings
+namespace Eventify.Service.Mappings
 {
     public class TicketProfile : Profile
     {

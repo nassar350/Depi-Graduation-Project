@@ -1,6 +1,6 @@
 ﻿using Eventify.Core.Enums;
 
-namespace Eventify.APIs.DTOs.Payments
+namespace Eventify.Service.DTOs.Payments
 {
     public class UpdatePaymentDto
     {

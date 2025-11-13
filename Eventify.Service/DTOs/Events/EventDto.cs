@@ -1,4 +1,4 @@
-﻿namespace Eventify.APIs.DTOs.Events
+﻿namespace Eventify.Service.DTOs.Events
 {
     public class EventDto
     {

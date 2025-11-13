@@ -1,7 +1,7 @@
 ﻿using Eventify.Core.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace Eventify.APIs.DTOs.Payments
+namespace Eventify.Service.DTOs.Payments
 {
     public class CreatePaymentDto
     {

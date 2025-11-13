@@ -1,6 +1,6 @@
 ﻿using Eventify.Core.Enums;
 
-namespace Eventify.APIs.DTOs.Bookings
+namespace Eventify.Service.DTOs.Bookings
 {
     public class BookingDto
     {

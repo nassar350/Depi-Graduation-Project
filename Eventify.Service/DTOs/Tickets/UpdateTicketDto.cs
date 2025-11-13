@@ -1,4 +1,4 @@
-﻿namespace Eventify.APIs.DTOs.Tickets
+﻿namespace Eventify.Service.DTOs.Tickets
 {
     public class UpdateTicketDto
     {

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Eventify.API.Services.Auth;
-using Eventify.APIs.DTOs.Users;
+using Eventify.Service.DTOs.Users;
 using Eventify.Core.Entities;
 using Eventify.Repository.Data.Contexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Eventify.Repository.Repositories;
+using Eventify.Repository.Interfaces;
+using Eventify.Service.Services;
+using Eventify.Service.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,7 +60,22 @@ builder.Services.AddDbContext<EventifyContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapperDependency();
+
+
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<IEventService, EventService>();
+
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ISmsService, SmsService>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

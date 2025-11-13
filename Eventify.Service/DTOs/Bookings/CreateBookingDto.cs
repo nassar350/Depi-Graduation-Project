@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Eventify.APIs.DTOs.Bookings
+namespace Eventify.Service.DTOs.Bookings
 {
     public class CreateBookingDto
     {

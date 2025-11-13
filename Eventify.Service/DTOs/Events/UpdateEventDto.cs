@@ -1,4 +1,6 @@
-﻿namespace Eventify.APIs.DTOs.Events
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Eventify.Service.DTOs.Events
 {
     public class UpdateEventDto
     {
@@ -12,7 +14,7 @@
 
         public DateTime? EndDate { get; set; }
 
-        public byte[]? Photo { get; set; }
+        public IFormFile? Photo { get; set; }
 
         public List<int>? CategoryIds { get; set; }
     }
