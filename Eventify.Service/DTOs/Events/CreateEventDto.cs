@@ -23,7 +23,7 @@ namespace Eventify.Service.DTOs.Events
         [Required]
         public int OrganizerID { get; set; }
 
-        public IFormFile Photo { get; set; }
+        public IFormFile? Photo { get; set; }
 
         public List<int> CategoryIds { get; set; } = new();
     }

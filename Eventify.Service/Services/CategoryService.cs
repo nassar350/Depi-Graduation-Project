@@ -42,7 +42,9 @@ namespace Eventify.Service.Services
 
         public async Task<bool> UpdateAsync(int id, UpdateCategoryDto dto)
         {
-            var updatedCategory = _mapper.Map<Category>(dto);
+            var cat = await _repo.GetByIdAsync(id);
+            if (cat == null) return false;
+            var updatedCategory = _mapper.Map(dto,cat);
             return await _repo.UpdateAsync(id, updatedCategory);
         }
 
