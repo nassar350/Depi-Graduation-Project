@@ -15,6 +15,7 @@ namespace Eventify.Core.Entities
         public string PaymentMethod { get; set; }
         public PaymentStatus Status { get; set; }
         public DateTime DateTime { get; set; }
+        public string StripePaymentIntentId { get; set; }
         public Booking Booking { get; set; }
     }
 }

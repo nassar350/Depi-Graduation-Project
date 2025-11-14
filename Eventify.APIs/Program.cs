@@ -1,6 +1,8 @@
 ﻿using Eventify.API.Services.Auth;
 using Eventify.Core.Entities;
 using Eventify.Repository.Data.Contexts;
+using Eventify.Service.Interfaces;
+using Eventify.Service.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,12 +10,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Eventify.Repository.Repositories;
 using Eventify.Repository.Interfaces;
-using Eventify.Service.Services;
-using Eventify.Service.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("OfflineDbConnectionString");
+var connectionString = builder.Configuration.GetConnectionString("OnlineDbConnectionString");
 
 builder.Services.AddControllers();
 
@@ -69,6 +69,18 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ISmsService, SmsService>();
+
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

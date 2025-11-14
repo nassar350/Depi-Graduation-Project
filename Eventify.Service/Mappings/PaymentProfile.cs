@@ -12,7 +12,9 @@ namespace Eventify.Service.Mappings
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
 
             CreateMap<Payment, PaymentDetailsDto>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.CustomerEmail, opt => opt.MapFrom(src => src.Booking.User.Email))
+                .ForMember(dest => dest.CustomerPhone, opt => opt.MapFrom(src => src.Booking.User.PhoneNumber));
 
             CreateMap<CreatePaymentDto, Payment>()
                 .ForMember(dest => dest.DateTime, opt => opt.MapFrom(src => src.DateTime ?? DateTime.UtcNow));
