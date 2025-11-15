@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using Eventify.API.Services.Auth;
-using Eventify.Service.DTOs.Users;
+﻿using Eventify.API.Services.Auth;
 using Eventify.Core.Entities;
 using Eventify.Repository.Data.Contexts;
 using Eventify.Service.Interfaces;
@@ -62,6 +60,8 @@ builder.Services.AddDbContext<EventifyContext>(options =>
 
 builder.Services.AddAutoMapperDependency();
 
+builder.Services.AddScoped<IUserRepository , UserRepository>(); 
+builder.Services.AddScoped<IUserService , UserService>();
 
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IEventService, EventService>();
