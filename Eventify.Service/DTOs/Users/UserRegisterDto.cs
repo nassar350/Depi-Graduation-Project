@@ -14,7 +14,7 @@ namespace Eventify.Service.DTOs.Users
 
         [Required]
         public string Password { get; set; }
-
+        [Phone , MinLength(11) , MaxLength(11)]
         public string Phone { get; set; }
 
     }
