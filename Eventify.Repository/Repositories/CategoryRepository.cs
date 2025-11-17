@@ -31,7 +31,7 @@ namespace Eventify.Repository.Repositories
 
         public async Task<Category> AddAsync(Category category)
         {
-            await _context.Categories.AddAsync(category);
+            var result = await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
             return category;
         }

@@ -12,6 +12,12 @@ namespace Eventify.Service.DTOs.Categories
 
         [Required]
         public int Seats { get; set; }
+        public CreateCategoryDto(int eventid , string title , int seats)
+        {
+            EventId = eventid;
+            Title = title;
+            Seats = seats;
+        }
     }
 
 }

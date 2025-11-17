@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Eventify.Service.DTOs.Categories;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Eventify.Service.DTOs.Events
 {
     public class CreateEventDto
     {
-        [Required]
+        [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
 
         [Required]
@@ -25,7 +26,6 @@ namespace Eventify.Service.DTOs.Events
 
         public IFormFile? Photo { get; set; }
 
-        public List<int> CategoryIds { get; set; } = new();
+        public string CategoriesJson { get; set; }
     }
-
 }

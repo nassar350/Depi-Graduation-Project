@@ -1,6 +1,9 @@
-﻿using Eventify.Service.DTOs.Events;
+﻿using Eventify.Service.DTOs.Categories;
+using Eventify.Service.DTOs.Events;
+using Eventify.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 namespace Eventify.APIs.Controllers;
 
 
@@ -9,10 +12,12 @@ namespace Eventify.APIs.Controllers;
 public class EventsController : ControllerBase
 {
     private readonly IEventService _eventService;
+    private readonly ICategoryService _categoryService;
 
-    public EventsController(IEventService eventService)
+    public EventsController(IEventService eventService , ICategoryService categoryService)
     {
         _eventService = eventService;
+        _categoryService = categoryService;
     }
 
     [HttpGet]
@@ -32,11 +37,28 @@ public class EventsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,User")]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> Create([FromForm] CreateEventDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
+        if (dto.EndDate <= dto.StartDate)
+        {
+            ModelState.AddModelError("EndDate", "End Date must be after the Start Date");
+            return BadRequest(ModelState);  
+        }
+        if(dto.StartDate == DateTime.UtcNow)
+        {
+            ModelState.AddModelError("StartDate", "Start Date must be in the future");
+        }
+        var Categories = JsonConvert.DeserializeObject<List<CategoryCreationByEventDto>>(dto.CategoriesJson);
 
         var created = await _eventService.CreateAsync(dto);
+
+        if(Categories != null)
+        foreach (var category in Categories)
+        {
+            await _categoryService.CreateAsync(new CreateCategoryDto(created.Id, category.Title, category.Seats));
+        }
         return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
 
