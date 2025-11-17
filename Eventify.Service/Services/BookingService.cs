@@ -44,7 +44,8 @@ public class BookingService : IBookingService
         {
             var existing = await _repo.GetByIdAsync(id);
             if (existing == null) return false;
-            var updatedEntity = _mapper.Map(updatedBooking , existing) ;
+
+            var updatedEntity = _mapper.Map(updatedBooking , existing);
             
             return await _repo.UpdateAsync(id, _mapper.Map<Booking>(updatedEntity));
         }

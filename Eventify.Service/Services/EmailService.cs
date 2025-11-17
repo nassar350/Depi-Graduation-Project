@@ -24,7 +24,7 @@ namespace Eventify.Service.Services
 
         public async Task SendEmailAsync(string toEmail, string subject, string content)
         {
-            var apiKey = _config["Notification:SendGridApiKey"];
+            var apiKey = Environment.GetEnvironmentVariable("SendGridKey");
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(_config["Notification:FromEmail"], "Eventify");
             var to = new EmailAddress(toEmail);

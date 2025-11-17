@@ -12,10 +12,13 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Eventify.Repository.Repositories;
 using Eventify.Repository.Interfaces;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("OnlineDbConnectionString");
+
+Env.Load();
 
 builder.Services.AddControllers();
 

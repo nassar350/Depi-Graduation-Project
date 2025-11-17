@@ -30,6 +30,7 @@ namespace Eventify.Repository.Repositories
         {
             return await _context.Payments
                 .Include(p => p.Booking)
+                    .ThenInclude(b => b.User)
                 .FirstOrDefaultAsync(p => p.BookingId == bookingId);
         }
 

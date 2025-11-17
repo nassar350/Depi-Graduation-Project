@@ -26,7 +26,14 @@ namespace Eventify.Service.Services
             _configuration = configuration;
             _mapper = mapper;
 
-            StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
+            var stripeSecretKey = Environment.GetEnvironmentVariable("SecretKey");
+
+            if (string.IsNullOrEmpty(stripeSecretKey))
+                throw new Exception("Stripe Secret Key not set!");
+
+            StripeConfiguration.ApiKey = stripeSecretKey;
+
+            //StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
         }
 
         public async Task<IEnumerable<PaymentDto>> GetAllAsync()

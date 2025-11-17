@@ -2,6 +2,8 @@ bin/
 obj/
 .vs/
 
+.env
+
 # JetBrains Rider
 .idea/
 *.sln.iml

@@ -36,7 +36,11 @@ namespace Eventify.APIs.Controllers
         public async Task<IActionResult> HandleWebhook()
         {
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-            var endpointSecret = _configuration["Stripe:WebhookSecret"];
+
+            var endpointSecret = Environment.GetEnvironmentVariable("WebhookSecret");
+
+            if (string.IsNullOrEmpty(endpointSecret))
+                throw new Exception("Stripe Webhook Key not set!");
 
             Event stripeEvent;
 

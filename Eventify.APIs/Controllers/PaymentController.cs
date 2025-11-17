@@ -20,7 +20,7 @@ namespace Eventify.APIs.Controllers
         public async Task<IActionResult> GetAll() =>
             Ok(await _paymentService.GetAllAsync());
 
-        [HttpGet("{Id}")]
+        [HttpGet("{bookingId}")]
         public async Task<IActionResult> GetById(int bookingId)
         {
             var payment = await _paymentService.GetByIdAsync(bookingId);
@@ -35,7 +35,7 @@ namespace Eventify.APIs.Controllers
             return CreatedAtAction(nameof(GetById), new { bookingId = created.BookingId }, created);
         }
 
-        [HttpPut("{Id}")]
+        [HttpPut("{bookingId}")]
         public async Task<IActionResult> Update(int bookingId, [FromBody] UpdatePaymentDto dto)
         {
             var updated = await _paymentService.UpdateAsync(bookingId, dto);
@@ -43,14 +43,14 @@ namespace Eventify.APIs.Controllers
             return Ok(updated);
         }
 
-        [HttpDelete("{Id}")]
+        [HttpDelete("{bookingId}")]
         public async Task<IActionResult> Delete(int bookingId)
         {
             var deleted = await _paymentService.DeleteAsync(bookingId);
             return deleted ? NoContent() : NotFound();
         }
 
-        [HttpPost("{Id}/refund")]
+        [HttpPost("{bookingId}/refund")]
         public async Task<IActionResult> Refund(int bookingId)
         {
             var success = await _paymentService.RefundAsync(bookingId);
