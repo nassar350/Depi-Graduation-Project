@@ -1,6 +1,11 @@
-﻿using Eventify.Service.DTOs.Events;
+﻿using Eventify.Service.DTOs.Categories;
+using Eventify.Service.DTOs.Events;
+using Eventify.Service.DTOs.Tickets;
+using Eventify.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Security.Claims;
 namespace Eventify.APIs.Controllers;
 
 
@@ -9,10 +14,14 @@ namespace Eventify.APIs.Controllers;
 public class EventsController : ControllerBase
 {
     private readonly IEventService _eventService;
+    private readonly ICategoryService _categoryService;
+    private readonly ITicketService _ticketService;
 
-    public EventsController(IEventService eventService)
+    public EventsController(IEventService eventService , ICategoryService categoryService , ITicketService ticketService)
     {
         _eventService = eventService;
+        _categoryService = categoryService;
+        _ticketService = ticketService;
     }
 
     [HttpGet]
@@ -32,12 +41,26 @@ public class EventsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,User")]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> Create([FromForm] CreateEventDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var created = await _eventService.CreateAsync(dto);
-        return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+        var userID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userID == null)
+        {
+            return Unauthorized();
+        }
+
+        var created = await _eventService.CreateAsync(dto , userID);
+        if (!created.Success)
+        {
+            foreach (var error in created.Errors)
+                ModelState.AddModelError(error.Field, error.Message);
+
+            return BadRequest(ModelState);
+        }
+        return CreatedAtAction(nameof(Get), new { id = created.Data.Id }, created);
     }
 
     //[Authorize(Roles = "Admin")]

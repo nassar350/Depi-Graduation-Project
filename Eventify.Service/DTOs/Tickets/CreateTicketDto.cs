@@ -21,6 +21,14 @@ namespace Eventify.Service.DTOs.Tickets
         public int EventId { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "Booking ID must be a positive number")]
         public int? BookingId { get; set; }
+
+        public CreateTicketDto(string place , string type , int categoryId , int eventId)
+        {
+            Place = place;
+            Type = type;
+            CategoryId = categoryId;
+            EventId = eventId;
+        }
     }
 
 }

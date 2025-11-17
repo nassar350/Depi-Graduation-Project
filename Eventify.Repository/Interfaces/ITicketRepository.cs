@@ -13,6 +13,7 @@ namespace Eventify.Repository.Interfaces
         Task<IEnumerable<Ticket>> GetAllAsync();
         Task<Ticket?> GetByIdAsync(int id);
         Task AddAsync(Ticket ticket);
+        Task<IEnumerable<Ticket>> AddRangeAsync(IEnumerable<Ticket> tickets);
         void Update(Ticket ticket);
         void Delete(Ticket ticket);
     }

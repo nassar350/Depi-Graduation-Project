@@ -14,6 +14,12 @@ namespace Eventify.Service.DTOs.Categories
         [Required(ErrorMessage = "Total seats are required")]
         [Range(1, 10000, ErrorMessage = "Seats must be between 1 and 10000")]
         public int Seats { get; set; }
+        public CreateCategoryDto(int eventid , string title , int seats)
+        {
+            EventId = eventid;
+            Title = title;
+            Seats = seats;
+        }
     }
 
 }

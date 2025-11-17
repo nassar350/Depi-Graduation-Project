@@ -18,9 +18,10 @@ public class EventRepository : IEventRepository
         return entity?? throw new KeyNotFoundException($"Event with id {id} not found.");
     }
 
-    public async Task AddAsync(Event entity)
+    public async Task<Event> AddAsync(Event entity)
     {
         await _context.Events.AddAsync(entity);
+        return entity;
     }
 
     public void Update(Event entity)
