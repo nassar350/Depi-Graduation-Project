@@ -35,6 +35,11 @@ namespace Eventify.Repository.Repositories
             await _context.SaveChangesAsync();
             return category;
         }
+        public async Task<IEnumerable<Category>> AddRangeAsync(IEnumerable<Category> categories)
+        {
+            await _context.Categories.AddRangeAsync(categories);
+            return categories;
+        }
 
         public async Task<bool> UpdateAsync(int id, Category category)
         {

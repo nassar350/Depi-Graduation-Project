@@ -20,9 +20,12 @@ namespace Eventify.APIs.Controllers
         public async Task<IActionResult> GetAllUsers()
         {
             var result = await _userService.GetAllAsync();
-
+            foreach(var error in result.Errors)
+            {
+                ModelState.AddModelError(error.Field, error.Message);
+            }
             if (!result.Success)
-                return NotFound(result.ErrorMessage);
+                return BadRequest(ModelState);
 
             return Ok(result.Data);
         }
@@ -31,9 +34,12 @@ namespace Eventify.APIs.Controllers
         {
             var result = await _userService.GetByIdAsync(id);
 
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(error.Field, error.Message);
+            }
             if (!result.Success)
-                return NotFound(result.ErrorMessage);
-
+                return BadRequest(ModelState);
             return Ok(result.Data);
         }
         [HttpPut("{id:int}")]
@@ -44,9 +50,12 @@ namespace Eventify.APIs.Controllers
 
             var result = await _userService.UpdateAsync(id, userDto);
 
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(error.Field, error.Message);
+            }
             if (!result.Success)
-                return BadRequest(result.ErrorMessage);
-
+                return BadRequest(ModelState);
             return Ok(result.Data);
         }
         [HttpDelete("{id:int}")]
@@ -54,8 +63,12 @@ namespace Eventify.APIs.Controllers
         {
             var result = await _userService.DeleteAsync(id);
 
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(error.Field, error.Message);
+            }
             if (!result.Success)
-                return NotFound(result.ErrorMessage);
+                return BadRequest(ModelState);
 
             return NoContent();
         }

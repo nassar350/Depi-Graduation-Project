@@ -60,6 +60,8 @@ builder.Services.AddDbContext<EventifyContext>(options =>
 
 builder.Services.AddAutoMapperDependency();
 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 builder.Services.AddScoped<IUserRepository , UserRepository>(); 
 builder.Services.AddScoped<IUserService , UserService>();
 

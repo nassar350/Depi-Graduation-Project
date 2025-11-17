@@ -1,9 +1,11 @@
 ﻿using Eventify.Service.DTOs.Categories;
 using Eventify.Service.DTOs.Events;
+using Eventify.Service.DTOs.Tickets;
 using Eventify.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Security.Claims;
 namespace Eventify.APIs.Controllers;
 
 
@@ -13,11 +15,13 @@ public class EventsController : ControllerBase
 {
     private readonly IEventService _eventService;
     private readonly ICategoryService _categoryService;
+    private readonly ITicketService _ticketService;
 
-    public EventsController(IEventService eventService , ICategoryService categoryService)
+    public EventsController(IEventService eventService , ICategoryService categoryService , ITicketService ticketService)
     {
         _eventService = eventService;
         _categoryService = categoryService;
+        _ticketService = ticketService;
     }
 
     [HttpGet]
@@ -41,25 +45,22 @@ public class EventsController : ControllerBase
     public async Task<IActionResult> Create([FromForm] CreateEventDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        if (dto.EndDate <= dto.StartDate)
-        {
-            ModelState.AddModelError("EndDate", "End Date must be after the Start Date");
-            return BadRequest(ModelState);  
-        }
-        if(dto.StartDate == DateTime.UtcNow)
-        {
-            ModelState.AddModelError("StartDate", "Start Date must be in the future");
-        }
-        var Categories = JsonConvert.DeserializeObject<List<CategoryCreationByEventDto>>(dto.CategoriesJson);
 
-        var created = await _eventService.CreateAsync(dto);
-
-        if(Categories != null)
-        foreach (var category in Categories)
+        var userID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userID == null)
         {
-            await _categoryService.CreateAsync(new CreateCategoryDto(created.Id, category.Title, category.Seats));
+            return Unauthorized();
         }
-        return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+
+        var created = await _eventService.CreateAsync(dto , userID);
+        if (!created.Success)
+        {
+            foreach (var error in created.Errors)
+                ModelState.AddModelError(error.Field, error.Message);
+
+            return BadRequest(ModelState);
+        }
+        return CreatedAtAction(nameof(Get), new { id = created.Data.Id }, created);
     }
 
     //[Authorize(Roles = "Admin")]
