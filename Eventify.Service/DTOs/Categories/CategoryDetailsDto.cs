@@ -7,7 +7,7 @@ namespace Eventify.Service.DTOs.Categories
     {
         public int Id { get; set; }
 
-        public string Title { get; set; }
+        public string Title { get; set; }= string.Empty;
 
         public int Seats { get; set; }
 
@@ -15,9 +15,9 @@ namespace Eventify.Service.DTOs.Categories
 
         public int EventId { get; set; }
 
-        public EventDto Event { get; set; }
+        public EventDto Event { get; set; } = new();
 
-        public List<TicketDto> Tickets { get; set; }
+        public List<TicketDto> Tickets { get; set; }= new();
     }
 
 }

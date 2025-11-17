@@ -16,13 +16,13 @@ namespace Eventify.Service.DTOs.Bookings
 
         public int TicketsNum { get; set; }
 
-        public UserDto User { get; set; }
+        public UserDto User { get; set; } = new();
 
-        public EventDto Event { get; set; }
+        public EventDto Event { get; set; }= new();
 
-        public PaymentDto Payment { get; set; }
+        public PaymentDto Payment { get; set; }= new();
 
-        public List<TicketDto> Tickets { get; set; }
+        public List<TicketDto> Tickets { get; set; }= new();
     }
 
 }
