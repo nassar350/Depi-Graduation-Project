@@ -1,9 +1,10 @@
 ﻿using Eventify.API.Services.Auth;
-using Eventify.Service.DTOs.Users;
 using Eventify.Core.Entities;
 using Eventify.Core.Enums;
+using Eventify.Service.DTOs.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Eventify.API.Controllers
 {
@@ -30,7 +31,17 @@ namespace Eventify.API.Controllers
                 PhoneNumber = dto.Phone,
                 Role = Role.User
             };
-
+            if (user.Name.Any(char.IsLetter) == false)
+            {
+                ModelState.AddModelError("Name", "Name must have at least one alphabet letter. ");
+                return ValidationProblem(ModelState);
+            }
+            var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == user.PhoneNumber);
+            if(existingUser != null)
+            {
+                ModelState.AddModelError("PhoneNumber", "This phone number is already registered.");
+                return ValidationProblem(ModelState);
+            }
             var result = await _userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);

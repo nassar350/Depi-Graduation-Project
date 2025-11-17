@@ -1,4 +1,5 @@
 ﻿using Eventify.Service.DTOs.Events;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace Eventify.APIs.Controllers;
 
@@ -30,6 +31,7 @@ public class EventsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,User")]
     public async Task<IActionResult> Create([FromForm] CreateEventDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
