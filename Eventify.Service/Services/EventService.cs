@@ -61,7 +61,7 @@ public class EventService : IEventService
             {
                 foreach (var category in Categories)
                 {
-                    CategoriesToCreate.Add(new CreateCategoryDto(int.Parse(id), category.Title, category.Seats));
+                    CategoriesToCreate.Add(new CreateCategoryDto(curEvent.Id, category.Title, category.Seats));
                 }
             }
             var mappedCateories = _mapper.Map<List<Category>>(CategoriesToCreate);
