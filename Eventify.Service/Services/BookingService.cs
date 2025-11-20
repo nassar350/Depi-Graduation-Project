@@ -11,12 +11,14 @@ public class BookingService : IBookingService
    
         private readonly IBookingRepository _repo;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public BookingService(IBookingRepository repo, IMapper mapper)
-        {
-            _repo = repo;
-            _mapper = mapper;
-        }
+    public BookingService(IBookingRepository repo, IMapper mapper, IUnitOfWork unitOfWork)
+    {
+        _repo = repo;
+        _mapper = mapper;
+        _unitOfWork = unitOfWork;
+    }
 
         public async Task<IEnumerable<BookingDto>> GetAllAsync()
         {
@@ -35,6 +37,9 @@ public class BookingService : IBookingService
 
         public async Task<BookingDto> CreateAsync(CreateBookingDto booking)
         {
+            var user = _unitOfWork._userRepository.GetUserByEmail(booking.EmailAddress);
+            booking.UserId = user.Id;
+
             var entity = _mapper.Map<Booking>(booking);
             var created = await _repo.AddAsync(entity); 
             return _mapper.Map<BookingDto>(created);

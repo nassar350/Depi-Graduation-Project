@@ -6,6 +6,7 @@ namespace Eventify.Repository.Interfaces
     {
         Task<IEnumerable<User>> GetAllAsync();
         Task<User> GetByIdAsync(int id);
+        Task <User> GetUserByEmail(string email);
         Task<bool> UpdateAsync(int id , User user);
         Task<bool> DeleteAsync(int id);
 

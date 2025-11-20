@@ -23,6 +23,7 @@ namespace Eventify.Service.DTOs.Events
 
         [Required(ErrorMessage = "End date is required")]
         public DateTime EndDate { get; set; }
+
         //remove orgainizer id as it will be taken from the logged in user
        
         public IFormFile? Photo { get; set; }

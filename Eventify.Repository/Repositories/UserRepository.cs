@@ -32,6 +32,12 @@ namespace Eventify.Repository.Repositories
             return userToFind;
         }
 
+        public async Task<User> GetUserByEmail(String email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            return user;
+        }
+
         public async Task<bool> UpdateAsync(int id, User user)
         {
             var userToUpdate = await _userManager.FindByIdAsync(id.ToString());

@@ -39,8 +39,10 @@ namespace Eventify.APIs.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateBookingDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateBookingDto dto, int EventId)
         {
+            dto.EventId = EventId;
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
