@@ -11,6 +11,7 @@ namespace Eventify.Core.Entities
         public int ID { get; set; }
         public string Place { get; set; }
         public string Type { get; set; }
+        public decimal Price { get; set; }
         public int? BookingId { get; set; }
         public int EventId { get; set; }
         public int CategoryId { get; set; }
