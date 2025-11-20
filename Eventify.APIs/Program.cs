@@ -16,6 +16,47 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("OnlineDbConnectionString");
 
 builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.WithOrigins(
+                // Static HTML/CSS/JS development servers
+                "http://localhost:3000", // React/Live Server common port
+                "http://localhost:3001", 
+                "http://localhost:4200", // Angular default port
+                "http://localhost:5000", // .NET/Python simple servers
+                "http://localhost:5173", // Vite default port
+                "http://localhost:5500", // Live Server VS Code extension
+                "http://localhost:8000", // Python http.server
+                "http://localhost:8080", // Vue/Webpack dev server
+                "http://localhost:8090", // Common alternative port
+                "http://127.0.0.1:3000",
+                "http://127.0.0.1:5500", // Live Server alternative
+                "http://127.0.0.1:8000",
+                "http://127.0.0.1:8080",
+                "https://localhost:3000",
+                "https://localhost:3001",
+                "https://localhost:4200",
+                "https://localhost:5000",
+                "https://localhost:5173",
+                "https://localhost:5500",
+                "https://localhost:8000",
+                "https://localhost:8080",
+                "https://localhost:8090"
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+
+    options.AddPolicy("DevelopmentPolicy", policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
@@ -39,7 +80,7 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
-
+    
 builder.Services.AddIdentityCore<User>(options =>
 {
     options.Password.RequireDigit = true;
@@ -64,6 +105,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IUserRepository , UserRepository>(); 
 builder.Services.AddScoped<IUserService , UserService>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IEventService, EventService>();
@@ -119,6 +162,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("DevelopmentPolicy");
+}
+else
+{
+    app.UseCors("FrontendPolicy");
 }
 
 app.UseHttpsRedirection();

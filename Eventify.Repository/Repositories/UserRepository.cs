@@ -39,5 +39,26 @@ namespace Eventify.Repository.Repositories
             await _userManager.UpdateAsync(user);
             return true;
         }
+
+        // Authentication-specific methods
+        public async Task<User?> FindByEmailAsync(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
+        public async Task<User?> FindByPhoneNumberAsync(string phoneNumber)
+        {
+            return await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+        }
+
+        public async Task<IdentityResult> CreateUserAsync(User user, string password)
+        {
+            return await _userManager.CreateAsync(user, password);
+        }
+
+        public async Task<bool> CheckPasswordAsync(User user, string password)
+        {
+            return await _userManager.CheckPasswordAsync(user, password);
+        }
     }
 }

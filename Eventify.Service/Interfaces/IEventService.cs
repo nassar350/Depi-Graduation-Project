@@ -2,13 +2,17 @@
 using Eventify.Service.DTOs.Events;
 using Eventify.Service.Helpers;
 
-
-public interface IEventService
+namespace Eventify.Service.Interfaces
 {
-    Task<IEnumerable<EventDto>> GetAllAsync();
-    Task<EventDto> GetByIdAsync(int id);
-    Task<ServiceResult<EventDto>> CreateAsync(CreateEventDto dto , string userId);
-    Task<bool> UpdateAsync(int id, UpdateEventDto dto);
-    Task<bool> DeleteAsync(int id);
-  
+    public interface IEventService
+    {
+        Task<IEnumerable<EventDto>> GetAllAsync();
+        Task<ServiceResult<EventDetailsDto>> GetByIdAsync(int id); // Changed to return EventDetailsDto
+        Task<ServiceResult<EventDto>> CreateAsync(CreateEventDto dto, string userId);
+        Task<bool> UpdateAsync(int id, UpdateEventDto dto);
+        Task<bool> DeleteAsync(int id);
+        Task<ServiceResult<IEnumerable<EventDto>>> GetUpcomingEventsAsync(int take = 10);
+        Task<ServiceResult<IEnumerable<EventDto>>> GetEventsByOrganizerAsync(int organizerId);
+        Task<ServiceResult<IEnumerable<EventDto>>> SearchEventsAsync(string searchTerm);
+    }
 }
