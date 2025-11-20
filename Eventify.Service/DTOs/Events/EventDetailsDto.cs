@@ -9,11 +9,11 @@ namespace Eventify.Service.DTOs.Events
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public string Description { get; set; }
+        public string Description { get; set; }= string.Empty;
 
-        public string Address { get; set; }
+        public string Address { get; set; } = string.Empty;
 
         public DateTime StartDate { get; set; }
 
@@ -23,15 +23,15 @@ namespace Eventify.Service.DTOs.Events
 
         public int OrganizerID { get; set; }
 
-        public UserDto Organizer { get; set; }
+        public UserDto Organizer { get; set; }= new UserDto();
 
-        public List<CategoryDto> Categories { get; set; }
+        public List<CategoryDto> Categories { get; set; } = new();
 
-        public List<UserDto> Attendees { get; set; }
+        public List<UserDto> Attendees { get; set; }= new();
 
-        public List<TicketDto> Tickets { get; set; }
+        public List<TicketDto> Tickets { get; set; } = new();
 
-        public List<BookingDto> Bookings { get; set; }
+        public List<BookingDto> Bookings { get; set; } = new();
     }
 
 }

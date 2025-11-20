@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Details - Eventify</title>
+  <meta name="description" content="View event details, book tickets, and find event information.">
+  
+  <!-- Preload fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎉</text></svg>">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <span class="text-gradient">Eventify</span>
+      </a>
+      
+      <div class="navbar-menu">
+        <ul class="navbar-nav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="explore.html">Explore</a></li>
+          <li><a href="create-event.html" data-auth-required style="display: none;">Create Event</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+        
+        <div class="user-info">
+          <!-- Will be populated by JavaScript based on auth state -->
+        </div>
+      </div>
+      
+      <button class="navbar-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span>☰</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Loading State -->
+  <div id="eventLoading" class="text-center" style="padding: var(--space-3xl) 0;">
+    <p class="text-muted">Loading event details...</p>
+  </div>
+
+  <!-- Event Not Found -->
+  <div id="eventNotFound" style="display: none;" class="section text-center">
+    <div class="container">
+      <div class="card" style="max-width: 500px; margin: 0 auto;">
+        <div style="font-size: 4rem; margin-bottom: var(--space-lg);">😕</div>
+        <h2>Event Not Found</h2>
+        <p class="text-muted">
+          The event you're looking for doesn't exist or may have been removed.
+        </p>
+        <a href="explore.html" class="btn btn-primary">Browse Other Events</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Content -->
+  <main id="eventContent" style="display: none;">
+    <!-- Event Hero -->
+    <section class="event-hero" style="position: relative; overflow: hidden;">
+      <img 
+        id="eventHeroImage"
+        alt="Event image"
+        style="width: 100%; height: 400px; object-fit: cover; filter: brightness(0.7);"
+        onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=400&fit=crop'"
+      >
+      
+      <!-- Hero Overlay Content -->
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: var(--space-xl) 0;">
+        <div class="container">
+          <div class="flex-between" style="color: white; flex-wrap: wrap; gap: var(--space-lg);">
+            <div>
+              <div id="eventCategories" style="margin-bottom: var(--space-sm);">
+                <!-- Categories will be populated here -->
+              </div>
+              <h1 id="eventTitle" style="margin-bottom: var(--space-sm); color: white;">Event Title</h1>
+              <div class="flex gap-lg" style="flex-wrap: wrap; color: rgba(255,255,255,0.9);">
+                <div class="flex gap-sm">
+                  <span>📅</span>
+                  <span id="eventDate">Date</span>
+                </div>
+                <div class="flex gap-sm">
+                  <span>📍</span>
+                  <span id="eventLocation">Location</span>
+                </div>
+                <div class="flex gap-sm">
+                  <span>👥</span>
+                  <span id="eventCapacity">Capacity</span>
+                </div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div id="eventPrice" style="font-size: var(--font-size-2xl); font-weight: 600; margin-bottom: var(--space-md); color: white;"></div>
+              <button id="bookNowBtn" class="btn btn-primary btn-lg" style="min-width: 200px;">
+                Book Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Event Details -->
+    <section class="section">
+      <div class="container">
+        <div class="grid-2" style="gap: var(--space-2xl); align-items: start;">
+          <!-- Main Content -->
+          <div>
+            <!-- Description -->
+            <div style="margin-bottom: var(--space-2xl);">
+              <h2 style="margin-bottom: var(--space-lg);">About This Event</h2>
+              <div id="eventDescription" class="text-lg" style="line-height: 1.8;">
+                <!-- Description will be populated here -->
+              </div>
+            </div>
+
+            <!-- Ticket Categories -->
+            <div style="margin-bottom: var(--space-2xl);" id="ticketCategories">
+              <!-- Categories will be populated here -->
+            </div>
+
+            <!-- Organizer Information -->
+            <div style="margin-bottom: var(--space-2xl);">
+              <div class="section-header left-align">
+                <h2>Organizer Information</h2>
+                <p class="section-subtitle">Get to know the event organizer</p>
+              </div>
+              <div id="organizerInfo">
+                <!-- Organizer info will be populated here -->
+              </div>
+            </div>
+
+            <!-- Event Information -->
+            <div style="margin-bottom: var(--space-2xl);">
+              <div class="section-header left-align">
+                <h2>Event Information</h2>
+                <p class="section-subtitle">All the details you need to know</p>
+              </div>
+              <div id="eventInfoSummary">
+                <!-- Event info will be populated here -->
+              </div>
+            </div>
+
+            <!-- Event Actions -->
+            <div class="card" style="margin-bottom: var(--space-2xl);">
+              <h3 style="margin-bottom: var(--space-lg);">Share This Event</h3>
+              <div class="flex gap-md flex-wrap">
+                <button class="btn btn-outline" onclick="eventPage.shareEvent('copy')">
+                  📋 Copy Link
+                </button>
+                <button class="btn btn-outline" onclick="eventPage.shareEvent('twitter')">
+                  🐦 Share on Twitter
+                </button>
+                <button class="btn btn-outline" onclick="eventPage.shareEvent('facebook')">
+                  📘 Share on Facebook
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <div>
+            <!-- Booking Summary -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(124, 92, 255, 0.1), rgba(0, 212, 255, 0.1)); border: 1px solid var(--accent);">
+              <h3 style="margin-bottom: var(--space-lg);">Booking</h3>
+              <div id="bookingSummary">
+                <!-- Booking summary will be populated here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Eventify</h4>
+          <p>Connecting people through amazing events and experiences.</p>
+          <div class="social-links">
+            <a href="#" aria-label="Twitter">🐦</a>
+            <a href="#" aria-label="Facebook">📘</a>
+            <a href="#" aria-label="Instagram">📷</a>
+            <a href="#" aria-label="LinkedIn">💼</a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h4>For Attendees</h4>
+          <ul>
+            <li><a href="explore.html">Find Events</a></li>
+            <li><a href="login.html">My Tickets</a></li>
+            <li><a href="about.html">Help Center</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>For Organizers</h4>
+          <ul>
+            <li><a href="create-event.html">Create Event</a></li>
+            <li><a href="dashboard.html">Manage Events</a></li>
+            <li><a href="about.html">Resources</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="about.html">Contact</a></li>
+            <li><a href="#" onclick="app.showNotification('Privacy policy coming soon!', 'info')">Privacy</a></li>
+            <li><a href="#" onclick="app.showNotification('Terms of service coming soon!', 'info')">Terms</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 Eventify. All rights reserved.</p>
+        <p class="text-muted">Built with ❤️ for event lovers</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/app.js?v=1.5"></script>
+  <script src="js/event-test.js?v=1.5"></script>
+  <script>
+    // Test if event.js loaded
+    setTimeout(() => {
+      console.log('🔍 Testing if event.js loaded...');
+      console.log('🔍 window.testLoaded:', window.testLoaded);
+      console.log('🔍 window.EventPage:', typeof window.EventPage);
+      console.log('🔍 window.eventPage:', typeof window.eventPage);
+      
+      // Add test buttons for debugging
+      if (window.location.search.includes('debug=true')) {
+        const debugDiv = document.createElement('div');
+        debugDiv.style = 'position: fixed; top: 10px; right: 10px; background: #333; color: white; padding: 10px; z-index: 9999;';
+        debugDiv.innerHTML = `
+          <button onclick="testBooking()" style="margin: 5px; padding: 5px;">Test Book Now</button>
+          <button onclick="testCategorySelection(1)" style="margin: 5px; padding: 5px;">Test Category 1</button>
+        `;
+        document.body.appendChild(debugDiv);
+      }
+    }, 500);
+  </script>
+</body>
+</html>

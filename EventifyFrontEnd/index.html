@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eventify - Discover Amazing Events</title>
+  <meta name="description" content="Discover and book amazing events near you. From tech conferences to music festivals, find your next experience with Eventify.">
+  
+  <!-- Preload fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎉</text></svg>">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <span class="text-gradient">Eventify</span>
+      </a>
+      
+      <div class="navbar-menu">
+        <ul class="navbar-nav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="explore.html">Explore</a></li>
+          <li><a href="create-event.html" data-auth-required style="display: none;">Create Event</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+        
+        <div class="user-info">
+          <!-- Will be populated by JavaScript based on auth state -->
+        </div>
+      </div>
+      
+      <button class="navbar-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span>☰</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>Discover Amazing <span class="text-gradient">Events</span></h1>
+      <p>Find conferences, workshops, festivals, and networking events that inspire and connect you with like-minded people.</p>
+      
+      <div class="search-bar">
+        <div class="search-icon">🔍</div>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search events, locations, or topics..."
+          id="heroSearchInput"
+          aria-label="Search events"
+        >
+      </div>
+    </div>
+  </section>
+
+  <!-- Upcoming Events -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Upcoming Events</h2>
+        <p class="section-subtitle">Don't miss out on these exciting upcoming events</p>
+      </div>
+      
+      <!-- Loading state -->
+      <div id="eventsLoading" class="text-center">
+        <p class="text-muted">Loading events...</p>
+      </div>
+      
+      <!-- Events grid -->
+      <div class="grid grid-3" id="upcomingEventsGrid" style="display: none;">
+        <!-- Events will be populated by JavaScript -->
+      </div>
+      
+      <!-- Empty state -->
+      <div id="emptyState" style="display: none;" class="text-center">
+        <div class="card" style="max-width: 500px; margin: 0 auto;">
+          <h3>No Upcoming Events</h3>
+          <p class="text-muted">There are no upcoming events at the moment. Why not create your own?</p>
+          <a href="create-event.html" class="btn btn-primary" data-auth-required style="display: none;">Create Event</a>
+          <a href="login.html" class="btn btn-primary" data-guest-only>Login to Create Event</a>
+        </div>
+      </div>
+      
+      <!-- Load more button -->
+      <div class="text-center" style="margin-top: var(--space-xl);">
+        <button id="loadMoreBtn" class="btn btn-outline" style="display: none;">
+          Load More Events
+        </button>
+        <a href="explore.html" class="btn btn-primary" style="margin-left: var(--space-md);">
+          Explore All Events
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="section">
+    <div class="container">
+      <div class="card text-center" style="background: linear-gradient(135deg, rgba(124, 92, 255, 0.1), rgba(0, 212, 255, 0.1)); border: 1px solid var(--accent);">
+        <h2>Ready to Host Your Own Event?</h2>
+        <p style="font-size: var(--font-size-lg); margin-bottom: var(--space-xl);">
+          Join thousands of organizers who trust Eventify to bring their events to life
+        </p>
+        <a href="create-event.html" class="btn btn-primary btn-lg" data-auth-required style="display: none;">
+          Create Your Event
+        </a>
+        <a href="register.html" class="btn btn-primary btn-lg" data-guest-only>
+          Get Started
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Eventify</h4>
+          <p>Connecting people through amazing events and experiences.</p>
+          <div class="social-links">
+            <a href="#" aria-label="Twitter">🐦</a>
+            <a href="#" aria-label="Facebook">📘</a>
+            <a href="#" aria-label="Instagram">📷</a>
+            <a href="#" aria-label="LinkedIn">💼</a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h4>For Attendees</h4>
+          <ul>
+            <li><a href="explore.html">Find Events</a></li>
+            <li><a href="login.html">My Tickets</a></li>
+            <li><a href="about.html">Help Center</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>For Organizers</h4>
+          <ul>
+            <li><a href="create-event.html">Create Event</a></li>
+            <li><a href="dashboard.html">Manage Events</a></li>
+            <li><a href="about.html">Resources</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="about.html">Contact</a></li>
+            <li><a href="#" onclick="app.showNotification('Privacy policy coming soon!', 'info')">Privacy</a></li>
+            <li><a href="#" onclick="app.showNotification('Terms of service coming soon!', 'info')">Terms</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 Eventify. All rights reserved.</p>
+        <p class="text-muted">Built with ❤️ for event lovers</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

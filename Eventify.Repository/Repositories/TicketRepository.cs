@@ -38,7 +38,11 @@ namespace Eventify.Repository.Repositories
         {
             await _context.Tickets.AddAsync(ticket);
         }
-
+        public async Task<IEnumerable<Ticket>> AddRangeAsync(IEnumerable<Ticket> tickets)
+        {
+            await _context.Tickets.AddRangeAsync(tickets);
+            return tickets;
+        }
         public void Update(Ticket ticket)
         {
             _context.Tickets.Update(ticket);
