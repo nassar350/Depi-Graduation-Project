@@ -34,9 +34,10 @@ namespace Eventify.Repository.Repositories
                 .FirstOrDefaultAsync(p => p.BookingId == bookingId);
         }
 
-        public async Task AddAsync(Payment payment)
+        public async Task<Payment> AddAsync(Payment payment)
         {
             await _context.Payments.AddAsync(payment);
+            return payment;
         }
 
         public async Task UpdateAsync(Payment payment)

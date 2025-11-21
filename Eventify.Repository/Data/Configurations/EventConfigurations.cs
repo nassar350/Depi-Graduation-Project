@@ -47,5 +47,10 @@ public class EventConfigurations : IEntityTypeConfiguration<Event>
             .WithOne(ticket =>  ticket.Event)
             .HasForeignKey(ticket => ticket.EventId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasIndex(e => e.Name);
+        builder.HasIndex(e => e.StartDate);
+        builder.HasIndex(e => e.EndDate);
+        builder.HasIndex(e => new { e.Name, e.StartDate }); 
     }
 }

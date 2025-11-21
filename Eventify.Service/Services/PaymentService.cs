@@ -71,11 +71,15 @@ namespace Eventify.Service.Services
             // 2️⃣ Save payment to database
             var payment = _mapper.Map<Payment>(dto);
             payment.StripePaymentIntentId = intent.Id;
+            payment.Status = PaymentStatus.Pending;
 
             await _paymentRepository.AddAsync(payment);
             await _paymentRepository.SaveChangesAsync();
 
-            return _mapper.Map<PaymentDto>(payment);
+            var response = _mapper.Map<PaymentDto>(payment);
+            response.StripeClientSecret = intent.ClientSecret;
+
+            return response;
         }
 
         public async Task<PaymentDto?> UpdateAsync(int bookingId, UpdatePaymentDto dto)

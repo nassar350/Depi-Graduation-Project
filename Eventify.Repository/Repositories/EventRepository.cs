@@ -1,7 +1,7 @@
 ﻿using Eventify.Core.Entities;
 using Eventify.Repository.Data.Contexts;
+using Eventify.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-
 
 public class EventRepository : IEventRepository
 {
@@ -9,13 +9,17 @@ public class EventRepository : IEventRepository
     public EventRepository(EventifyContext context) => _context = context;
 
     public async Task<IEnumerable<Event>> GetAllAsync()
-        => await _context.Events.AsNoTracking().ToListAsync();
+        => await _context.Events
+            .Include(e => e.Organizer)
+            .AsNoTracking()
+            .ToListAsync();
 
     public async Task<Event> GetByIdAsync(int id)
     {
-                          var entity = await _context.Events
-                             .FirstOrDefaultAsync(e => e.Id == id);
-        return entity?? throw new KeyNotFoundException($"Event with id {id} not found.");
+        var entity = await _context.Events
+            .Include(e => e.Organizer)
+            .FirstOrDefaultAsync(e => e.Id == id);
+        return entity ?? throw new KeyNotFoundException($"Event with id {id} not found.");
     }
 
     public async Task<Event> AddAsync(Event entity)
@@ -36,6 +40,18 @@ public class EventRepository : IEventRepository
 
     public async Task<bool> ExistsAsync(int id)
     {
-        return await _context.Events.AnyAsync(e =>e.Id == id);
+        return await _context.Events.AnyAsync(e => e.Id == id);
+    }
+
+    public async Task<Event?> GetEventWithDetailsAsync(int id)
+    {
+        return await _context.Events
+            .Include(e => e.Organizer)
+            .Include(e => e.Categories)
+            .Include(e => e.Tickets)
+            .Include(e => e.EventsAttendedByUsers)
+                .ThenInclude(ua => ua.User)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id);
     }
 }

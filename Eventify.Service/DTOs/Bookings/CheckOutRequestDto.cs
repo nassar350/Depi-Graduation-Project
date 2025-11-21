@@ -1,9 +1,14 @@
 ﻿using Eventify.Core.Enums;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Eventify.Service.DTOs.Bookings
 {
-    public class CreateBookingDto
+    public class CheckOutRequestDto
     {
         [Required(ErrorMessage = "You Must Enter Your First Name")]
         [MaxLength(60, ErrorMessage = "First Name Can not Exceed 60 Character")]
@@ -35,13 +40,13 @@ namespace Eventify.Service.DTOs.Bookings
         [Required(ErrorMessage = "Event ID is required")]
         [Range(1, int.MaxValue, ErrorMessage = "Event ID must be a positive number")]
         public int EventId { get; set; }
-       
+
         //[Required(ErrorMessage = "User ID is required")]
-        [Range(1, int.MaxValue, ErrorMessage = "User ID must be a positive number")]
+        //[Range(1, int.MaxValue, ErrorMessage = "User ID must be a positive number")]
         public int? UserId { get; set; }
 
+        public string? Currency { get; set; }
+
         public TicketStatus TicketStatus { get; set; } = TicketStatus.Pending;
-
     }
-
 }
