@@ -10,6 +10,7 @@
 
         public int CategoryId { get; set; }
 
+        public decimal Price { get; set; }
         public int EventId { get; set; }
 
         public int? BookingId { get; set; }

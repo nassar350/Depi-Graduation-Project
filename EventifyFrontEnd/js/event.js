@@ -354,9 +354,8 @@ class EventPage {
              ${isAvailable ? `onclick="eventPage.selectCategory(${category.id})"` : ''}>
           <div class="category-header">
             <h3 class="category-title">${category.title}</h3>
-            <div class="category-capacity">
-              <div class="capacity-available">${availableSeats} available</div>
-              <div class="capacity-total">of ${category.seats} total</div>
+            <div class="category-price">
+              <span class="price-amount">$${category.ticketPrice}</span>
             </div>
           </div>
           
@@ -381,7 +380,7 @@ class EventPage {
             ${isAvailable ? `
               <button class="btn btn-primary category-select-btn" 
                       data-category-id="${category.id}">
-                Select ${category.title}
+                Select for $${category.ticketPrice}
               </button>
             ` : `
               <button class="btn btn-secondary" disabled>
@@ -453,7 +452,7 @@ class EventPage {
     });
     
     // Navigate to booking page with event and category info
-    const bookingUrl = `book.html?eventId=${this.eventId}&categoryId=${categoryId}&eventName=${encodeURIComponent(this.event.name)}&categoryName=${encodeURIComponent(category.name)}&price=${category.price}`;
+    const bookingUrl = `book.html?eventId=${this.eventId}&categoryId=${categoryId}&eventName=${encodeURIComponent(this.event.name)}&categoryName=${encodeURIComponent(category.title)}&price=${category.ticketPrice}`;
     window.location.href = bookingUrl;
   }
     
@@ -627,6 +626,11 @@ class EventPage {
         </div>
         
         <div class="summary-row">
+          <span>Price:</span>
+          <span class="summary-value">$${this.selectedCategory.ticketPrice}</span>
+        </div>
+        
+        <div class="summary-row">
           <span>Available Seats:</span>
           <span class="summary-value text-success">${availableSeats}</span>
         </div>
@@ -634,7 +638,7 @@ class EventPage {
         <div class="summary-actions">
           ${availableSeats > 0 ? `
             <button class="btn btn-primary btn-block" onclick="eventPage.proceedToBooking()">
-              Proceed to Booking
+              Book for $${this.selectedCategory.ticketPrice}
             </button>
           ` : `
             <button class="btn btn-secondary btn-block" disabled>
@@ -671,7 +675,7 @@ class EventPage {
     }
 
     // Redirect to booking page with category info
-    const bookingUrl = `book.html?eventId=${this.eventId}&categoryId=${this.selectedCategory.id}&categoryTitle=${encodeURIComponent(this.selectedCategory.title)}`;
+    const bookingUrl = `book.html?eventId=${this.eventId}&categoryId=${this.selectedCategory.id}&categoryTitle=${encodeURIComponent(this.selectedCategory.title)}&price=${this.selectedCategory.ticketPrice}`;
     window.location.href = bookingUrl;
   }
 
@@ -802,7 +806,7 @@ class EventPage {
     console.log('Book Now clicked - redirecting to booking with first available category');
     
     // Navigate to booking page with first available category
-    const bookingUrl = `book.html?eventId=${this.eventId}&categoryId=${availableCategory.id}&eventName=${encodeURIComponent(this.event.name)}&categoryName=${encodeURIComponent(availableCategory.name)}&price=${availableCategory.price}`;
+    const bookingUrl = `book.html?eventId=${this.eventId}&categoryId=${availableCategory.id}&eventName=${encodeURIComponent(this.event.name)}&categoryName=${encodeURIComponent(availableCategory.title)}&price=${availableCategory.ticketPrice}`;
     window.location.href = bookingUrl;
   }
 }

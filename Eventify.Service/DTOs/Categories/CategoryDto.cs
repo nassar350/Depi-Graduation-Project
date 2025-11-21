@@ -8,6 +8,7 @@
 
         public string Title { get; set; }= string.Empty;
 
+        public decimal TicketPrice { get; set; }
         public int Seats { get; set; }
 
         public int Booked { get; set; }

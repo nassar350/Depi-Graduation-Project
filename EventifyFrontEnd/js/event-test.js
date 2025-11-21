@@ -214,7 +214,7 @@ class EventPage {
       eventName: this.event.name,
       categoryId: categoryId,
       categoryName: categoryName,
-      price: category.price || 0,
+      price: category.ticketPrice || 0,
       availableSeats: availableSeats,
       eventDate: this.event.startDate,
       eventLocation: this.event.address
@@ -223,7 +223,7 @@ class EventPage {
     sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
     
     // Navigate to booking page
-    const bookingUrl = `book.html?eventId=${this.eventId}&categoryId=${categoryId}&eventName=${encodeURIComponent(this.event.name)}&categoryName=${encodeURIComponent(categoryName)}&price=${category.price || 0}`;
+    const bookingUrl = `book.html?eventId=${this.eventId}&categoryId=${categoryId}&eventName=${encodeURIComponent(this.event.name)}&categoryName=${encodeURIComponent(categoryName)}&price=${category.ticketPrice || 0}`;
     console.log('🚀 Redirecting to:', bookingUrl);
     window.location.href = bookingUrl;
   }
@@ -282,7 +282,7 @@ class EventPage {
       
       // Handle different possible property names
       const categoryName = category.name || category.title || category.categoryName || 'Standard';
-      const categoryPrice = category.price || 0;
+      const categoryPrice = category.ticketPrice || 0;
       const categorySeats = category.seats || category.capacity || 0;
       const categoryBooked = category.booked || category.sold || 0;
       const categoryDescription = category.description || category.desc || 'Standard seating';

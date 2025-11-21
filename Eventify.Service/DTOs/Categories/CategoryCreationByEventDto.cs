@@ -14,5 +14,7 @@ namespace Eventify.Service.DTOs.Categories
 
         [Required]
         public int Seats { get; set; }
+        [Required]
+        public decimal TicketPrice { get; set; }
     }
 }

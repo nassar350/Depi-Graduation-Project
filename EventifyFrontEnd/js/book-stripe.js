@@ -282,7 +282,7 @@ class BookingPage {
     if (!this.category) return;
 
     const ticketQuantity = parseInt(document.getElementById('ticketQuantity')?.value || 0);
-    const ticketPrice = this.category.price || 0;
+    const ticketPrice = this.category.ticketPrice || 0;
     const subtotal = ticketPrice * ticketQuantity;
     const discount = subtotal * (this.promoDiscount / 100);
     const total = subtotal - discount;

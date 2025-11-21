@@ -78,7 +78,7 @@ namespace Eventify.Service.Services
                 {
                     foreach (var category in Categories)
                     {
-                        CategoriesToCreate.Add(new CreateCategoryDto(curEvent.Id, category.Title, category.Seats));
+                        CategoriesToCreate.Add(new CreateCategoryDto(curEvent.Id, category.Title, category.Seats , category.TicketPrice));
                     }
                 }
                 var mappedCateories = _mapper.Map<List<Category>>(CategoriesToCreate);
@@ -88,7 +88,7 @@ namespace Eventify.Service.Services
                 {
                     for (int i = 0; i < category.Seats; i++)
                     {
-                        ticketsToCreate.Add(new CreateTicketDto(curEvent.Address, category.Title, category.Id, curEvent.Id));
+                        ticketsToCreate.Add(new CreateTicketDto(curEvent.Address, category.Title, category.Id, curEvent.Id , category.TicketPrice));
                     }
                 }
                 var mappedTickets = _mapper.Map<List<Ticket>>(ticketsToCreate);
@@ -124,8 +124,6 @@ namespace Eventify.Service.Services
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
-
-        // Methods for frontend integration
         public async Task<ServiceResult<IEnumerable<EventDto>>> GetUpcomingEventsAsync(int take = 10)
         {
             try
@@ -189,7 +187,7 @@ namespace Eventify.Service.Services
                     .Where(e => e.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                                e.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                                e.Address.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-                    .Where(e => e.StartDate > DateTime.UtcNow) // Only upcoming events
+                    .Where(e => e.StartDate > DateTime.UtcNow) 
                     .OrderBy(e => e.StartDate)
                     .ToList();
 
