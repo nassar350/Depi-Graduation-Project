@@ -4,6 +4,7 @@ using Eventify.Core.Enums;
 using Eventify.Repository.Interfaces;
 using Eventify.Service.DTOs.Bookings;
 using Eventify.Service.DTOs.Payments;
+using Eventify.Service.Helpers;
 using Eventify.Service.Interfaces;
 using Microsoft.Extensions.Logging;
 using Stripe;
@@ -28,12 +29,16 @@ namespace Eventify.Service.Services
             _logger = logger;
         }
 
-        public async Task<CheckoutResponseDto> CreateCheckoutAsync(CheckOutRequestDto dto)
+        public async Task<ServiceResult<CheckoutResponseDto>> CreateCheckoutAsync(CheckOutRequestDto dto)
         {
+            int quantity = _unitOfWork._ticketRepository.CountNotBookedTickets(dto.EventId , dto.CategoryName);
+            if (dto.TicketsNum > quantity) {
+                return ServiceResult<CheckoutResponseDto>.Fail("TicketNum", "The number of tickets you are trying to book is not availabe");
+            }
             // 1. Calculate total
             var total = dto.TotalPrice;
             var amountInCents = (long)(total * 100m);
-
+            var TicketsToBook = await _unitOfWork._ticketRepository.GetNotBookedTickets(dto.EventId, dto.CategoryName, dto.TicketsNum);
             // 2. Create Stripe PaymentIntent
             var paymentIntentService = new PaymentIntentService();
             var piOptions = new PaymentIntentCreateOptions
@@ -48,7 +53,7 @@ namespace Eventify.Service.Services
                 }
             };
 
-            PaymentIntent intent = null;
+            PaymentIntent? intent = null;
 
             try
             {
@@ -68,6 +73,10 @@ namespace Eventify.Service.Services
                 // 3. Create booking entity
 
                 var user = await _unitOfWork._userRepository.GetUserByEmail(dto.EmailAddress);
+                if (user == null)
+                {
+                    return ServiceResult<CheckoutResponseDto>.Fail("Email Address", "No such user with this email address");
+                }
 
                 var booking = new Booking
                 {
@@ -77,6 +86,7 @@ namespace Eventify.Service.Services
                     Status = TicketStatus.Pending,
                     CreatedDate = DateTime.UtcNow
                 };
+
 
                 var createdBooking = await _unitOfWork._bookingRepository.AddAsync(booking);
                 await _unitOfWork.SaveChangesAsync();
@@ -96,6 +106,12 @@ namespace Eventify.Service.Services
 
                 // 5. Persist both in one transaction (via unit of work)
                 await _unitOfWork.SaveChangesAsync();
+                foreach (var ticket in TicketsToBook)
+                {
+                    ticket.BookingId = createdBooking.Id;
+                }
+                _unitOfWork._ticketRepository.UpdateRange(TicketsToBook);
+                await _unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();
 
                 // 6. Prepare response with client_secret for frontend to confirm payment
@@ -107,7 +123,7 @@ namespace Eventify.Service.Services
                     ClientSecret = intent.ClientSecret ?? string.Empty
                 };
 
-                return response;
+                return ServiceResult<CheckoutResponseDto>.Ok(response);
             }
             catch (Exception dbEx)
             {
