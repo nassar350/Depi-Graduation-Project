@@ -13,10 +13,8 @@ namespace Eventify.Service.Services
 {
     public class CheckOutService : ICheckOutService
     {
-        private readonly IBookingRepository _bookingRepo;
-        private readonly IPaymentRepository _paymentRepo;
+
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
         private readonly ILogger<CheckoutService> _logger;
 
         public CheckOutService(
@@ -26,10 +24,7 @@ namespace Eventify.Service.Services
             IMapper mapper,
             ILogger<CheckoutService> logger)
         {
-            _bookingRepo = bookingRepo;
-            _paymentRepo = paymentRepo;
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _logger = logger;
         }
 
