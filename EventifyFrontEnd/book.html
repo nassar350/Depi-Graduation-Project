@@ -14,6 +14,9 @@
   <!-- Styles -->
   <link rel="stylesheet" href="css/styles.css">
   
+  <!-- Stripe.js -->
+  <script src="https://js.stripe.com/v3/"></script>
+  
   <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎉</text></svg>">
 </head>
@@ -175,117 +178,41 @@
                 </div>
               </div>
               
-              <button 
-                type="button" 
-                id="continueToPaymentBtn" 
-                class="btn btn-primary btn-lg btn-full"
-                onclick="bookingPage.goToStep(2)"
-              >
-                Continue to Payment
-              </button>
-            </div>
-
-            <!-- Step 2: Payment Information -->
-            <div class="step-content" data-step="2" style="display: none;">
-              <h2 style="margin-bottom: var(--space-lg);">Payment Information</h2>
-              
-              <!-- Mock Payment Warning -->
-              <div class="card" style="background: rgba(255, 184, 0, 0.1); border: 1px solid var(--warning); margin-bottom: var(--space-xl);">
-                <div class="flex gap-md" style="align-items: center;">
-                  <span style="font-size: 1.5rem;">⚠️</span>
-                  <div>
-                    <h4 style="margin: 0; color: var(--warning);">Demo Payment</h4>
-                    <p style="margin: 0; font-size: var(--font-size-sm);">
-                      This is a demo application. No real charges will be made.
-                    </p>
+              <!-- Payment Section -->
+              <div style="margin-top: var(--space-2xl);">
+                <h3 style="margin-bottom: var(--space-lg);">Payment Information</h3>
+                
+                <div class="card" style="background: rgba(0, 123, 255, 0.05); border: 1px solid rgba(0, 123, 255, 0.2); margin-bottom: var(--space-lg);">
+                  <div class="flex gap-md" style="align-items: center;">
+                    <span style="font-size: 1.5rem;">🔒</span>
+                    <div>
+                      <h4 style="margin: 0; color: #007bff;">Secure Payment with Stripe</h4>
+                      <p style="margin: var(--space-xs) 0 0 0; font-size: var(--font-size-sm); color: var(--muted);">
+                        Your payment is secured with industry-standard encryption. We never store your card details.
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
               
-              <div class="form-group">
-                <label for="cardNumber" class="form-label">Card Number *</label>
-                <input 
-                  type="text" 
-                  id="cardNumber" 
-                  name="cardNumber"
-                  class="form-input" 
-                  placeholder="1234 5678 9012 3456"
-                  required
-                  autocomplete="cc-number"
-                  maxlength="19"
-                >
-              </div>
-              
-              <div class="form-group">
-                <label for="cardName" class="form-label">Name on Card *</label>
-                <input 
-                  type="text" 
-                  id="cardName" 
-                  name="cardName"
-                  class="form-input" 
-                  required
-                  autocomplete="cc-name"
-                >
-              </div>
-              
-              <div class="form-row">
                 <div class="form-group">
-                  <label for="cardExpiry" class="form-label">Expiry Date *</label>
-                  <input 
-                    type="text" 
-                    id="cardExpiry" 
-                    name="cardExpiry"
-                    class="form-input" 
-                    placeholder="MM/YY"
-                    required
-                    autocomplete="cc-exp"
-                    maxlength="5"
-                  >
-                </div>
-                
-                <div class="form-group">
-                  <label for="cardCvc" class="form-label">CVC *</label>
-                  <input 
-                    type="text" 
-                    id="cardCvc" 
-                    name="cardCvc"
-                    class="form-input" 
-                    placeholder="123"
-                    required
-                    autocomplete="cc-csc"
-                    maxlength="4"
-                  >
+                  <label class="form-label">Card Information *</label>
+                  <div id="card-element" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: white;">
+                    <!-- Stripe Card Element will be inserted here -->
+                  </div>
+                  <div id="card-errors" role="alert" style="color: #c33; margin-top: var(--space-sm); font-size: var(--font-size-sm);"></div>
                 </div>
               </div>
               
-              <div class="form-group">
-                <label class="checkbox-label">
-                  <input type="checkbox" id="savePayment" name="savePayment">
-                  <span class="checkmark"></span>
-                  Save payment method for future bookings
-                </label>
-              </div>
+              <div id="bookingError" class="alert alert-error" style="display: none; margin-top: var(--space-lg);"></div>
               
-              <div class="flex gap-md">
-                <button 
-                  type="button" 
-                  class="btn btn-outline btn-lg" 
-                  style="flex: 1;"
-                  onclick="bookingPage.goToStep(1)"
-                >
-                  Back
-                </button>
-                <button 
-                  type="button" 
-                  id="processPaymentBtn" 
-                  class="btn btn-primary btn-lg" 
-                  style="flex: 2;"
-                  onclick="bookingPage.processPayment()"
-                >
-                  Complete Booking
-                </button>
-              </div>
-            </div>
+              <button 
+                type="submit" 
+                id="confirmBookingBtn" 
+                class="btn btn-primary btn-lg btn-full"
+              >
+                <span id="button-text">Complete Booking & Pay</span>
+                <span id="spinner" style="display: none;">⏳ Processing...</span>
+              </button>
           </form>
         </div>
 
@@ -422,8 +349,11 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="js/app.js"></script>
-  <script src="js/book.js"></script>
+  <script>
+    // Set API Base URL globally
+    window.API_BASE_URL = 'https://localhost:7119/api';
+  </script>
+  <script src="js/book-stripe.js"></script>
 
   <style>
     /* Booking-specific styles */

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Successful - Eventify</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <span class="text-gradient">Eventify</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Success Message -->
+  <section class="section">
+    <div class="container">
+      <div class="card" style="max-width: 600px; margin: 0 auto; text-align: center;">
+        <div style="width: 100px; height: 100px; background: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-lg); font-size: 3rem;">
+          ✓
+        </div>
+        
+        <h1 style="color: #28a745; margin-bottom: var(--space-md);">Payment Successful!</h1>
+        <p class="text-lg" style="margin-bottom: var(--space-xl);">
+          Your booking has been confirmed. A confirmation email has been sent to your email address.
+        </p>
+        
+        <div id="bookingDetails" style="text-align: left; background: #f8f9fa; padding: var(--space-lg); border-radius: 8px; margin-bottom: var(--space-xl);">
+          <!-- Booking details will be populated here -->
+        </div>
+        
+        <div class="flex gap-md" style="justify-content: center;">
+          <a href="dashboard.html" class="btn btn-primary">View My Bookings</a>
+          <a href="explore.html" class="btn btn-outline">Browse Events</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Get booking details from URL or session storage
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookingId = urlParams.get('bookingId');
+    
+    if (bookingId) {
+      document.getElementById('bookingDetails').innerHTML = `
+        <h3 style="margin-bottom: var(--space-md);">Booking Details</h3>
+        <p><strong>Booking ID:</strong> ${bookingId}</p>
+        <p style="margin-top: var(--space-sm);">Your tickets have been sent to your email.</p>
+      `;
+    }
+  </script>
+</body>
+</html>
