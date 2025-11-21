@@ -1,4 +1,5 @@
 ﻿using Eventify.Service.DTOs.Bookings;
+using Eventify.Service.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace Eventify.Service.Interfaces
 {
     public interface ICheckOutService
     {
-        Task<CheckoutResponseDto> CreateCheckoutAsync(CheckOutRequestDto dto);
+        Task<ServiceResult<CheckoutResponseDto>> CreateCheckoutAsync(CheckOutRequestDto dto);
     }
 }

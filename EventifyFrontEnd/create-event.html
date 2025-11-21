@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Event - Eventify</title>
+  <meta name="description" content="Create and organize amazing events with Eventify.">
+  
+  <!-- Preload fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎉</text></svg>">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <span class="text-gradient">Eventify</span>
+      </a>
+      
+      <div class="navbar-menu">
+        <ul class="navbar-nav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="explore.html">Explore</a></li>
+          <li><a href="create-event.html" class="active">Create Event</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+        
+        <div class="user-info">
+          <!-- Will be populated by JavaScript based on auth state -->
+        </div>
+      </div>
+      
+      <button class="navbar-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span>☰</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section" style="padding: var(--space-2xl) 0;">
+    <div class="container">
+      <div class="text-center" style="max-width: 800px; margin: 0 auto;">
+        <h1 class="hero-title" style="margin-bottom: var(--space-md);">
+          Create Amazing Events
+        </h1>
+        <p class="hero-subtitle" style="margin-bottom: var(--space-xl);">
+          Bring people together with professionally organized events. From intimate workshops to large conferences, Eventify makes event creation simple and powerful.
+        </p>
+        
+        <!-- Progress Steps -->
+        <div class="create-steps" style="display: flex; justify-content: center; gap: var(--space-lg); margin-bottom: var(--space-2xl);">
+          <div class="step active">
+            <div class="step-number">1</div>
+            <div class="step-label">Event Details</div>
+          </div>
+          <div class="step-divider"></div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-label">Description</div>
+          </div>
+          <div class="step-divider"></div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-label">Categories</div>
+          </div>
+          <div class="step-divider"></div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-label">Publish</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Create Event Form -->
+  <main class="section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8" style="margin: 0 auto;">
+          <div class="card">
+            <!-- Step 1: Event Details -->
+            <form id="createEventForm" class="create-event-form" enctype="multipart/form-data" novalidate>
+              <div class="step-content active" data-step="1">
+                <h2 style="margin-bottom: var(--space-lg);">Event Details</h2>
+                
+                <div class="form-group">
+                  <label for="eventTitle" class="form-label">Event Name *</label>
+                  <input 
+                    type="text" 
+                    id="eventTitle" 
+                    name="name"
+                    class="form-input" 
+                    required
+                    placeholder="Give your event a catchy title"
+                    minlength="3"
+                    maxlength="100"
+                  >
+                  <div class="form-hint">Make it clear and engaging (3-100 characters)</div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="startDate" class="form-label">Start Date & Time *</label>
+                    <input 
+                      type="datetime-local" 
+                      id="startDate" 
+                      name="startDate"
+                      class="form-input" 
+                      required
+                    >
+                  </div>
+
+                  <div class="form-group">
+                    <label for="endDate" class="form-label">End Date & Time *</label>
+                    <input 
+                      type="datetime-local" 
+                      id="endDate" 
+                      name="endDate"
+                      class="form-input" 
+                      required
+                    >
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="eventLocation" class="form-label">Event Address *</label>
+                  <input 
+                    type="text" 
+                    id="eventLocation" 
+                    name="address"
+                    class="form-input" 
+                    required
+                    minlength="5"
+                    maxlength="200"
+                    placeholder="Enter venue address"
+                  >
+                  <div class="form-hint" id="locationHint">Full address or venue location (5-200 characters)</div>
+                </div>
+
+                <div class="form-group">
+                  <label for="eventImage" class="form-label">Event Photo</label>
+                  <input 
+                    type="file" 
+                    id="eventImage" 
+                    name="photo"
+                    class="form-input" 
+                    accept="image/*"
+                  >
+                  <div class="form-hint">Upload an engaging image to make your event stand out (JPG, PNG, GIF)</div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn btn-primary" onclick="createEventPage.nextStep()">
+                    Continue to Description →
+                  </button>
+                </div>
+              </div>
+
+              <!-- Step 2: Description -->
+              <div class="step-content" data-step="2">
+                <h2 style="margin-bottom: var(--space-lg);">Event Description & Details</h2>
+                
+                <div class="form-group">
+                  <label for="eventDescription" class="form-label">Event Description *</label>
+                  <textarea 
+                    id="eventDescription" 
+                    name="description"
+                    class="form-textarea" 
+                    required
+                    rows="6"
+                    placeholder="Describe what attendees can expect from your event..."
+                    minlength="10"
+                    maxlength="1000"
+                  ></textarea>
+                  <div class="form-hint">
+                    <span id="descCharCount">0</span>/1000 characters (10 minimum required)
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn btn-outline" onclick="createEventPage.prevStep()">
+                    ← Back
+                  </button>
+                  <button type="button" class="btn btn-primary" onclick="createEventPage.nextStep()">
+                    Continue to Tickets →
+                  </button>
+                </div>
+              </div>
+
+              <!-- Step 3: Categories -->
+              <div class="step-content" data-step="3">
+                <h2 style="margin-bottom: var(--space-lg);">Event Categories & Seating</h2>
+                
+                <div class="form-group">
+                  <label class="form-label">Ticket Categories *</label>
+                  <div class="form-hint">Add different ticket categories with seating capacity for each</div>
+                </div>
+
+                <div id="categoriesContainer">
+                  <!-- Categories will be dynamically added here -->
+                </div>
+
+                <div class="form-group">
+                  <button type="button" class="btn btn-outline" onclick="createEventPage.addCategory()" id="addCategoryBtn">
+                    + Add Category
+                  </button>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn btn-outline" onclick="createEventPage.prevStep()">
+                    ← Back
+                  </button>
+                  <button type="button" class="btn btn-primary" onclick="createEventPage.nextStep()">
+                    Review & Publish →
+                  </button>
+                </div>
+              </div>
+
+              <!-- Step 4: Review & Publish -->
+              <div class="step-content" data-step="4">
+                <h2 style="margin-bottom: var(--space-lg);">Review & Publish</h2>
+                
+                <div class="event-preview" style="border: 2px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-lg); margin-bottom: var(--space-lg);">
+                  <h3 style="margin-bottom: var(--space-md);">Event Preview</h3>
+                  <div id="eventPreview">
+                    <!-- Will be populated by JavaScript -->
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label class="checkbox-option">
+                      <input type="checkbox" name="agreeToTerms" required>
+                      <span>I agree to Eventify's <a href="#" onclick="app.showNotification('Terms of service coming soon!', 'info')">Terms of Service</a> and <a href="#" onclick="app.showNotification('Event creation guidelines coming soon!', 'info')">Event Creation Guidelines</a> *</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="publish-options" style="background: var(--card-bg); padding: var(--space-lg); border-radius: var(--radius-md); margin-bottom: var(--space-lg);">
+                  <h4 style="margin-bottom: var(--space-md);">Publish Options</h4>
+                  <div class="radio-group">
+                    <label class="radio-option">
+                      <input type="radio" name="publishStatus" value="published" checked>
+                      <span>
+                        <strong>Publish Now</strong><br>
+                        <small class="text-muted">Make your event visible immediately</small>
+                      </span>
+                    </label>
+                    <label class="radio-option">
+                      <input type="radio" name="publishStatus" value="draft">
+                      <span>
+                        <strong>Save as Draft</strong><br>
+                        <small class="text-muted">Save and publish later</small>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="button" class="btn btn-outline" onclick="createEventPage.prevStep()">
+                    ← Back
+                  </button>
+                  <button type="submit" class="btn btn-primary btn-lg">
+                    🚀 Create Event
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-content text-center">
+        <div style="font-size: 4rem; margin-bottom: var(--space-lg);">🎉</div>
+        <h2 style="margin-bottom: var(--space-md);">Event Created Successfully!</h2>
+        <p style="margin-bottom: var(--space-xl); color: var(--muted);">
+          Your event has been created and is now live. Share it with your audience!
+        </p>
+        
+        <div id="eventActions" class="flex gap-md" style="justify-content: center; margin-bottom: var(--space-lg);">
+          <!-- Will be populated with event-specific actions -->
+        </div>
+        
+        <button class="btn btn-primary" onclick="createEventPage.closeSuccessModal()">
+          Continue
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Eventify</h4>
+          <p>Connecting people through amazing events and experiences.</p>
+          <div class="social-links">
+            <a href="#" aria-label="Twitter">🐦</a>
+            <a href="#" aria-label="Facebook">📘</a>
+            <a href="#" aria-label="Instagram">📷</a>
+            <a href="#" aria-label="LinkedIn">💼</a>
+          </div>
+        </div>
+        
+        <div class="footer-section">
+          <h4>For Attendees</h4>
+          <ul>
+            <li><a href="explore.html">Find Events</a></li>
+            <li><a href="login.html">My Tickets</a></li>
+            <li><a href="about.html">Help Center</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>For Organizers</h4>
+          <ul>
+            <li><a href="create-event.html">Create Event</a></li>
+            <li><a href="dashboard.html">Manage Events</a></li>
+            <li><a href="about.html">Resources</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="about.html">Contact</a></li>
+            <li><a href="#" onclick="app.showNotification('Privacy policy coming soon!', 'info')">Privacy</a></li>
+            <li><a href="#" onclick="app.showNotification('Terms of service coming soon!', 'info')">Terms</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 Eventify. All rights reserved.</p>
+        <p class="text-muted">Built with ❤️ for event organizers</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/events-data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/create-event.js"></script>
+</body>
+</html>

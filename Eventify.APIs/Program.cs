@@ -100,14 +100,6 @@ builder.Services.AddDbContext<EventifyContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-var stripeKey = builder.Configuration["STRIPE_SECRET_KEY"] ?? Environment.GetEnvironmentVariable("SecretKey");
-
-if (string.IsNullOrEmpty(stripeKey))
-{
-    throw new Exception("Stripe secret key is not configured in STRIPE_SECRET_KEY");
-}
-
-StripeConfiguration.ApiKey = stripeKey;
 
 builder.Services.AddAutoMapperDependency();
 builder.Services.AddServiceLayer();

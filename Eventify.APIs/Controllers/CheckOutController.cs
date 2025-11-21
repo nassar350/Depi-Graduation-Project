@@ -1,9 +1,10 @@
-﻿using Eventify.Service.DTOs.Bookings;
-using Eventify.Service.DTOs.Auth;
+﻿using Eventify.Service.DTOs.Auth;
+using Eventify.Service.DTOs.Bookings;
 using Eventify.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Eventify.APIs.Controllers
 {
@@ -19,7 +20,7 @@ namespace Eventify.APIs.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Create([FromBody] CheckOutRequestDto dto)
         {
             if (!ModelState.IsValid)
@@ -38,13 +39,25 @@ namespace Eventify.APIs.Controllers
             try
             {
                 var result = await _checkoutService.CreateCheckoutAsync(dto);
-                
-                return Ok(new ApiResponseDto<CheckoutResponseDto>
+                if (result.Success)
                 {
-                    Success = true,
-                    Message = "Checkout session created successfully",
-                    Data = result
-                });
+
+                    return Ok(new ApiResponseDto<CheckoutResponseDto>
+                    {
+                        Success = true,
+                        Message = "Checkout session created successfully",
+                        Data = result.Data
+                    });
+                }
+                else
+                {
+                    return BadRequest(new ApiResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "Validation failed",
+                        Errors = result.Errors.Select(e => e.Message).ToList()
+                    });
+                }
             }
             catch (Exception ex)
             {
