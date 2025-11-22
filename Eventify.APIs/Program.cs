@@ -53,7 +53,8 @@ builder.Services.AddCors(options =>
                 "https://localhost:5500",
                 "https://localhost:8000",
                 "https://localhost:8080",
-                "https://localhost:8090"
+                "https://localhost:8090",
+                "https://eventfiy.netlify.app/"
             )
             .AllowAnyMethod()
             .AllowAnyHeader()
