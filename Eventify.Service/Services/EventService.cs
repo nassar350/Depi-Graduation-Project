@@ -128,12 +128,7 @@ namespace Eventify.Service.Services
         {
             try
             {
-                var allEvents = await _unitOfWork._eventRepository.GetAllAsync();
-                var upcomingEvents = allEvents
-                    .Where(e => e.StartDate > DateTime.UtcNow)
-                    .OrderBy(e => e.StartDate)
-                    .Take(take)
-                    .ToList();
+                var upcomingEvents = await _unitOfWork._eventRepository.GetUpcommingAsync(take);
 
                 if (!upcomingEvents.Any())
                 {

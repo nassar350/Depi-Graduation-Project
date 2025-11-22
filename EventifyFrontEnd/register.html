@@ -134,25 +134,25 @@
 
             <div class="form-group">
               <label for="confirmPassword" class="form-label">Confirm Password *</label>
-              <input 
-                type="password" 
-                id="confirmPassword" 
-                name="confirmPassword"
-                class="form-input" 
-                required
-                autocomplete="new-password"
-                placeholder="Confirm your password"
-              >
-            </div>
-
-            <div class="form-group">
-              <label for="userType" class="form-label">I want to *</label>
-              <select id="userType" name="userType" class="form-select" required>
-                <option value="">Select your primary interest</option>
-                <option value="attendee">Attend events</option>
-                <option value="organizer">Organize events</option>
-                <option value="both">Both attend and organize</option>
-              </select>
+              <div style="position: relative;">
+                <input 
+                  type="password" 
+                  id="confirmPassword" 
+                  name="confirmPassword"
+                  class="form-input" 
+                  required
+                  autocomplete="new-password"
+                  placeholder="Confirm your password"
+                >
+                <button 
+                  type="button" 
+                  id="toggleConfirmPassword"
+                  style="position: absolute; right: var(--space-md); top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer;"
+                  aria-label="Toggle password visibility"
+                >
+                  👁️
+                </button>
+              </div>
             </div>
 
             <div class="form-group">
@@ -180,34 +180,7 @@
             </button>
           </form>
 
-          <!-- Social Sign Up (Mock) -->
-          <div style="margin: var(--space-xl) 0;">
-            <div style="text-align: center; position: relative; margin-bottom: var(--space-lg);">
-              <div style="height: 1px; background: var(--border);"></div>
-              <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--card); padding: 0 var(--space-md); color: var(--muted); font-size: var(--font-size-sm);">
-                Or sign up with
-              </span>
-            </div>
-            
-            <div class="flex gap-md">
-              <button 
-                type="button" 
-                class="btn btn-outline btn-full"
-                onclick="authPage.socialSignup('google')"
-              >
-                🌐 Google
-              </button>
-              <button 
-                type="button" 
-                class="btn btn-outline btn-full"
-                onclick="authPage.socialSignup('github')"
-              >
-                🐱 GitHub
-              </button>
-            </div>
-          </div>
-
-          <div class="text-center" style="padding-top: var(--space-lg); border-top: 1px solid var(--border);">
+          <div class="text-center" style="padding-top: var(--space-lg); margin-top: var(--space-xl); border-top: 1px solid var(--border);">
             <p class="text-muted">
               Already have an account? 
               <a href="login.html" class="text-accent">Sign in here</a>
@@ -231,6 +204,22 @@
   <script src="js/events-data.js"></script>
   <script src="js/app.js"></script>
   <script src="js/auth.js"></script>
+  <script>
+    // Password toggle functionality
+    document.getElementById('togglePassword')?.addEventListener('click', function() {
+      const passwordInput = document.getElementById('password');
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      this.textContent = type === 'password' ? '👁️' : '🙈';
+    });
+
+    document.getElementById('toggleConfirmPassword')?.addEventListener('click', function() {
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+      const type = confirmPasswordInput.type === 'password' ? 'text' : 'password';
+      confirmPasswordInput.type = type;
+      this.textContent = type === 'password' ? '👁️' : '🙈';
+    });
+  </script>
 
   <style>
     .checkbox-label {

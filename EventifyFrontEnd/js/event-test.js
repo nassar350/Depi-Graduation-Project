@@ -117,7 +117,7 @@ class EventPage {
       if (this.event.categories && Array.isArray(this.event.categories)) {
         totalCapacity = this.event.categories.reduce((sum, cat) => sum + (cat.seats || 0), 0);
       }
-      eventCapacity.textContent = totalCapacity > 0 ? `${totalCapacity} Capacity` : 'Capacity TBA';
+      eventCapacity.textContent = totalCapacity > 0 ? `Total Capacity: ${totalCapacity}` : 'Capacity TBA';
     }
     
     // Display description
@@ -264,7 +264,7 @@ class EventPage {
     this.selectCategory(availableCategory.id);
   }
   
-  displayCategories() {
+  async displayCategories() {
     if (!this.event.categories || this.event.categories.length === 0) {
       console.log('🚀 No categories to display');
       return;
@@ -278,41 +278,76 @@ class EventPage {
     
     console.log('🚀 Raw categories data:', this.event.categories);
     
-    const categoriesHtml = this.event.categories.map(category => {
-      console.log('🚀 Processing category:', category);
-      
-      // Handle different possible property names
-      const categoryName = category.name || category.title || category.categoryName || 'Standard';
-      const categoryPrice = category.ticketPrice || 0;
-      const categorySeats = category.seats || category.capacity || 0;
-      const categoryBooked = category.booked || category.sold || 0;
-      const categoryDescription = category.description || category.desc || 'Standard seating';
-      
-      const availableSeats = categorySeats - categoryBooked;
-      const isAvailable = availableSeats > 0;
-      
-      console.log(`🚀 Category: ${categoryName}, Price: ${categoryPrice}, Available: ${availableSeats}`);
-      
+    // Fetch available seats for each category
+    const categoriesWithAvailability = await Promise.all(
+      this.event.categories.map(async (category) => {
+        console.log('🚀 Processing category:', category);
+        
+        const categoryName = category.name || category.title || category.categoryName || 'Standard';
+        const categoryPrice = category.ticketPrice || 0;
+        const categoryDescription = category.description || category.desc || 'Standard seating';
+        
+        // Calculate fallback available seats from category data
+        const categorySeats = category.seats || category.capacity || 0;
+        const categoryBooked = category.booked || category.sold || 0;
+        const fallbackAvailableSeats = categorySeats - categoryBooked;
+        
+        // Fetch real-time available seats from API
+        let availableSeats = fallbackAvailableSeats;
+        let isAvailable = availableSeats > 0;
+        
+        try {
+          const apiUrl = `${this.apiBaseUrl}/tickets/available?eventId=${this.eventId}&categoryName=${encodeURIComponent(categoryName)}`;
+          console.log(`🚀 Fetching available seats from: ${apiUrl}`);
+          
+          const response = await fetch(apiUrl);
+          const data = await response.json();
+          
+          console.log(`🚀 API response for ${categoryName}:`, data);
+          
+          if (data.success && data.data && typeof data.data.availableTickets === 'number') {
+            availableSeats = data.data.availableTickets;
+            isAvailable = availableSeats > 0;
+            console.log(`🚀 Category: ${categoryName}, Available seats from API: ${availableSeats}`);
+          } else {
+            console.warn(`🚀 Using fallback seats for ${categoryName}. API response:`, data);
+          }
+        } catch (error) {
+          console.error(`🚀 Error fetching available seats for ${categoryName}, using fallback:`, error);
+        }
+        
+        return {
+          ...category,
+          categoryName,
+          categoryPrice,
+          categoryDescription,
+          availableSeats,
+          isAvailable
+        };
+      })
+    );
+    
+    const categoriesHtml = categoriesWithAvailability.map(category => {
       return `
-        <div class="ticket-category ${!isAvailable ? 'sold-out' : ''}" data-category-id="${category.id}">
+        <div class="ticket-category ${!category.isAvailable ? 'sold-out' : ''}" data-category-id="${category.id}">
           <div class="category-header">
-            <h3>${categoryName}</h3>
-            <div class="category-price">${categoryPrice} EGP</div>
+            <h3>${category.categoryName}</h3>
+            <div class="category-price">${category.categoryPrice} EGP</div>
           </div>
           <div class="category-details">
-            <p class="category-description">${categoryDescription}</p>
+            <p class="category-description">${category.categoryDescription}</p>
             <div class="category-info">
               <span class="seats-available">
-                ${isAvailable ? 
-                  `${availableSeats} seats available` : 
+                ${category.isAvailable ? 
+                  `${category.availableSeats} seats available` : 
                   '<span class="sold-out-text">Sold Out</span>'
                 }
               </span>
             </div>
           </div>
           <div class="category-actions">
-            ${isAvailable ? 
-              `<button class="btn btn-primary category-select-btn" data-category-id="${category.id}">Select ${categoryName}</button>` : 
+            ${category.isAvailable ? 
+              `<button class="btn btn-primary category-select-btn" data-category-id="${category.id}">Select ${category.categoryName}</button>` : 
               '<button class="btn btn-secondary" disabled>Sold Out</button>'
             }
           </div>
@@ -499,6 +534,63 @@ class EventPage {
     `;
     
     console.log('🚀 Event details displayed');
+  }
+  
+  // Share event functionality
+  shareEvent(platform) {
+    console.log('🚀 Share event called with platform:', platform);
+    
+    if (!this.event) {
+      console.error('🚀 No event data available for sharing');
+      alert('Event data not loaded');
+      return;
+    }
+
+    const eventUrl = window.location.href;
+    const eventTitle = this.event.name;
+
+    switch (platform) {
+      case 'copy':
+        this.copyToClipboard(eventUrl);
+        break;
+      case 'twitter':
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this event: ${eventTitle}`)}&url=${encodeURIComponent(eventUrl)}`;
+        window.open(twitterUrl, '_blank', 'noopener,noreferrer');
+        break;
+      case 'facebook':
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(eventUrl)}`;
+        window.open(facebookUrl, '_blank', 'noopener,noreferrer');
+        break;
+      default:
+        console.error('🚀 Unknown share platform:', platform);
+    }
+  }
+
+  // Copy URL to clipboard
+  async copyToClipboard(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      console.log('🚀 Link copied to clipboard');
+      alert('Event link copied to clipboard!');
+    } catch (err) {
+      console.error('🚀 Failed to copy:', err);
+      // Fallback method
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        console.log('🚀 Link copied using fallback method');
+        alert('Event link copied to clipboard!');
+      } catch (err2) {
+        console.error('🚀 Fallback copy failed:', err2);
+        alert('Failed to copy link');
+      }
+      document.body.removeChild(textArea);
+    }
   }
 }
 
