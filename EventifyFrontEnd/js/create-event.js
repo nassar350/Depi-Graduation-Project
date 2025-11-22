@@ -4,7 +4,7 @@ class CreateEventPage {
     this.currentStep = 1;
     this.maxStep = 4;
     this.categories = [];
-    this.apiBaseUrl = 'https://localhost:7105';
+    this.apiBaseUrl = window.API_BASE_URL || 'http://eventify.runasp.net';
     
     this.init();
   }

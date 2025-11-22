@@ -1,10 +1,11 @@
 // Booking Page with Stripe Payment Integration
 console.log('🚀 Booking with Stripe script loaded');
 
-const API_BASE_URL = window.API_BASE_URL || 'https://localhost:7119/api';
+// Prefer global API_BASE_URL set by pages; fallback to production default
+const API_BASE_URL = window.API_BASE_URL || 'http://eventify.runasp.net/api';
 
 // Initialize Stripe (you'll need to replace with your publishable key)
-const STRIPE_PUBLISHABLE_KEY = 'pk_test_51QRZgFRsYKUqwGhfO1Sh36qglrV3VmXr5aHkXFrPfWU28uVW4CjsqDfZdKzrpX1Pd00ajKUJ'; // Replace with your actual key
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SSOEXK93KknicwiI9yfrki50Y5mUj1rhwwL1brt2VaoVZqfafneC0naPTuTXLufC8Ero4hQpcFNjyh28rfc344V00RDIkQ0ie'; // Replace with your actual key
 const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
 const elements = stripe.elements();
 
@@ -26,6 +27,35 @@ const cardElement = elements.create('card', {
   },
 });
 
+// Helper functions for auth (compatible with multiple storage keys)
+function getAuthToken() {
+  // Check multiple possible localStorage keys
+  return localStorage.getItem('token') 
+      || localStorage.getItem('eventify_token') 
+      || localStorage.getItem('authToken')
+      || null;
+}
+
+function getUserId() {
+  // Try direct userId keys first
+  let userId = localStorage.getItem('userId') || localStorage.getItem('user_id');
+  
+  if (!userId) {
+    // Fallback to parsing from stored user object
+    const userJson = localStorage.getItem('eventifyUser');
+    if (userJson) {
+      try {
+        const user = JSON.parse(userJson);
+        userId = user.id || user.userId;
+      } catch (e) {
+        console.error('Error parsing eventifyUser:', e);
+      }
+    }
+  }
+  
+  return userId;
+}
+
 class BookingPage {
   constructor() {
     this.eventId = null;
@@ -40,17 +70,27 @@ class BookingPage {
 
   init() {
     console.log('🚀 BookingPage initialized with Stripe');
+    console.log('🚀 Current URL:', window.location.href);
     
     // Check authentication first
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
+    console.log('🚀 Auth token check:', token ? 'Token found' : 'No token');
+    
     if (!token) {
-      console.log('🚀 User not logged in');
+      console.log('🚀 User not logged in - redirecting to login');
       sessionStorage.setItem('redirectAfterLogin', window.location.href);
-      window.location.href = 'login.html';
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 1000);
       return;
     }
 
     this.getEventId();
+    if (!this.eventId || !this.categoryId) {
+      console.error('🚀 Missing eventId or categoryId - cannot proceed');
+      return;
+    }
+    
     this.loadBookingData();
     this.setupFormHandlers();
   }
@@ -59,8 +99,9 @@ class BookingPage {
     const params = new URLSearchParams(window.location.search);
     this.eventId = params.get('eventId') ? parseInt(params.get('eventId')) : null;
     this.categoryId = params.get('categoryId') ? parseInt(params.get('categoryId')) : null;
+    this.categoryNameFromUrl = params.get('categoryName') || null;
     
-    console.log('🚀 Event ID:', this.eventId, 'Category ID:', this.categoryId);
+    console.log('🚀 Event ID:', this.eventId, 'Category ID:', this.categoryId, 'Category Name:', this.categoryNameFromUrl);
     
     if (!this.eventId || !this.categoryId) {
       this.showError('Invalid booking link. Missing event or category information.');
@@ -72,9 +113,12 @@ class BookingPage {
     try {
       this.showLoading(true);
       
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
+      console.log('🚀 Loading booking data with token:', token ? 'present' : 'missing');
+      console.log('🚀 Event ID:', this.eventId, 'Category ID:', this.categoryId);
       
       // Load event details
+      console.log('🚀 Fetching event from:', `${API_BASE_URL}/Events/${this.eventId}`);
       const eventResponse = await fetch(`${API_BASE_URL}/Events/${this.eventId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -82,35 +126,59 @@ class BookingPage {
         }
       });
       
+      console.log('🚀 Event response status:', eventResponse.status);
       const eventData = await eventResponse.json();
       console.log('🚀 Event data:', eventData);
       
       if (!eventData.success || !eventData.data) {
-        this.showError('Event not found');
+        this.showError(`Event not found (status: ${eventResponse.status})`);
         return;
       }
       
       this.event = eventData.data;
       
-      // Load category details
-      const categoryResponse = await fetch(`${API_BASE_URL}/Categories/${this.categoryId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      const categoryData = await categoryResponse.json();
-      console.log('🚀 Category data:', categoryData);
-      
-      if (!categoryData.success || !categoryData.data) {
-        this.showError('Category not found');
-        return;
+      // Try to find category from event data first (fallback approach)
+      let categoryFromEvent = null;
+      if (this.event.categories && Array.isArray(this.event.categories)) {
+        categoryFromEvent = this.event.categories.find(cat => cat.id === this.categoryId);
+        console.log('🚀 Category from event data:', categoryFromEvent);
       }
       
-      this.category = categoryData.data;
+      // Try to load category details from API
+      try {
+        console.log('🚀 Fetching category from:', `${API_BASE_URL}/Categories/${this.categoryId}`);
+        const categoryResponse = await fetch(`${API_BASE_URL}/Categories/${this.categoryId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        console.log('🚀 Category response status:', categoryResponse.status);
+        const categoryData = await categoryResponse.json();
+        console.log('🚀 Category data from API:', categoryData);
+        
+        if (categoryData.success && categoryData.data) {
+          this.category = categoryData.data;
+        } else if (categoryFromEvent) {
+          console.log('🚀 Using category from event data as fallback');
+          this.category = categoryFromEvent;
+        } else {
+          this.showError('Category not found');
+          return;
+        }
+      } catch (categoryError) {
+        console.error('🚀 Category API error:', categoryError);
+        if (categoryFromEvent) {
+          console.log('🚀 Using category from event data as fallback after error');
+          this.category = categoryFromEvent;
+        } else {
+          this.showError('Category not found');
+          return;
+        }
+      }
       
-      // Load available tickets for this category
+      // Load available tickets for this category (with automatic fallback to category capacity)
       await this.loadAvailableTickets();
       
       // Check if tickets are available
@@ -137,19 +205,31 @@ class BookingPage {
       
     } catch (error) {
       console.error('🚀 Error loading booking data:', error);
-      this.showError('Error loading booking information. Please try again.');
+      console.error('🚀 Error details:', error.message, error.stack);
+      this.showError(`Error loading booking information: ${error.message}. Please try again.`);
     }
   }
 
   async loadAvailableTickets() {
     try {
-      const token = localStorage.getItem('token');
+      const token = getAuthToken();
+      console.log('🚀 Fetching tickets from:', `${API_BASE_URL}/Tickets/category/${this.categoryId}`);
+      
       const response = await fetch(`${API_BASE_URL}/Tickets/category/${this.categoryId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
+
+      console.log('🚀 Tickets response status:', response.status);
+
+      // If API doesn't exist (404) or fails, use category capacity as fallback
+      if (!response.ok) {
+        console.log('🚀 Tickets API not available (status:', response.status, ') - using category capacity fallback');
+        this.createMockTicketsFromCategory();
+        return;
+      }
 
       const data = await response.json();
       console.log('🚀 Tickets data:', data);
@@ -160,15 +240,38 @@ class BookingPage {
         );
         this.category.totalTickets = data.data.length;
         
-        console.log('🚀 Available tickets:', this.category.availableTickets.length);
+        console.log('🚀 Available tickets from API:', this.category.availableTickets.length);
       } else {
-        this.category.availableTickets = [];
-        this.category.totalTickets = 0;
+        console.log('🚀 No valid ticket data - using category capacity fallback');
+        this.createMockTicketsFromCategory();
       }
     } catch (error) {
       console.error('🚀 Error loading tickets:', error);
-      this.category.availableTickets = [];
+      console.log('🚀 Using category capacity fallback due to error');
+      this.createMockTicketsFromCategory();
     }
+  }
+
+  createMockTicketsFromCategory() {
+    // Calculate available seats from category data
+    const seats = this.category.seats || this.category.capacity || 100;
+    const booked = this.category.booked || this.category.sold || 0;
+    const available = Math.max(0, seats - booked);
+    
+    console.log('🚀 Creating mock tickets - Total seats:', seats, 'Booked:', booked, 'Available:', available);
+    
+    // Create mock tickets array
+    this.category.availableTickets = [];
+    for (let i = 0; i < available; i++) {
+      this.category.availableTickets.push({ 
+        id: `mock-${i}`, 
+        status: 0,
+        categoryId: this.categoryId
+      });
+    }
+    
+    this.category.totalTickets = seats;
+    console.log('🚀 Mock tickets created:', this.category.availableTickets.length);
   }
 
   mountCardElement() {
@@ -200,6 +303,7 @@ class BookingPage {
   }
 
   showError(message) {
+    console.error('🚀 Showing error to user:', message);
     this.showLoading(false);
     const errorDiv = document.getElementById('bookingError');
     const errorMessage = document.getElementById('errorMessage');
@@ -331,8 +435,23 @@ class BookingPage {
   }
 
   prefillUserData() {
-    const userName = localStorage.getItem('userName') || '';
-    const userEmail = localStorage.getItem('userEmail') || '';
+    // Try multiple localStorage keys for name/email
+    let userName = localStorage.getItem('userName') || localStorage.getItem('user_name') || '';
+    let userEmail = localStorage.getItem('userEmail') || localStorage.getItem('user_email') || '';
+    
+    // Fallback to stored user object
+    if (!userName || !userEmail) {
+      const userJson = localStorage.getItem('eventifyUser');
+      if (userJson) {
+        try {
+          const user = JSON.parse(userJson);
+          if (!userName && user.name) userName = user.name;
+          if (!userEmail && user.email) userEmail = user.email;
+        } catch (e) {
+          console.error('Error parsing eventifyUser for prefill:', e);
+        }
+      }
+    }
 
     const nameParts = userName ? userName.split(' ') : [];
     
@@ -382,8 +501,8 @@ class BookingPage {
         throw new Error('Not enough tickets available');
       }
 
-      const token = localStorage.getItem('token');
-      const userId = localStorage.getItem('userId');
+      const token = getAuthToken();
+      const userId = getUserId();
 
       if (!token || !userId) {
         throw new Error('Please login to continue');
@@ -401,7 +520,7 @@ class BookingPage {
         phoneNumber: phone || '',
         ticketsNum: ticketQuantity,
         totalPrice: totalPrice,
-        categoryName: this.category.name,
+        categoryName: this.category.name || this.categoryNameFromUrl || 'Standard',
         promoCode: promoCode,
         eventId: this.eventId,
         userId: parseInt(userId),
@@ -424,7 +543,22 @@ class BookingPage {
       console.log('🚀 Checkout response:', checkoutResult);
 
       if (!checkoutResponse.ok || !checkoutResult.success) {
-        const errorMsg = checkoutResult.errors?.join(', ') || checkoutResult.message || 'Failed to create checkout session';
+        // Handle errors array properly - check if it exists and is an array
+        let errorMsg = 'Failed to create checkout session';
+        
+        if (checkoutResult.errors) {
+          if (Array.isArray(checkoutResult.errors)) {
+            errorMsg = checkoutResult.errors.join(', ');
+          } else if (typeof checkoutResult.errors === 'string') {
+            errorMsg = checkoutResult.errors;
+          } else if (typeof checkoutResult.errors === 'object') {
+            // Handle validation errors object format
+            errorMsg = Object.values(checkoutResult.errors).flat().join(', ');
+          }
+        } else if (checkoutResult.message) {
+          errorMsg = checkoutResult.message;
+        }
+        
         throw new Error(errorMsg);
       }
 

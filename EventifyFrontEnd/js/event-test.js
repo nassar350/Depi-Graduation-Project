@@ -5,7 +5,8 @@ window.testLoaded = true;
 class EventPage {
   constructor() {
     console.log('🚀 EventPage constructor working!');
-    this.apiBaseUrl = 'https://localhost:7105';
+    // Use global API base if available (set in pages), fallback to production
+    this.apiBaseUrl = (window.API_BASE_URL) ? window.API_BASE_URL : 'http://eventify.runasp.net/api';
     this.eventId = this.getEventId();
     this.loadEvent();
   }
@@ -28,7 +29,7 @@ class EventPage {
     this.showLoading(true);
     
     try {
-      const response = await fetch(`${this.apiBaseUrl}/api/events/${this.eventId}`);
+      const response = await fetch(`${this.apiBaseUrl}/events/${this.eventId}`);
       const data = await response.json();
       console.log('🚀 Event data:', data);
       
