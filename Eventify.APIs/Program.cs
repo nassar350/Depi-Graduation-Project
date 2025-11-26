@@ -38,18 +38,17 @@ builder.Services.AddCors(options =>
     options.AddPolicy("FrontendPolicy", policy =>
     {
         policy.WithOrigins(
-                // Static HTML/CSS/JS development servers
-                "http://localhost:3000", // React/Live Server common port
+                "http://localhost:3000", 
                 "http://localhost:3001", 
-                "http://localhost:4200", // Angular default port
-                "http://localhost:5000", // .NET/Python simple servers
-                "http://localhost:5173", // Vite default port
-                "http://localhost:5500", // Live Server VS Code extension
-                "http://localhost:8000", // Python http.server
-                "http://localhost:8080", // Vue/Webpack dev server
-                "http://localhost:8090", // Common alternative port
+                "http://localhost:4200", 
+                "http://localhost:5000", 
+                "http://localhost:5173", 
+                "http://localhost:5500", 
+                "http://localhost:8000", 
+                "http://localhost:8080", 
+                "http://localhost:8090", 
                 "http://127.0.0.1:3000",
-                "http://127.0.0.1:5500", // Live Server alternative
+                "http://127.0.0.1:5500", 
                 "http://127.0.0.1:8000",
                 "http://127.0.0.1:8080",
                 "https://localhost:3000",
