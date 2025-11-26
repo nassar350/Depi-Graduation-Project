@@ -28,6 +28,10 @@ if (string.IsNullOrEmpty(stripeKey))
 
 StripeConfiguration.ApiKey = stripeKey;
 
+// Register ticket services
+builder.Services.AddScoped<ITicketEncryptionService>(sp =>
+    new TicketEncryptionService(builder.Configuration["TicketEncryption:Key"]));
+
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {

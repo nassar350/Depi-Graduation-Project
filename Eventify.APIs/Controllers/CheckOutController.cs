@@ -1,6 +1,7 @@
 ﻿using Eventify.Service.DTOs.Auth;
 using Eventify.Service.DTOs.Bookings;
 using Eventify.Service.Interfaces;
+using Eventify.Service.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +14,12 @@ namespace Eventify.APIs.Controllers
     public class CheckOutController : ControllerBase
     {
         private readonly ICheckOutService _checkoutService;
+        private readonly ITicketDownloadService _ticketDownloadService;
 
-        public CheckOutController(ICheckOutService checkoutService)
+        public CheckOutController(ICheckOutService checkoutService, ITicketDownloadService ticketDownloadService)
         {
             _checkoutService = checkoutService;
+            _ticketDownloadService = ticketDownloadService;
         }
 
         [HttpPost]
@@ -68,6 +71,31 @@ namespace Eventify.APIs.Controllers
                     Errors = new List<string> { ex.Message }
                 });
             }
+        }
+
+        /// <summary>
+        /// Download all tickets for a booking as PDF
+        /// </summary>
+        /// <param name="bookingId">Booking ID</param>
+        /// <returns>PDF file with all tickets (one page per ticket)</returns>
+        [HttpGet("tickets/{bookingId}/pdf")]
+        public async Task<IActionResult> DownloadTicketPdf(int bookingId)
+        {
+            var (success, message, data, errors) = await _ticketDownloadService.GenerateTicketsPdfAsync(bookingId);
+
+            if (!success)
+            {
+                var statusCode = message.Contains("not found") ? 404 : 500;
+                return StatusCode(statusCode, new
+                {
+                    success,
+                    message,
+                    data = (object)null,
+                    errors
+                });
+            }
+
+            return File(data.PdfBytes, "application/pdf", data.FileName);
         }
     }
 }

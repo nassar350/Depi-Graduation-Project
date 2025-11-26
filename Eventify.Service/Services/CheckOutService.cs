@@ -32,13 +32,16 @@ namespace Eventify.Service.Services
         public async Task<ServiceResult<CheckoutResponseDto>> CreateCheckoutAsync(CheckOutRequestDto dto)
         {
             int quantity = _unitOfWork._ticketRepository.CountNotBookedTickets(dto.EventId , dto.CategoryName);
+
             if (dto.TicketsNum > quantity) {
                 return ServiceResult<CheckoutResponseDto>.Fail("TicketNum", "The number of tickets you are trying to book is not availabe");
             }
+
             // 1. Calculate total
             var total = dto.TotalPrice;
             var amountInCents = (long)(total * 100m);
             var TicketsToBook = await _unitOfWork._ticketRepository.GetNotBookedTickets(dto.EventId, dto.CategoryName, dto.TicketsNum);
+            
             // 2. Create Stripe PaymentIntent
             var paymentIntentService = new PaymentIntentService();
             var piOptions = new PaymentIntentCreateOptions
@@ -106,10 +109,12 @@ namespace Eventify.Service.Services
 
                 // 5. Persist both in one transaction (via unit of work)
                 await _unitOfWork.SaveChangesAsync();
+
                 foreach (var ticket in TicketsToBook)
                 {
                     ticket.BookingId = createdBooking.Id;
                 }
+
                 _unitOfWork._ticketRepository.UpdateRange(TicketsToBook);
                 await _unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();

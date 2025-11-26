@@ -10,10 +10,12 @@ namespace Eventify.APIs.Controllers
     public class TicketsController : ControllerBase
     {
         private readonly ITicketService _ticketService;
+        private readonly ITicketVerificationService _verificationService;
 
-        public TicketsController(ITicketService ticketService)
+        public TicketsController(ITicketService ticketService, ITicketVerificationService verificationService)
         {
             _ticketService = ticketService;
+            _verificationService = verificationService;
         }
 
         [HttpGet]
@@ -212,6 +214,27 @@ namespace Eventify.APIs.Controllers
                     Errors = new List<string> { ex.Message }
                 });
             }
+        }
+
+        /// <summary>
+        /// Verify if a ticket is valid (event hasn't ended)
+        /// </summary>
+        /// <param name="token">Encrypted ticket token from QR code</param>
+        /// <returns>Validation result with ticket details</returns>
+        [HttpGet("verify/{token}")]
+        public async Task<IActionResult> VerifyTicket(string token)
+        {
+            var (success, message, data, errors) = await _verificationService.VerifyTicketAsync(token);
+
+            var statusCode = success ? 200 : 400;
+
+            return StatusCode(statusCode, new
+            {
+                success,
+                message,
+                data,
+                errors
+            });
         }
     }
 }
