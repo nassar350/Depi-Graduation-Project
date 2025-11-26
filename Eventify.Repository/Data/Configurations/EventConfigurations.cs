@@ -33,9 +33,10 @@ public class EventConfigurations : IEntityTypeConfiguration<Event>
         builder.Property(ev => ev.EndDate)
             .IsRequired() ;
 
-        builder.Property(ev => ev.Photo)
-            .IsRequired(false);
-        
+        builder.Property(ev => ev.PhotoUrl)
+       .HasColumnName("PhotoUrl")
+       .HasMaxLength(1000)
+       .IsRequired(false);
 
         // Event => Categories (One TO Many)
         builder.HasMany(u => u.Categories)
