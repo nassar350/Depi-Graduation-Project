@@ -11,7 +11,7 @@ console.log('🚀 Event.js: Set window.eventJsLoaded = true');
 class EventPage {
   constructor() {
     console.log('EventPage constructor started');
-    this.apiBaseUrl = window.API_BASE_URL || 'http://eventify.runasp.net';
+    this.apiBaseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
     console.log('API base URL set:', this.apiBaseUrl);
     this.eventId = null;
     this.event = null;

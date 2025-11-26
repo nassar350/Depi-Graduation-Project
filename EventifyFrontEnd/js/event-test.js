@@ -6,7 +6,7 @@ class EventPage {
   constructor() {
     console.log('🚀 EventPage constructor working!');
     // Use global API base if available (set in pages), fallback to production
-    this.apiBaseUrl = (window.API_BASE_URL) ? window.API_BASE_URL : 'http://eventify.runasp.net/api';
+    this.apiBaseUrl = (window.API_BASE_URL) ? window.API_BASE_URL : 'https://eventify.runasp.net/api';
     this.eventId = this.getEventId();
     this.loadEvent();
   }
