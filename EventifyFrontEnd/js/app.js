@@ -576,7 +576,7 @@ class EventifyApp {
   // API utility: Make authenticated API calls
   async apiCall(endpoint, options = {}) {
     const token = this.getToken();
-    const baseUrl = window.API_BASE_URL || 'http://eventify.runasp.net';
+    const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
     
     const defaultOptions = {
       headers: {

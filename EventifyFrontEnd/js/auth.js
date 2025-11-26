@@ -4,7 +4,7 @@
 class AuthPage {
   constructor() {
     this.currentPage = this.getCurrentPage();
-    this.apiBaseUrl = window.API_BASE_URL || 'http://eventify.runasp.net';
+    this.apiBaseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
     this.init();
   }
 
@@ -62,15 +62,12 @@ class AuthPage {
   }
 
   setupValidation() {
-    const inputs = document.querySelectorAll('.form-input');
-    inputs.forEach(input => {
-      input.addEventListener('blur', () => this.validateField(input));
-      input.addEventListener('input', () => this.clearErrors(input));
-    });
-
-    // Password strength indicator
+    // Disable the auth page validation since app.js already handles it
+    // This prevents duplicate error messages
+    
+    // Only add password strength indicator for register page
     const passwordInput = document.getElementById('password');
-    if (passwordInput) {
+    if (passwordInput && this.currentPage === 'register') {
       passwordInput.addEventListener('input', () => {
         this.displayPasswordStrength(passwordInput.value, 'passwordStrength');
       });
@@ -147,25 +144,27 @@ class AuthPage {
   showFieldError(field, message) {
     field.classList.add('error');
     
-    // Remove existing error
-    const existingError = field.parentNode.querySelector('.field-error');
-    if (existingError) {
-      existingError.remove();
-    }
+    // Remove ALL existing errors (check both parent and any nested containers)
+    const parentElement = field.parentNode;
+    const existingErrors = parentElement.querySelectorAll('.field-error');
+    existingErrors.forEach(error => error.remove());
 
     // Add new error
     const errorDiv = document.createElement('div');
     errorDiv.className = 'field-error';
+    errorDiv.style.color = '#ef4444';
+    errorDiv.style.fontSize = '0.875rem';
+    errorDiv.style.marginTop = '0.25rem';
     errorDiv.textContent = message;
-    field.parentNode.appendChild(errorDiv);
+    parentElement.appendChild(errorDiv);
   }
 
   clearErrors(field) {
     field.classList.remove('error');
-    const errorDiv = field.parentNode.querySelector('.field-error');
-    if (errorDiv) {
-      errorDiv.remove();
-    }
+    // Remove ALL error messages from parent
+    const parentElement = field.parentNode;
+    const errorDivs = parentElement.querySelectorAll('.field-error');
+    errorDivs.forEach(errorDiv => errorDiv.remove());
   }
 
   // Handle login with real API
@@ -260,12 +259,6 @@ class AuthPage {
       return;
     }
 
-    // Check terms agreement
-    if (!document.getElementById('agreeTerms').checked) {
-      app.showNotification('Please agree to the Terms of Service and Privacy Policy', 'error');
-      return;
-    }
-
     try {
       // Show loading state
       submitBtn.textContent = 'Creating Account...';
@@ -295,6 +288,7 @@ class AuthPage {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Registration response data:', data);
         
         if (data.success) {
           app.showNotification(data.message || 'Account created successfully! Please log in with your credentials.', 'success');
@@ -313,13 +307,67 @@ class AuthPage {
             }
           }, 1500);
         } else {
-          const errorMessage = data.errors && data.errors.length > 0 ? data.errors[0] : data.message;
+          // Handle errors array or single message
+          console.log('Registration failed - errors:', data.errors);
+          console.log('Registration failed - message:', data.message);
+          
+          let errorMessage = '';
+          
+          if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+            // Show first error from the array
+            errorMessage = data.errors[0];
+          } else if (data.message) {
+            errorMessage = data.message;
+          } else {
+            errorMessage = 'Registration failed. Please try again.';
+          }
+          
+          console.log('Showing error message:', errorMessage);
           app.showNotification(errorMessage, 'error');
         }
         
       } else {
-        const data = await response.json().catch(() => ({ message: 'Registration failed. Please try again.' }));
-        const errorMessage = data.errors && data.errors.length > 0 ? data.errors[0] : data.message;
+        // Handle different status codes
+        let errorData;
+        try {
+          errorData = await response.json();
+          console.log('Registration error response:', errorData);
+        } catch (e) {
+          console.error('Failed to parse error response:', e);
+          errorData = {};
+        }
+        
+        let errorMessage = '';
+        
+        // Check for ASP.NET validation errors format (object with properties containing arrays)
+        if (errorData.errors && typeof errorData.errors === 'object' && !Array.isArray(errorData.errors)) {
+          // Get the first error message from the errors object
+          const errorKeys = Object.keys(errorData.errors);
+          if (errorKeys.length > 0) {
+            const firstErrorKey = errorKeys[0];
+            const firstErrorArray = errorData.errors[firstErrorKey];
+            if (Array.isArray(firstErrorArray) && firstErrorArray.length > 0) {
+              errorMessage = firstErrorArray[0];
+            }
+          }
+        }
+        // Check for simple errors array format
+        else if (errorData.errors && Array.isArray(errorData.errors) && errorData.errors.length > 0) {
+          errorMessage = errorData.errors[0];
+        }
+        // Check for message property
+        else if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+        // Check for title property (ASP.NET default)
+        else if (errorData.title) {
+          errorMessage = errorData.title;
+        }
+        else {
+          errorMessage = 'Registration failed. Please try again.';
+        }
+        
+        console.log('Showing error message:', errorMessage);
         app.showNotification(errorMessage, 'error');
       }
       

@@ -17,16 +17,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("OnlineDbConnectionString");
 
-Env.Load();
+//Env.Load();
 
-var stripeKey = builder.Configuration["STRIPE_SECRET_KEY"] ?? Environment.GetEnvironmentVariable("SecretKey");
+//var stripeKey = builder.Configuration["STRIPE_SECRET_KEY"] ?? Environment.GetEnvironmentVariable("SecretKey");
 
-if (string.IsNullOrEmpty(stripeKey))
-{
-    throw new Exception("Stripe secret key is not configured in STRIPE_SECRET_KEY");
-}
+//if (string.IsNullOrEmpty(stripeKey))
+//{
+//    throw new Exception("Stripe secret key is not configured in STRIPE_SECRET_KEY");
+//}
 
-StripeConfiguration.ApiKey = stripeKey;
+//StripeConfiguration.ApiKey = stripeKey;
 
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
@@ -169,7 +169,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseCors("DevelopmentPolicy");
+    app.UseCors("FrontendPolicy");
 }
 else
 {
