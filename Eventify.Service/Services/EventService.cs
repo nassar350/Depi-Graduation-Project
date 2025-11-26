@@ -17,11 +17,13 @@ namespace Eventify.Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
 
-        public EventService(IMapper mapper, IUnitOfWork unitOfWork)
+        public EventService(IMapper mapper, IUnitOfWork unitOfWork, IPhotoService photoService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _photoService = photoService;
         }
 
         public async Task<IEnumerable<EventDto>> GetAllAsync()
@@ -70,6 +72,11 @@ namespace Eventify.Service.Services
             {
                 var ev = _mapper.Map<Event>(dto);
                 ev.OrganizerID = int.Parse(id);
+                if (dto.Photo != null)
+                {
+                    string photoUrl = await _photoService.UploadPhotoAsync(dto.Photo);
+                    ev.PhotoUrl = photoUrl;
+                }
                 var curEvent = await _unitOfWork._eventRepository.AddAsync(ev);
                 await _unitOfWork.SaveChangesAsync();
                 var CategoriesToCreate = new List<CreateCategoryDto>();
@@ -110,6 +117,15 @@ namespace Eventify.Service.Services
         {
             var ev = await _unitOfWork._eventRepository.GetByIdAsync(id);
             if (ev == null) return false;
+            if (dto.Photo != null)
+            {
+                var uploadResult = await _photoService.UploadPhotoAsync(dto.Photo);
+
+                if (uploadResult == null)
+                    throw new Exception("Photo upload failed");
+
+                ev.PhotoUrl = uploadResult; 
+            }
             _mapper.Map(dto, ev);
             _unitOfWork._eventRepository.Update(ev);
             await _unitOfWork.SaveChangesAsync();

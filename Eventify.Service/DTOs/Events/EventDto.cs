@@ -18,7 +18,7 @@
 
         public string OrganizerName { get; set; } = string.Empty;
 
-        public byte[]? Photo { get; set; }
+        public string? PhotoUrl { get; set; }
 
         public string PhotoBase64 { get; set; } = string.Empty;
 
