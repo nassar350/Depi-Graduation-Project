@@ -9,7 +9,7 @@ public class Event
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public int  OrganizerID { get; set; }  // Reference to PK in User
-    public byte[]? Photo { get; set; }
+    public string? PhotoUrl { get; set; }
     public ICollection<UserAttendEvent> EventsAttendedByUsers { get; set; }
         = new HashSet<UserAttendEvent>();
     public User Organizer { get; set; } 

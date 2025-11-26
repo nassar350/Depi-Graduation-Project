@@ -1,14 +1,17 @@
-﻿using Eventify.API.Services.Auth;
+﻿using DotNetEnv;
+using Eventify.API.Services.Auth;
 using Eventify.Core.Entities;
 using Eventify.Repository.Data.Contexts;
 using Eventify.Service.DependencyInjection;
+using Eventify.Service.Helpers;
+using Eventify.Service.Interfaces;
+using Eventify.Service.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using DotNetEnv;
 using Stripe;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -112,6 +115,24 @@ builder.Services.AddDbContext<EventifyContext>(options =>
 
 builder.Services.AddAutoMapperDependency();
 builder.Services.AddServiceLayer();
+
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddSingleton(provider =>
+{
+    var config = provider.GetRequiredService<IConfiguration>();
+    var settings = config.GetSection("Cloudinary").Get<CloudinarySettings>();
+
+    var account = new CloudinaryDotNet.Account(
+        settings.CloudName,
+        settings.ApiKey,
+        settings.ApiSecret
+    );
+
+    return new CloudinaryDotNet.Cloudinary(account);
+});
+
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
