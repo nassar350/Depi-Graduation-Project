@@ -6,7 +6,7 @@ class EventPage {
   constructor() {
     console.log('🚀 EventPage constructor working!');
     // Use global API base if available (set in pages), fallback to production
-    this.apiBaseUrl = (window.API_BASE_URL) ? window.API_BASE_URL : 'https://eventify.runasp.net/api';
+    this.apiBaseUrl = (window.API_BASE_URL) ? window.API_BASE_URL : 'https://eventify.runasp.net';
     this.eventId = this.getEventId();
     this.loadEvent();
   }
@@ -29,7 +29,26 @@ class EventPage {
     this.showLoading(true);
     
     try {
-      const response = await fetch(`${this.apiBaseUrl}/events/${this.eventId}`);
+      const apiUrl = `${this.apiBaseUrl}/api/events/${this.eventId}`;
+      console.log('🚀 Fetching event from:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        mode: 'cors',
+        credentials: 'omit'
+      });
+      
+      console.log('🚀 Response status:', response.status);
+      console.log('🚀 Response headers:', [...response.headers.entries()]);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       console.log('🚀 Event data:', data);
       
@@ -77,12 +96,8 @@ class EventPage {
     const heroImage = document.getElementById('eventHeroImage');
     if (heroImage) {
       let imageUrl = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop';
-      if (this.event.photo && typeof this.event.photo === 'string') {
-        if (this.event.photo.startsWith('http') || this.event.photo.startsWith('data:')) {
-          imageUrl = this.event.photo;
-        } else {
-          imageUrl = `data:image/jpeg;base64,${this.event.photo}`;
-        }
+      if (this.event.photoUrl) {
+        imageUrl = this.event.photoUrl;
       }
       heroImage.src = imageUrl;
       heroImage.alt = this.event.name;
@@ -297,10 +312,17 @@ class EventPage {
         let isAvailable = availableSeats > 0;
         
         try {
-          const apiUrl = `${this.apiBaseUrl}/tickets/available?eventId=${this.eventId}&categoryName=${encodeURIComponent(categoryName)}`;
+          const apiUrl = `${this.apiBaseUrl}/api/tickets/available?eventId=${this.eventId}&categoryName=${encodeURIComponent(categoryName)}`;
           console.log(`🚀 Fetching available seats from: ${apiUrl}`);
           
-          const response = await fetch(apiUrl);
+          const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            mode: 'cors'
+          });
           const data = await response.json();
           
           console.log(`🚀 API response for ${categoryName}:`, data);

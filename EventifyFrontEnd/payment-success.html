@@ -20,16 +20,16 @@
   <section class="section">
     <div class="container">
       <div class="card" style="max-width: 600px; margin: 0 auto; text-align: center;">
-        <div style="width: 100px; height: 100px; background: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-lg); font-size: 3rem;">
+        <div style="width: 100px; height: 100px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-lg); font-size: 3rem; color: var(--bg);">
           ✓
         </div>
         
-        <h1 style="color: #28a745; margin-bottom: var(--space-md);">Payment Successful!</h1>
-        <p class="text-lg" style="margin-bottom: var(--space-xl);">
+        <h1 style="color: var(--success); margin-bottom: var(--space-md);">Payment Successful!</h1>
+        <p class="text-lg" style="margin-bottom: var(--space-xl); color: var(--muted);">
           Your booking has been confirmed. A confirmation email has been sent to your email address.
         </p>
         
-        <div id="bookingDetails" style="text-align: left; background: #f8f9fa; padding: var(--space-lg); border-radius: 8px; margin-bottom: var(--space-xl);">
+        <div id="bookingDetails" style="text-align: left; background: var(--card); padding: var(--space-lg); border-radius: 8px; margin-bottom: var(--space-xl); border: 1px solid var(--border);">
           <!-- Booking details will be populated here -->
         </div>
         
@@ -42,15 +42,32 @@
   </section>
 
   <script>
-    // Get booking details from URL or session storage
+    // Set API Base URL
+    const API_BASE_URL = window.API_BASE_URL || 'https://eventify.runasp.net';
+    
+    // Get booking details from URL
     const urlParams = new URLSearchParams(window.location.search);
     const bookingId = urlParams.get('bookingId');
+    const eventId = urlParams.get('eventId');
     
     if (bookingId) {
-      document.getElementById('bookingDetails').innerHTML = `
+      const detailsHtml = `
         <h3 style="margin-bottom: var(--space-md);">Booking Details</h3>
-        <p><strong>Booking ID:</strong> ${bookingId}</p>
+        <p><strong>Booking ID:</strong> #${bookingId}</p>
         <p style="margin-top: var(--space-sm);">Your tickets have been sent to your email.</p>
+        <div style="margin-top: var(--space-lg);">
+          <a href="${API_BASE_URL}/api/checkout/tickets/${bookingId}/pdf" 
+             class="btn btn-primary" 
+             download
+             style="display: inline-block;">
+            📥 Download Tickets (PDF)
+          </a>
+        </div>
+      `;
+      document.getElementById('bookingDetails').innerHTML = detailsHtml;
+    } else {
+      document.getElementById('bookingDetails').innerHTML = `
+        <p class="text-muted">Booking details not available.</p>
       `;
     }
   </script>

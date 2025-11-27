@@ -587,11 +587,8 @@ class BookingPage {
       if (paymentIntent.status === 'succeeded') {
         console.log('🚀 Payment succeeded!', paymentIntent);
         
-        // Show success message
-        alert(`Booking confirmed! Your booking ID is: ${bookingId}\n\nPayment successful!\n\nThank you for booking with Eventify!`);
-        
-        // Redirect to event page or dashboard
-        window.location.href = `event.html?id=${this.eventId}`;
+        // Redirect to payment success page with booking details
+        window.location.href = `payment-success.html?bookingId=${bookingId}&eventId=${this.eventId}`;
       } else {
         throw new Error('Payment was not completed');
       }

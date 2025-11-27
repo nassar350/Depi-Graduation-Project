@@ -173,7 +173,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseCors("DevelopmentPolicy");
+    app.UseCors("FrontendPolicy");
 }
 else
 {

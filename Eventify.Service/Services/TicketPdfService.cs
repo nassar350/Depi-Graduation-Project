@@ -70,7 +70,7 @@ namespace Eventify.Service.Services
                 foreach (var ticket in tickets)
                 {
                     var token = _encryptionService.GenerateTicketToken(ticket.ID, booking.Id);
-                    var verificationUrl = $"{verificationBaseUrl}/api/Tickets/verify/{token}";
+                    var verificationUrl = $"{verificationBaseUrl}/verify-ticket.html?token={token}";
 
                     container.Page(page =>
                     {
@@ -147,7 +147,9 @@ namespace Eventify.Service.Services
             {
                 qrCol.Item().Text("Scan to Verify Ticket").FontSize(12).SemiBold();
                 qrCol.Item().PaddingTop(10).Width(200).Height(200).Image(_qrCodeService.GenerateQrCode(verificationUrl));
-                qrCol.Item().PaddingTop(10).Text(verificationUrl).FontSize(8).FontColor(Colors.Grey.Darken1);
+                qrCol.Item().PaddingTop(10).Hyperlink(verificationUrl).Text("Click here to verify online")
+                    .FontSize(10).FontColor(Colors.Blue.Darken2).Underline();
+                qrCol.Item().PaddingTop(5).Text("or scan the QR code above").FontSize(8).FontColor(Colors.Grey.Darken1);
             });
         }
 
