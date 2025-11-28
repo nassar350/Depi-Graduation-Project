@@ -60,6 +60,9 @@ class EventPage {
           this.event.categories = [];
         }
         
+        // Fetch real-time available ticket counts for each category
+        await this.fetchAvailableTicketCounts();
+        
         this.displayEvent();
         this.showLoading(false);
       } else {
@@ -68,6 +71,39 @@ class EventPage {
     } catch (error) {
       console.error('🚀 Load error:', error);
       this.showEventNotFound();
+    }
+  }
+
+  async fetchAvailableTicketCounts() {
+    if (!this.event.categories || this.event.categories.length === 0) {
+      return;
+    }
+
+    console.log('🚀 Fetching available ticket counts for categories');
+    
+    for (const category of this.event.categories) {
+      try {
+        const response = await fetch(
+          `${this.apiBaseUrl}/api/Tickets/available?eventId=${this.eventId}&categoryName=${encodeURIComponent(category.title)}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            }
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data) {
+            category.availableTicketsCount = data.data.availableTickets;
+            console.log(`🚀 Category "${category.title}" available tickets:`, category.availableTicketsCount);
+          }
+        }
+      } catch (error) {
+        console.error(`🚀 Error fetching ticket count for category "${category.title}":`, error);
+      }
     }
   }
 
@@ -513,9 +549,22 @@ class EventPage {
     
     const totalSeats = this.event.categories ? 
       this.event.categories.reduce((sum, cat) => sum + (cat.seats || 0), 0) : 0;
-    const bookedSeats = this.event.categories ? 
-      this.event.categories.reduce((sum, cat) => sum + (cat.booked || 0), 0) : 0;
-    const availableSeats = totalSeats - bookedSeats;
+    
+    // Calculate available seats from real-time ticket data
+    let availableSeats = 0;
+    if (this.event.categories && Array.isArray(this.event.categories)) {
+      for (const cat of this.event.categories) {
+        // Check if we have real-time available ticket count
+        if (cat.availableTicketsCount !== undefined) {
+          availableSeats += cat.availableTicketsCount;
+        } else {
+          // Fallback to seats - booked calculation
+          availableSeats += (cat.seats || 0) - (cat.booked || 0);
+        }
+      }
+    }
+    
+    const percentageRemaining = totalSeats > 0 ? ((availableSeats / totalSeats) * 100).toFixed(0) : 0;
     
     eventDetailsContainer.innerHTML = `
       <div class="event-info-grid">
@@ -541,7 +590,7 @@ class EventPage {
           <div class="info-content">
             <h4>Tickets Available</h4>
             <p class="info-primary">${availableSeats} of ${totalSeats} seats</p>
-            <p class="info-secondary">${((availableSeats/totalSeats)*100).toFixed(0)}% remaining</p>
+            <p class="info-secondary">${percentageRemaining}% remaining</p>
           </div>
         </div>
         

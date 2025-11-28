@@ -417,7 +417,8 @@
 
         // Set role
         const roleElement = document.getElementById('userRole');
-        roleElement.textContent = this.user.role === 'organizer' ? 'Event Organizer' : 'Event Attendee';
+        // Display role as "Admin" or "User" only
+        roleElement.textContent = this.user.role === 1 || this.user.role === 'Admin' ? 'Admin' : 'User';
         
         // Show organizer-specific elements
         if (this.user.role === 'organizer' || this.user.userType === 'both' || this.user.userType === 'organizer') {
