@@ -22,7 +22,8 @@ namespace Eventify.Repository.Data.Configurations
                 .IsRequired(true)
                 .HasColumnType("varchar");
 
-            
+            builder.Property(t => t.Price)
+                .IsRequired(true);
             
             builder.Property(t => t.Type)
                 .HasMaxLength(50)

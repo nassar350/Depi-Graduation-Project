@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" width="1200" height="1600">
+  <title>Booking Page Wireframe</title>
+  
+  <!-- Background -->
+  <rect width="1200" height="1600" fill="#f5f5f5"/>
+  
+  <!-- Navigation -->
+  <rect x="0" y="0" width="1200" height="80" fill="#ffffff" stroke="#e0e0e0" stroke-width="2"/>
+  <text x="60" y="50" font-family="Arial" font-size="28" font-weight="bold" fill="#7C5CFF">Eventify</text>
+  <text x="900" y="50" font-family="Arial" font-size="16" fill="#333">Home</text>
+  <text x="980" y="50" font-family="Arial" font-size="16" fill="#333">Explore</text>
+  <text x="1060" y="50" font-family="Arial" font-size="16" fill="#333">Login</text>
+  
+  <!-- Progress Steps -->
+  <g id="progress-steps">
+    <circle cx="300" cy="150" r="30" fill="#7C5CFF"/>
+    <text x="300" y="160" font-family="Arial" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
+    <text x="300" y="190" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Details</text>
+    
+    <line x1="330" y1="150" x2="570" y2="150" stroke="#e0e0e0" stroke-width="4"/>
+    
+    <circle cx="600" cy="150" r="30" fill="#e0e0e0"/>
+    <text x="600" y="160" font-family="Arial" font-size="20" font-weight="bold" fill="#999" text-anchor="middle">2</text>
+    <text x="600" y="190" font-family="Arial" font-size="14" fill="#999" text-anchor="middle">Payment</text>
+    
+    <line x1="630" y1="150" x2="870" y2="150" stroke="#e0e0e0" stroke-width="4"/>
+    
+    <circle cx="900" cy="150" r="30" fill="#e0e0e0"/>
+    <text x="900" y="160" font-family="Arial" font-size="20" font-weight="bold" fill="#999" text-anchor="middle">3</text>
+    <text x="900" y="190" font-family="Arial" font-size="14" fill="#999" text-anchor="middle">Confirmation</text>
+  </g>
+  
+  <!-- Two Column Layout -->
+  <!-- Left Column - Form -->
+  <g id="form-column">
+    <text x="60" y="270" font-family="Arial" font-size="28" font-weight="bold" fill="#333">Booking Details</text>
+    
+    <!-- Form Fields -->
+    <rect x="60" y="300" width="700" height="900" fill="#ffffff" rx="12" stroke="#e0e0e0" stroke-width="2"/>
+    
+    <!-- First Name -->
+    <text x="90" y="350" font-family="Arial" font-size="14" font-weight="bold" fill="#333">First Name *</text>
+    <rect x="90" y="360" width="320" height="50" fill="#ffffff" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="110" y="392" font-family="Arial" font-size="14" fill="#999">Enter first name</text>
+    
+    <!-- Last Name -->
+    <text x="440" y="350" font-family="Arial" font-size="14" font-weight="bold" fill="#333">Last Name *</text>
+    <rect x="440" y="360" width="320" height="50" fill="#ffffff" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="460" y="392" font-family="Arial" font-size="14" fill="#999">Enter last name</text>
+    
+    <!-- Email -->
+    <text x="90" y="460" font-family="Arial" font-size="14" font-weight="bold" fill="#333">Email Address *</text>
+    <rect x="90" y="470" width="670" height="50" fill="#ffffff" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="110" y="502" font-family="Arial" font-size="14" fill="#999">your.email@example.com</text>
+    
+    <!-- Phone -->
+    <text x="90" y="570" font-family="Arial" font-size="14" font-weight="bold" fill="#333">Phone Number</text>
+    <rect x="90" y="580" width="670" height="50" fill="#ffffff" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="110" y="612" font-family="Arial" font-size="14" fill="#999">+1 (555) 123-4567</text>
+    
+    <!-- Ticket Quantity -->
+    <text x="90" y="680" font-family="Arial" font-size="14" font-weight="bold" fill="#333">Number of Tickets *</text>
+    <rect x="90" y="690" width="320" height="50" fill="#ffffff" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="110" y="722" font-family="Arial" font-size="14" fill="#999">Select quantity</text>
+    <polygon points="390,715 400,720 390,725" fill="#666"/>
+    
+    <!-- Promo Code -->
+    <text x="440" y="680" font-family="Arial" font-size="14" font-weight="bold" fill="#333">Promo Code</text>
+    <rect x="440" y="690" width="240" height="50" fill="#ffffff" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="460" y="722" font-family="Arial" font-size="14" fill="#999">Enter code</text>
+    <rect x="690" y="690" width="70" height="50" fill="#e0e0e0" rx="8" stroke="#999" stroke-width="1"/>
+    <text x="725" y="722" font-family="Arial" font-size="14" font-weight="bold" fill="#333" text-anchor="middle">Apply</text>
+    
+    <!-- Payment Section -->
+    <text x="90" y="800" font-family="Arial" font-size="20" font-weight="bold" fill="#333">Payment Information</text>
+    
+    <!-- Stripe Badge -->
+    <rect x="90" y="820" width="670" height="80" fill="rgba(0, 123, 255, 0.05)" rx="8" stroke="rgba(0, 123, 255, 0.2)" stroke-width="1"/>
+    <text x="120" y="850" font-family="Arial" font-size="24" fill="#007bff">🔒</text>
+    <text x="160" y="850" font-family="Arial" font-size="16" font-weight="bold" fill="#007bff">Secure Payment with Stripe</text>
+    <text x="160" y="875" font-family="Arial" font-size="12" fill="#666">Your payment is secured with industry-standard encryption</text>
+    
+    <!-- Card Element -->
+    <text x="90" y="950" font-family="Arial" font-size="14" font-weight="bold" fill="#333">Card Information *</text>
+    <rect x="90" y="960" width="670" height="120" fill="#ffffff" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="110" y="992" font-family="Arial" font-size="14" fill="#999">Card number</text>
+    <line x1="110" y1="1010" x2="740" y2="1010" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="110" y="1042" font-family="Arial" font-size="14" fill="#999">MM / YY</text>
+    <line x1="450" y1="1025" x2="450" y2="1065" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="470" y="1042" font-family="Arial" font-size="14" fill="#999">CVC</text>
+    
+    <!-- Submit Button -->
+    <rect x="90" y="1120" width="670" height="60" fill="#7C5CFF" rx="30"/>
+    <text x="425" y="1157" font-family="Arial" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">Complete Booking & Pay</text>
+  </g>
+  
+  <!-- Right Column - Summary -->
+  <g id="summary-column">
+    <rect x="820" y="240" width="320" height="600" fill="#ffffff" rx="12" stroke="#7C5CFF" stroke-width="2"/>
+    <rect x="820" y="240" width="320" height="60" fill="rgba(124, 92, 255, 0.1)" rx="12"/>
+    <text x="980" y="278" font-family="Arial" font-size="24" font-weight="bold" fill="#333" text-anchor="middle">Booking Summary</text>
+    
+    <!-- Event Info -->
+    <rect x="840" y="320" width="280" height="120" fill="#f8f9fa" rx="8"/>
+    <rect x="850" y="330" width="80" height="80" fill="#e0e0e0" rx="4"/>
+    <text x="890" y="375" font-family="Arial" font-size="24" fill="#999" text-anchor="middle">🎵</text>
+    <text x="950" y="350" font-family="Arial" font-size="14" font-weight="bold" fill="#333">Summer Music Festival</text>
+    <text x="950" y="373" font-family="Arial" font-size="12" fill="#666">July 15, 2024</text>
+    <text x="950" y="393" font-family="Arial" font-size="12" fill="#666">Central Park</text>
+    <text x="950" y="413" font-family="Arial" font-size="12" font-weight="bold" fill="#7C5CFF">General Admission</text>
+    
+    <!-- Order Details -->
+    <line x1="840" y1="460" x2="1120" y2="460" stroke="#e0e0e0" stroke-width="1"/>
+    
+    <text x="860" y="495" font-family="Arial" font-size="14" fill="#666">Tickets:</text>
+    <text x="1100" y="495" font-family="Arial" font-size="14" fill="#333" text-anchor="end">2</text>
+    
+    <text x="860" y="525" font-family="Arial" font-size="14" fill="#666">Price per ticket:</text>
+    <text x="1100" y="525" font-family="Arial" font-size="14" fill="#333" text-anchor="end">$50.00</text>
+    
+    <text x="860" y="555" font-family="Arial" font-size="14" fill="#28a745">Promo discount:</text>
+    <text x="1100" y="555" font-family="Arial" font-size="14" fill="#28a745" text-anchor="end">-$10.00</text>
+    
+    <line x1="840" y1="575" x2="1120" y2="575" stroke="#e0e0e0" stroke-width="2"/>
+    
+    <text x="860" y="610" font-family="Arial" font-size="18" font-weight="bold" fill="#333">Total:</text>
+    <text x="1100" y="610" font-family="Arial" font-size="24" font-weight="bold" fill="#7C5CFF" text-anchor="end">$90.00</text>
+    
+    <!-- Security Badge -->
+    <rect x="860" y="660" width="240" height="80" fill="rgba(0, 212, 255, 0.1)" rx="8"/>
+    <text x="980" y="690" font-family="Arial" font-size="24" fill="#00D4FF" text-anchor="middle">🔒</text>
+    <text x="980" y="715" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">Your booking is secured with</text>
+    <text x="980" y="730" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">industry-standard encryption</text>
+  </g>
+  
+  <!-- Footer -->
+  <rect x="0" y="1350" width="1200" height="250" fill="#1a1a1a"/>
+  <text x="600" y="1430" font-family="Arial" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">Eventify</text>
+  <text x="600" y="1470" font-family="Arial" font-size="16" fill="#999" text-anchor="middle">Connecting people through amazing events</text>
+  <text x="600" y="1550" font-family="Arial" font-size="14" fill="#666" text-anchor="middle">© 2025 Eventify. All rights reserved.</text>
+</svg>

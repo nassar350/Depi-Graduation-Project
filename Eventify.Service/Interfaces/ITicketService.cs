@@ -14,5 +14,6 @@ namespace Eventify.Service.Interfaces
         Task<TicketDto> CreateAsync(CreateTicketDto dto);
         Task<bool> UpdateAsync(int id, UpdateTicketDto dto);
         Task<bool> DeleteAsync(int id);
+        int GetAvailableTicketsCount(int eventId, string categoryName);
     }
 }

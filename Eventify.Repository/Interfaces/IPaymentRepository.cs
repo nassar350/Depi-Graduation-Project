@@ -11,7 +11,7 @@ namespace Eventify.Repository.Interfaces
     {
         Task<IEnumerable<Payment>> GetAllAsync();
         Task<Payment?> GetByIdAsync(int bookingId);
-        Task AddAsync(Payment payment);
+        Task <Payment> AddAsync(Payment payment);
         Task UpdateAsync(Payment payment);
         Task DeleteAsync(Payment payment);
         Task SaveChangesAsync();

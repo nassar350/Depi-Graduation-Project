@@ -7,7 +7,7 @@ using Eventify.Repository.Data.Contexts;
 
 namespace Eventify.Repository.Repositories;
 
-public class BookingRepository:IBookingRepository
+public class BookingRepository : IBookingRepository
 {
     private readonly EventifyContext _context;
 
@@ -19,15 +19,9 @@ public class BookingRepository:IBookingRepository
     // Return all booking without their Users
     public async  Task<List<Booking>> GetAllAsync()
     {
-        
-       
         return await _context.Bookings
             .ToListAsync();
     }
-
-    
-   
-    
     
     // Return Booking where Bookind ID == id  [Without User]
 
@@ -40,11 +34,14 @@ public class BookingRepository:IBookingRepository
     public async Task<Booking> AddAsync(Booking booking)
     {
         await _context.Bookings.AddAsync(booking);
-        await _context.SaveChangesAsync();
         return booking;
     }
 
-   
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
+
 
     public async Task<bool> UpdateAsync(int id, Booking booking)
     {

@@ -8,7 +8,7 @@ public interface IBookingRepository
   
     Task<Booking?> GetByIdAsync(int id);
     Task<Booking> AddAsync(Booking booking);
-    
+    Task SaveChangesAsync();
     Task<bool> UpdateAsync(int id, Booking booking);
     Task<bool> DeleteAsync(int id);
 }

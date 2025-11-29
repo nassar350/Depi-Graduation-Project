@@ -24,11 +24,13 @@ namespace Eventify.Service.Services
 
         public async Task SendSmsAsync(string toNumber, string message)
         {
-            TwilioClient.Init(_config["Notification:TwilioAccountSid"], _config["Notification:TwilioAuthToken"]);
+            TwilioClient.Init(Environment.GetEnvironmentVariable("TwilioAccountSID"), Environment.GetEnvironmentVariable("TwilioAuthToken"));
+            //TwilioClient.Init("", "");
+
             var msg = await MessageResource.CreateAsync(
                 body: message,
                 from: new Twilio.Types.PhoneNumber(_config["Notification:TwilioFromNumber"]),
-                to: new Twilio.Types.PhoneNumber(toNumber)
+                to: new Twilio.Types.PhoneNumber($"+2{toNumber}")
             );
 
             _logger.LogInformation($"SMS sent to {toNumber} with SID {msg.Sid}");

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Eventify</title>
+  <meta name="description" content="Login to your Eventify account to manage bookings, create events, and more.">
+  
+  <!-- Preload fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎉</text></svg>">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <span class="text-gradient">Eventify</span>
+      </a>
+      
+      <div class="navbar-menu">
+        <ul class="navbar-nav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="explore.html">Explore</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+      </div>
+      
+      <button class="navbar-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span>☰</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Login Form -->
+  <section class="section" style="min-height: 80vh; display: flex; align-items: center;">
+    <div class="container">
+      <div class="flex-center">
+        <div class="card" style="width: 100%; max-width: 400px;">
+          <div class="text-center" style="margin-bottom: var(--space-xl);">
+            <h1>Welcome Back</h1>
+            <p class="text-muted">Sign in to your account</p>
+          </div>
+
+          <form id="loginForm" novalidate>
+            <div class="form-group">
+              <label for="email" class="form-label">Email Address *</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email"
+                class="form-input" 
+                required
+                autocomplete="email"
+                placeholder="you@example.com"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="password" class="form-label">Password *</label>
+              <div style="position: relative;">
+                <input 
+                  type="password" 
+                  id="password" 
+                  name="password"
+                  class="form-input" 
+                  required
+                  autocomplete="current-password"
+                  placeholder="Enter your password"
+                >
+                <button 
+                  type="button" 
+                  id="togglePassword"
+                  style="position: absolute; right: var(--space-md); top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer;"
+                  aria-label="Toggle password visibility"
+                >
+                  👁️
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="rememberMe" name="rememberMe">
+                <span class="checkmark"></span>
+                Remember me
+              </label>
+            </div>
+
+            <button 
+              type="submit" 
+              id="loginBtn" 
+              class="btn btn-primary btn-lg btn-full"
+            >
+              Sign In
+            </button>
+          </form>
+
+          <div class="text-center" style="margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid var(--border);">
+            <p class="text-muted">
+              Don't have an account? 
+              <a href="register.html" class="text-accent">Sign up here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom" style="text-align: center;">
+        <p>&copy; 2025 Eventify. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/events-data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Password toggle functionality
+    document.getElementById('togglePassword')?.addEventListener('click', function() {
+      const passwordInput = document.getElementById('password');
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      this.textContent = type === 'password' ? '👁️' : '🙈';
+    });
+  </script>
+
+  <style>
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      cursor: pointer;
+      font-size: var(--font-size-sm);
+    }
+    
+    .checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+  </style>
+</body>
+</html>

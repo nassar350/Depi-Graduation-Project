@@ -12,6 +12,7 @@ namespace Eventify.Core.Entities
         public int Id { get; set; }
         public DateTime CreatedDate { get; set; }
         public TicketStatus Status { get; set; }
+        public string CategoryName { get; set; }
         public int TicketsNum { get; set; }
         public int UserId { get; set; }
 

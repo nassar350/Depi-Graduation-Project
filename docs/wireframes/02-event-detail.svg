@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1800" width="1200" height="1800">
+  <title>Event Detail Page Wireframe</title>
+  
+  <!-- Background -->
+  <rect width="1200" height="1800" fill="#f5f5f5"/>
+  
+  <!-- Navigation -->
+  <rect x="0" y="0" width="1200" height="80" fill="#ffffff" stroke="#e0e0e0" stroke-width="2"/>
+  <text x="60" y="50" font-family="Arial" font-size="28" font-weight="bold" fill="#7C5CFF">Eventify</text>
+  <text x="900" y="50" font-family="Arial" font-size="16" fill="#333">Home</text>
+  <text x="980" y="50" font-family="Arial" font-size="16" fill="#333">Explore</text>
+  <text x="1060" y="50" font-family="Arial" font-size="16" fill="#333">Login</text>
+  
+  <!-- Hero Image -->
+  <rect x="0" y="80" width="1200" height="400" fill="#e0e0e0"/>
+  <text x="600" y="260" font-family="Arial" font-size="72" fill="#999" text-anchor="middle">🎵</text>
+  <rect x="0" y="380" width="1200" height="100" fill="rgba(0,0,0,0.6)"/>
+  <text x="60" y="435" font-family="Arial" font-size="36" font-weight="bold" fill="#ffffff">Summer Music Festival 2024</text>
+  <text x="60" y="465" font-family="Arial" font-size="16" fill="#ffffff">📅 July 15, 2024 • 📍 Central Park • 👥 5000 Capacity</text>
+  
+  <!-- Content Area (2 columns) -->
+  <!-- Left Column - Main Content -->
+  <g id="left-column">
+    <!-- About Section -->
+    <text x="60" y="560" font-family="Arial" font-size="28" font-weight="bold" fill="#333">About This Event</text>
+    <rect x="60" y="580" width="700" height="200" fill="#ffffff" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="80" y="615" font-family="Arial" font-size="14" fill="#666">Join us for the most amazing summer music festival of the year!</text>
+    <text x="80" y="640" font-family="Arial" font-size="14" fill="#666">Featuring top artists, food trucks, and activities for all ages.</text>
+    <text x="80" y="665" font-family="Arial" font-size="14" fill="#666">This is a family-friendly event with something for everyone.</text>
+    <text x="80" y="690" font-family="Arial" font-size="14" fill="#666">Don't miss out on this incredible experience!</text>
+    
+    <!-- Ticket Categories Section -->
+    <text x="60" y="850" font-family="Arial" font-size="28" font-weight="bold" fill="#333">Ticket Categories</text>
+    <text x="60" y="880" font-family="Arial" font-size="14" fill="#666">Choose your preferred seating option</text>
+    
+    <!-- Category 1: General Admission -->
+    <rect x="60" y="920" width="700" height="140" fill="#ffffff" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="80" y="955" font-family="Arial" font-size="20" font-weight="bold" fill="#333">General Admission</text>
+    <text x="680" y="955" font-family="Arial" font-size="24" font-weight="bold" fill="#7C5CFF" text-anchor="end">$50</text>
+    <text x="80" y="985" font-family="Arial" font-size="14" fill="#666">Standard entry with access to main stage area</text>
+    <text x="80" y="1010" font-family="Arial" font-size="14" fill="#28a745">✓ 500 seats available</text>
+    <rect x="580" y="1025" width="160" height="40" fill="#7C5CFF" rx="20"/>
+    <text x="660" y="1051" font-family="Arial" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">Select</text>
+    
+    <!-- Category 2: VIP -->
+    <rect x="60" y="1080" width="700" height="140" fill="#ffffff" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="80" y="1115" font-family="Arial" font-size="20" font-weight="bold" fill="#333">VIP Pass</text>
+    <text x="680" y="1115" font-family="Arial" font-size="24" font-weight="bold" fill="#7C5CFF" text-anchor="end">$150</text>
+    <text x="80" y="1145" font-family="Arial" font-size="14" fill="#666">Premium seating with backstage access and refreshments</text>
+    <text x="80" y="1170" font-family="Arial" font-size="14" fill="#28a745">✓ 100 seats available</text>
+    <rect x="580" y="1185" width="160" height="40" fill="#7C5CFF" rx="20"/>
+    <text x="660" y="1211" font-family="Arial" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">Select</text>
+    
+    <!-- Organizer Info -->
+    <text x="60" y="1300" font-family="Arial" font-size="28" font-weight="bold" fill="#333">Organizer Information</text>
+    <rect x="60" y="1330" width="700" height="120" fill="#ffffff" rx="8" stroke="#e0e0e0" stroke-width="1"/>
+    <circle cx="110" cy="1390" r="30" fill="#7C5CFF"/>
+    <text x="110" y="1400" font-family="Arial" font-size="24" font-weight="bold" fill="#ffffff" text-anchor="middle">JD</text>
+    <text x="160" y="1375" font-family="Arial" font-size="18" font-weight="bold" fill="#333">John Doe Events</text>
+    <text x="160" y="1400" font-family="Arial" font-size="14" fill="#666">Professional event organizer</text>
+    <text x="160" y="1425" font-family="Arial" font-size="14" fill="#666">📧 john@eventify.com</text>
+  </g>
+  
+  <!-- Right Column - Booking Summary -->
+  <g id="right-column">
+    <rect x="820" y="540" width="320" height="400" fill="#ffffff" rx="12" stroke="#7C5CFF" stroke-width="2"/>
+    <rect x="820" y="540" width="320" height="60" fill="rgba(124, 92, 255, 0.1)" rx="12"/>
+    <text x="980" y="578" font-family="Arial" font-size="24" font-weight="bold" fill="#333" text-anchor="middle">Booking</text>
+    
+    <!-- Event Summary -->
+    <rect x="840" y="620" width="280" height="100" fill="#f8f9fa" rx="8"/>
+    <rect x="850" y="630" width="80" height="80" fill="#e0e0e0" rx="4"/>
+    <text x="890" y="675" font-family="Arial" font-size="24" fill="#999" text-anchor="middle">🎵</text>
+    <text x="950" y="655" font-family="Arial" font-size="14" font-weight="bold" fill="#333">Summer Music Festival</text>
+    <text x="950" y="678" font-family="Arial" font-size="12" fill="#666">July 15, 2024</text>
+    <text x="950" y="698" font-family="Arial" font-size="12" fill="#666">Central Park</text>
+    
+    <!-- Price Info -->
+    <line x1="840" y1="740" x2="1120" y2="740" stroke="#e0e0e0" stroke-width="1"/>
+    <text x="860" y="770" font-family="Arial" font-size="14" fill="#666">From</text>
+    <text x="1100" y="800" font-family="Arial" font-size="32" font-weight="bold" fill="#7C5CFF" text-anchor="end">$50</text>
+    
+    <!-- Book Now Button -->
+    <rect x="860" y="840" width="240" height="60" fill="#7C5CFF" rx="30"/>
+    <text x="980" y="877" font-family="Arial" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">Book Now</text>
+    
+    <!-- Security Badge -->
+    <rect x="860" y="920" width="240" height="60" fill="rgba(0, 212, 255, 0.1)" rx="8"/>
+    <text x="980" y="945" font-family="Arial" font-size="24" fill="#00D4FF" text-anchor="middle">🔒</text>
+    <text x="980" y="965" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">Secure booking</text>
+  </g>
+  
+  <!-- Footer -->
+  <rect x="0" y="1550" width="1200" height="250" fill="#1a1a1a"/>
+  <text x="600" y="1630" font-family="Arial" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">Eventify</text>
+  <text x="600" y="1670" font-family="Arial" font-size="16" fill="#999" text-anchor="middle">Connecting people through amazing events</text>
+  <text x="600" y="1750" font-family="Arial" font-size="14" fill="#666" text-anchor="middle">© 2025 Eventify. All rights reserved.</text>
+</svg>
