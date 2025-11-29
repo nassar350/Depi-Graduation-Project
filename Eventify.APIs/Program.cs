@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("OnlineDbConnectionString");
 
-Env.Load();
+// Env.Load();
 
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
@@ -100,14 +100,14 @@ builder.Services.AddDbContext<EventifyContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-var stripeKey = builder.Configuration["STRIPE_SECRET_KEY"] ?? Environment.GetEnvironmentVariable("SecretKey");
-
-if (string.IsNullOrEmpty(stripeKey))
-{
-    throw new Exception("Stripe secret key is not configured in STRIPE_SECRET_KEY");
-}
-
-StripeConfiguration.ApiKey = stripeKey;
+// var stripeKey = builder.Configuration["STRIPE_SECRET_KEY"] ?? Environment.GetEnvironmentVariable("SecretKey");
+//
+// if (string.IsNullOrEmpty(stripeKey))
+// {
+//     throw new Exception("Stripe secret key is not configured in STRIPE_SECRET_KEY");
+// }
+//
+// StripeConfiguration.ApiKey = stripeKey;
 
 builder.Services.AddAutoMapperDependency();
 builder.Services.AddServiceLayer();
