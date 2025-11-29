@@ -50,7 +50,7 @@
   <text x="50" y="678" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#FFFFFF" opacity="0.7">⚙️ Settings</text>
   
   <rect x="20" y="710" width="240" height="48" rx="12" fill="transparent"/>
-  <text x="50" y="738" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#FFFFFF" opacity="0.7">❓ Help & Support</text>
+  <text x="50" y="738" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#FFFFFF" opacity="0.7">❓ Help &amp; Support</text>
   
   <!-- Logout -->
   <rect x="20" y="2680" width="240" height="48" rx="12" fill="transparent"/>
@@ -189,7 +189,7 @@
       <rect x="710" y="1110" width="280" height="180" rx="12" fill="#E5E7EB"/>
       <text x="850" y="1205" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280" text-anchor="middle">Event Image</text>
       
-      <text x="730" y="1325" font-family="'Segoe UI', Arial, sans-serif" font-size="18" fill="#1A1A2E" font-weight="bold">Food & Wine Expo</text>
+      <text x="730" y="1325" font-family="'Segoe UI', Arial, sans-serif" font-size="18" fill="#1A1A2E" font-weight="bold">Food &amp; Wine Expo</text>
       <text x="730" y="1350" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">May 22, 2024</text>
       <text x="730" y="1370" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Grand Hall, Alexandria</text>
       

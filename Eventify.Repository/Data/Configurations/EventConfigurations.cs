@@ -33,6 +33,11 @@ public class EventConfigurations : IEntityTypeConfiguration<Event>
         builder.Property(ev => ev.EndDate)
             .IsRequired() ;
 
+        builder.Property(p => p.EventCategory)
+                .HasMaxLength(50)
+                .IsRequired(true)
+                .HasConversion<string>();
+
         builder.Property(ev => ev.PhotoUrl)
        .HasColumnName("PhotoUrl")
        .HasMaxLength(1000)

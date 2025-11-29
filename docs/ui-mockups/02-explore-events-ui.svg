@@ -93,12 +93,12 @@
     
     <rect x="150" y="770" width="20" height="20" rx="4" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
     <text x="180" y="786" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">🎨</text>
-    <text x="210" y="786" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">Art & Culture</text>
+    <text x="210" y="786" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">Art &amp; Culture</text>
     <text x="370" y="786" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#9CA3AF" text-anchor="end">(32)</text>
     
     <rect x="150" y="800" width="20" height="20" rx="4" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
     <text x="180" y="816" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">🍔</text>
-    <text x="210" y="816" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">Food & Drink</text>
+    <text x="210" y="816" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">Food &amp; Drink</text>
     <text x="370" y="816" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#9CA3AF" text-anchor="end">(23)</text>
     
     <rect x="150" y="830" width="20" height="20" rx="4" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
@@ -184,7 +184,7 @@
     <rect x="880" y="460" width="110" height="32" rx="16" fill="#FF6B6B"/>
     <text x="935" y="482" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#FFFFFF" text-anchor="middle" font-weight="600">Almost Sold Out</text>
     
-    <text x="880" y="700" font-family="'Segoe UI', Arial, sans-serif" font-size="20" font-weight="bold" fill="#1A1A2E">AI & ML Conference</text>
+    <text x="880" y="700" font-family="'Segoe UI', Arial, sans-serif" font-size="20" font-weight="bold" fill="#1A1A2E">AI &amp; ML Conference</text>
     <text x="880" y="730" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280">📍 Smart Village</text>
     <text x="880" y="755" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280">📅 Dec 8, 2024 • 10:00 AM</text>
     <text x="880" y="780" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280">👥 300 attendees</text>

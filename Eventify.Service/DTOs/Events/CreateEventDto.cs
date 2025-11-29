@@ -1,4 +1,5 @@
-﻿using Eventify.Service.DTOs.Categories;
+﻿using Eventify.Core.Enums;
+using Eventify.Service.DTOs.Categories;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
@@ -24,8 +25,11 @@ namespace Eventify.Service.DTOs.Events
         [Required(ErrorMessage = "End date is required")]
         public DateTime EndDate { get; set; }
 
+        [Required(ErrorMessage = "Event category is required")]
+        public EventCategory EventCategory { get; set; }
+
         //remove orgainizer id as it will be taken from the logged in user
-       
+
         public IFormFile? Photo { get; set; }
 
         public string CategoriesJson { get; set; }
