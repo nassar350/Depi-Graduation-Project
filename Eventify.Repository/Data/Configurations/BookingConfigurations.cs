@@ -27,6 +27,11 @@ namespace Eventify.Repository.Data.Configurations
                 .IsRequired();
             builder.Property(p => p.TicketsNum).IsRequired();
 
+            builder.Property(p => p.CategoryName)
+                .IsRequired(true)
+                .HasColumnType("varchar")
+                .HasMaxLength(40);
+
             builder.HasMany(b => b.Tickets)
                 .WithOne(t => t.Booking)
                 .HasForeignKey(t => t.BookingId)

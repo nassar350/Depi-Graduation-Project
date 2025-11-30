@@ -26,7 +26,14 @@ namespace Eventify.Service.Services
             _configuration = configuration;
             _mapper = mapper;
 
-            StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
+            var stripeSecretKey = Environment.GetEnvironmentVariable("SecretKey");
+
+            if (string.IsNullOrEmpty(stripeSecretKey))
+                throw new Exception("Stripe Secret Key not set!");
+
+            StripeConfiguration.ApiKey = stripeSecretKey;
+
+            //StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
         }
 
         public async Task<IEnumerable<PaymentDto>> GetAllAsync()
@@ -64,11 +71,15 @@ namespace Eventify.Service.Services
             // 2️⃣ Save payment to database
             var payment = _mapper.Map<Payment>(dto);
             payment.StripePaymentIntentId = intent.Id;
+            payment.Status = PaymentStatus.Pending;
 
             await _paymentRepository.AddAsync(payment);
             await _paymentRepository.SaveChangesAsync();
 
-            return _mapper.Map<PaymentDto>(payment);
+            var response = _mapper.Map<PaymentDto>(payment);
+            response.StripeClientSecret = intent.ClientSecret;
+
+            return response;
         }
 
         public async Task<PaymentDto?> UpdateAsync(int bookingId, UpdatePaymentDto dto)

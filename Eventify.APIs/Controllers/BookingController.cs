@@ -1,12 +1,10 @@
 using Eventify.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc; 
+using Microsoft.AspNetCore.Mvc;
 using Eventify.Service.DTOs.Bookings;
-
-
-
-
-
+using Eventify.Service.DTOs.Auth;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Eventify.APIs.Controllers
 {
@@ -20,55 +18,173 @@ namespace Eventify.APIs.Controllers
         {
             _service = service;
         }
+
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var bookings = await _service.GetAllAsync();
-            if (bookings.Count() == 0) return NotFound($"There is No Booking");
-            return Ok(bookings);
+            
+            if (!bookings.Any())
+            {
+                return Ok(new ApiResponseDto<IEnumerable<BookingDto>>
+                {
+                    Success = false,
+                    Message = "No bookings found",
+                    Data = Enumerable.Empty<BookingDto>()
+                });
+            }
+
+            return Ok(new ApiResponseDto<IEnumerable<BookingDto>>
+            {
+                Success = true,
+                Message = "Bookings retrieved successfully",
+                Data = bookings
+            });
         }
-        
-        
-        
+
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetById(int id)
         {
             var booking = await _service.GetByIdAsync(id);
-            if (booking == null) return NotFound($"Booking with id {id} not found");
-            return Ok(booking);
+            
+            if (booking == null)
+            {
+                return NotFound(new ApiResponseDto<object>
+                {
+                    Success = false,
+                    Message = $"Booking with ID {id} not found"
+                });
+            }
+
+            return Ok(new ApiResponseDto<BookingDto>
+            {
+                Success = true,
+                Message = "Booking retrieved successfully",
+                Data = booking
+            });
         }
-        
+
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateBookingDto dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                              .Select(e => e.ErrorMessage)
+                                              .ToList();
+                return BadRequest(new ApiResponseDto<object>
+                {
+                    Success = false,
+                    Message = "Validation failed",
+                    Errors = errors
+                });
+            }
 
-            var created = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            try
+            {
+                var created = await _service.CreateAsync(dto);
+                
+                return CreatedAtAction(nameof(GetById), new { id = created.Id }, 
+                    new ApiResponseDto<BookingDto>
+                    {
+                        Success = true,
+                        Message = "Booking created successfully",
+                        Data = created
+                    });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponseDto<object>
+                {
+                    Success = false,
+                    Message = "An error occurred while creating the booking",
+                    Errors = new List<string> { ex.Message }
+                });
+            }
         }
-        
+
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateBookingDto dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                              .Select(e => e.ErrorMessage)
+                                              .ToList();
+                return BadRequest(new ApiResponseDto<object>
+                {
+                    Success = false,
+                    Message = "Validation failed",
+                    Errors = errors
+                });
+            }
 
-            var success = await _service.UpdateAsync(id, dto);
-            if (!success) return NotFound($"Booking with id {id} not found");
+            try
+            {
+                var success = await _service.UpdateAsync(id, dto);
+                
+                if (!success)
+                {
+                    return NotFound(new ApiResponseDto<object>
+                    {
+                        Success = false,
+                        Message = $"Booking with ID {id} not found"
+                    });
+                }
 
-            return NoContent();
+                return Ok(new ApiResponseDto<object>
+                {
+                    Success = true,
+                    Message = "Booking updated successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponseDto<object>
+                {
+                    Success = false,
+                    Message = "An error occurred while updating the booking",
+                    Errors = new List<string> { ex.Message }
+                });
+            }
         }
-        
+
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _service.DeleteAsync(id);
-            if (!success) return NotFound($"Booking with id {id} not found");
+            try
+            {
+                var success = await _service.DeleteAsync(id);
+                
+                if (!success)
+                {
+                    return NotFound(new ApiResponseDto<object>
+                    {
+                        Success = false,
+                        Message = $"Booking with ID {id} not found"
+                    });
+                }
 
-            return NoContent();
+                return Ok(new ApiResponseDto<object>
+                {
+                    Success = true,
+                    Message = "Booking deleted successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponseDto<object>
+                {
+                    Success = false,
+                    Message = "An error occurred while deleting the booking",
+                    Errors = new List<string> { ex.Message }
+                });
+            }
         }
-        
-        
     }
 }

@@ -1,8 +1,6 @@
-﻿using Eventify.API.Services.Auth;
-using Eventify.Service.DTOs.Users;
-using Eventify.Core.Entities;
-using Eventify.Core.Enums;
-using Microsoft.AspNetCore.Identity;
+﻿using Eventify.Service.DTOs.Users;
+using Eventify.Service.DTOs.Auth;
+using Eventify.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Eventify.API.Controllers
@@ -11,44 +9,78 @@ namespace Eventify.API.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
-        private readonly JwtTokenGenerator _jwt;
+        private readonly IAuthService _authService;
 
-        public AuthController(UserManager<User> userManager, JwtTokenGenerator jwt)
+        public AuthController(IAuthService authService)
         {
-            _userManager = userManager;
-            _jwt = jwt;
+            _authService = authService;
         }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
         {
-            var user = new User
+            if (!ModelState.IsValid)
             {
-                UserName = dto.Email,
-                Email = dto.Email,
-                Name = dto.Name,
-                PhoneNumber = dto.Phone,
-                Role = Role.User
-            };
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                              .Select(e => e.ErrorMessage)
+                                              .ToList();
+                return BadRequest(new ApiResponseDto<object>
+                {
+                    Success = false,
+                    Message = "Validation failed",
+                    Errors = errors
+                });
+            }
 
-            var result = await _userManager.CreateAsync(user, dto.Password);
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
+            var result = await _authService.RegisterAsync(dto);
+            
+            if (!result.Success)
+            {
+                var errorMessages = result.Errors.Select(e => e.Message).ToList();
+                return BadRequest(new ApiResponseDto<object>
+                {
+                    Success = false,
+                    Message = result.Errors.FirstOrDefault()?.Message ?? "Registration failed",
+                    Errors = errorMessages
+                });
+            }
 
-            return Ok("User registered successfully");
+            return Ok(new ApiResponseDto<UserInfoDto>
+            {
+                Success = true,
+                Message = "User registered successfully",
+                Data = result.Data
+            });
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
         {
-            var user = await _userManager.FindByEmailAsync(dto.Email);
-            if (user == null) return Unauthorized("Invalid email or password");
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                              .Select(e => e.ErrorMessage)
+                                              .ToList();
+                return BadRequest(new ApiResponseDto<object>
+                {
+                    Success = false,
+                    Message = "Validation failed",
+                    Errors = errors
+                });
+            }
 
-            var check = await _userManager.CheckPasswordAsync(user, dto.Password);
-            if (!check) return Unauthorized("Invalid email or password");
+            var result = await _authService.LoginAsync(dto);
+            
+            if (!result.Success)
+            {
+                return Unauthorized(new AuthResponseDto
+                {
+                    Success = false,
+                    Message = result.Errors.FirstOrDefault()?.Message ?? "Login failed"
+                });
+            }
 
-            var token = _jwt.GenerateToken(user);
-            return Ok(new { Token = token });
+            return Ok(result.Data);
         }
     }
 }

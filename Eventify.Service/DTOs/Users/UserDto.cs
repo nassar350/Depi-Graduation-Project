@@ -1,12 +1,13 @@
-﻿namespace Eventify.Service.DTOs.Users
+﻿using Eventify.Core.Enums;
+
+namespace Eventify.Service.DTOs.Users
 {
     public class UserDto
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public string Role { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
     }
 
 }

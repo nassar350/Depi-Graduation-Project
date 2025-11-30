@@ -33,9 +33,10 @@ public class EventConfigurations : IEntityTypeConfiguration<Event>
         builder.Property(ev => ev.EndDate)
             .IsRequired() ;
 
-        builder.Property(ev => ev.Photo)
-            .IsRequired(false);
-        
+        builder.Property(ev => ev.PhotoUrl)
+       .HasColumnName("PhotoUrl")
+       .HasMaxLength(1000)
+       .IsRequired(false);
 
         // Event => Categories (One TO Many)
         builder.HasMany(u => u.Categories)
@@ -47,5 +48,10 @@ public class EventConfigurations : IEntityTypeConfiguration<Event>
             .WithOne(ticket =>  ticket.Event)
             .HasForeignKey(ticket => ticket.EventId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasIndex(e => e.Name);
+        builder.HasIndex(e => e.StartDate);
+        builder.HasIndex(e => e.EndDate);
+        builder.HasIndex(e => new { e.Name, e.StartDate }); 
     }
 }

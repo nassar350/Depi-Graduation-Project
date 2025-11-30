@@ -30,6 +30,11 @@ namespace Eventify.Repository.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -67,6 +72,9 @@ namespace Eventify.Repository.Data.Migrations
 
                     b.Property<int>("Seats")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("TicketPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -109,15 +117,25 @@ namespace Eventify.Repository.Data.Migrations
                     b.Property<int>("OrganizerID")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("Photo")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("PhotoUrl");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EndDate");
+
+                    b.HasIndex("Name");
+
                     b.HasIndex("OrganizerID");
+
+                    b.HasIndex("StartDate");
+
+                    b.HasIndex("Name", "StartDate");
 
                     b.ToTable("Events", (string)null);
                 });
@@ -173,6 +191,9 @@ namespace Eventify.Repository.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(70)
                         .HasColumnType("varchar");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Type")
                         .IsRequired()

@@ -10,26 +10,35 @@ namespace Eventify.Service.Mappings
         public EventProfile()
         {
             CreateMap<CreateEventDto, Event>()
-                .ForMember(dest => dest.Photo,
-                    opt => opt.MapFrom(src => ConvertFormFileToByteArray(src.Photo))) // handle IFormFile -> byte[]
-                .ForMember(dest => dest.Categories, opt => opt.Ignore()) // map CategoryIds manually in service
+               .ForMember(dest => dest.PhotoUrl, opt => opt.Ignore())
+               .ForMember(dest => dest.Categories, opt => opt.Ignore()) // map CategoryIds manually in service
                 .ForMember(dest => dest.Organizer, opt => opt.Ignore())
                 .ForMember(dest => dest.EventsAttendedByUsers, opt => opt.Ignore())
                 .ForMember(dest => dest.Tickets, opt => opt.Ignore());
 
-            CreateMap<Event, EventDto>();
+            CreateMap<Event, EventDto>()
+                .ForMember(dest => dest.OrganizerName,
+                    opt => opt.MapFrom(src => src.Organizer != null ? src.Organizer.Name : "Unknown"))
+                .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.PhotoUrl ?? ""))
+                .ForMember(dest => dest.AvailableTickets,
+                    opt => opt.MapFrom(src => src.Tickets != null ? src.Tickets.Count(t => t.BookingId == null) : 0))
+                .ForMember(dest => dest.IsUpcoming,
+                    opt => opt.MapFrom(src => src.StartDate > DateTime.UtcNow))
+                .ForMember(dest => dest.Status,
+                    opt => opt.MapFrom(src => GetEventStatus(src.StartDate, src.EndDate)));
 
             CreateMap<Event, EventDetailsDto>()
                 .ForMember(dest => dest.Categories,
                     opt => opt.MapFrom(src => src.Categories))
                 .ForMember(dest => dest.Attendees,
                     opt => opt.MapFrom(src => src.EventsAttendedByUsers.Select(a => a.User)))
+                .ForMember(dest => dest.Tickets,
+                    opt => opt.MapFrom(src => src.Tickets))
                 .ForMember(dest => dest.Bookings,
                     opt => opt.Ignore());
 
             CreateMap<UpdateEventDto, Event>()
-                .ForMember(dest => dest.Photo,
-                    opt => opt.MapFrom(src => ConvertFormFileToByteArray(src.Photo)))
+               .ForMember(dest => dest.PhotoUrl, opt => opt.Ignore())
                 .ForAllMembers(opt =>
                     opt.Condition((src, dest, srcMember) => srcMember != null));
         }
@@ -40,6 +49,17 @@ namespace Eventify.Service.Mappings
             using var ms = new MemoryStream();
             file.CopyTo(ms);
             return ms.ToArray();
+        }
+
+        private static string GetEventStatus(DateTime startDate, DateTime endDate)
+        {
+            var now = DateTime.UtcNow;
+            if (now < startDate)
+                return "Upcoming";
+            else if (now >= startDate && now <= endDate)
+                return "Ongoing";
+            else
+                return "Completed";
         }
     }
 }
