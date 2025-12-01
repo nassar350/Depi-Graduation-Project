@@ -3,6 +3,7 @@ using Eventify.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Eventify.APIs.Controllers
 {
@@ -30,10 +31,28 @@ namespace Eventify.APIs.Controllers
             return Ok(result.Data);
         }
         [HttpGet("{id:int}")]
+        [Authorize]
         public async Task<IActionResult> GetUserById(int id)
         {
             var result = await _userService.GetByIdAsync(id);
 
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(error.Field, error.Message);
+            }
+            if (!result.Success)
+                return BadRequest(ModelState);
+            return Ok(result.Data);
+        }
+        [HttpGet("Current")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var CurrentUserID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (CurrentUserID == null)
+            {
+                return Unauthorized();
+            }
+            var result = await _userService.GetByIdAsync(int.Parse(CurrentUserID));
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(error.Field, error.Message);

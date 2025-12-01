@@ -87,8 +87,8 @@
             <p id="userEmail" class="text-muted" style="margin-bottom: var(--space-sm);">user@example.com</p>
             <div class="flex gap-lg" style="flex-wrap: wrap;">
               <div>
-                <span class="text-muted">Member since:</span>
-                <span id="memberSince">-</span>
+                <span class="text-muted">Phone:</span>
+                <span id="userPhone">-</span>
               </div>
               <div>
                 <span class="text-muted">Role:</span>
@@ -104,6 +104,10 @@
             <div class="text-center">
               <div style="font-size: var(--font-size-2xl); font-weight: 600; color: var(--accent-2);" id="ticketsBooked">0</div>
               <div style="font-size: var(--font-size-sm); color: var(--muted);">Tickets Booked</div>
+            </div>
+            <div class="text-center">
+              <div style="font-size: var(--font-size-2xl); font-weight: 600; color: #28a745;" id="totalRevenue">$0</div>
+              <div style="font-size: var(--font-size-sm); color: var(--muted);">Total Revenue</div>
             </div>
           </div>
         </div>
@@ -124,16 +128,8 @@
             data-tab="events"
             onclick="dashboardPage.switchTab('events')"
             id="myEventsTab"
-            style="display: none;"
           >
             📅 My Events
-          </button>
-          <button 
-            class="tab-btn" 
-            data-tab="bookmarks"
-            onclick="dashboardPage.switchTab('bookmarks')"
-          >
-            🔖 Bookmarks
           </button>
         </div>
       </div>
@@ -207,38 +203,7 @@
         </div>
       </div>
 
-      <!-- Bookmarks Tab -->
-      <div class="tab-content" data-tab="bookmarks" style="display: none;">
-        <div class="flex-between" style="margin-bottom: var(--space-lg); align-items: center;">
-          <h3>Bookmarked Events</h3>
-          <button 
-            class="btn btn-outline" 
-            onclick="dashboardPage.clearAllBookmarks()"
-            id="clearBookmarksBtn"
-          >
-            🗑️ Clear All
-          </button>
-        </div>
-        
-        <div id="bookmarksContainer">
-          <div id="bookmarksLoading" class="text-center">
-            <p class="text-muted">Loading your bookmarks...</p>
-          </div>
-          
-          <div id="bookmarksList" style="display: none;">
-            <!-- Bookmarks will be populated here -->
-          </div>
-          
-          <div id="noBookmarks" style="display: none;" class="text-center">
-            <div class="card" style="max-width: 400px; margin: 0 auto;">
-              <div style="font-size: 3rem; margin-bottom: var(--space-md);">🔖</div>
-              <h4>No Bookmarks</h4>
-              <p class="text-muted">You haven't bookmarked any events yet.</p>
-              <a href="explore.html" class="btn btn-primary">Explore Events</a>
-            </div>
-          </div>
-        </div>
-      </div>
+
     </div>
   </main>
 
@@ -378,14 +343,18 @@
         this.currentTab = 'bookings';
         this.bookings = [];
         this.userEvents = [];
-        this.bookmarks = [];
         
         this.init();
       }
 
-      init() {
-        // Check authentication
-        this.user = app.getCurrentUser();
+      async init() {
+        // Check authentication - first get fresh data from API
+        try {
+          this.user = await app.fetchCurrentUser();
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+        
         if (!this.user) {
           app.showNotification('Please log in to access your dashboard', 'warning');
           setTimeout(() => {
@@ -394,6 +363,9 @@
           return;
         }
 
+        // Wait a tick to ensure DOM is ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         this.loadUserProfile();
         this.loadUserData();
         this.setupEventHandlers();
@@ -401,28 +373,68 @@
       }
 
       loadUserProfile() {
-        if (!this.user) return;
+        if (!this.user) {
+          console.error('No user data available');
+          return;
+        }
 
-        // Update profile display
-        document.getElementById('userName').textContent = this.user.name;
-        document.getElementById('userEmail').textContent = this.user.email;
-        document.getElementById('userAvatar').src = this.user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(this.user.name)}&background=7c5cff&color=ffffff&size=200`;
-        
-        // Format join date
-        const joinDate = new Date(this.user.joinDate || Date.now());
-        document.getElementById('memberSince').textContent = joinDate.toLocaleDateString('en-US', { 
-          month: 'long', 
-          year: 'numeric' 
-        });
+        console.log('Loading user profile with data:', this.user);
 
-        // Set role
-        const roleElement = document.getElementById('userRole');
-        roleElement.textContent = this.user.role === 'organizer' ? 'Event Organizer' : 'Event Attendee';
-        
-        // Show organizer-specific elements
-        if (this.user.role === 'organizer' || this.user.userType === 'both' || this.user.userType === 'organizer') {
-          document.getElementById('myEventsTab').style.display = 'block';
-          document.getElementById('createEventBtn').style.display = 'inline-flex';
+        try {
+          // Update profile display
+          const userNameElement = document.getElementById('userName');
+          const userEmailElement = document.getElementById('userEmail');
+          const userAvatarElement = document.getElementById('userAvatar');
+          const userPhoneElement = document.getElementById('userPhone');
+          const roleElement = document.getElementById('userRole');
+
+          console.log('Found elements:', {
+            userName: !!userNameElement,
+            userEmail: !!userEmailElement,
+            userAvatar: !!userAvatarElement,
+            userPhone: !!userPhoneElement,
+            userRole: !!roleElement
+          });
+
+          if (userNameElement) {
+            userNameElement.textContent = this.user.name || 'User Name';
+            userNameElement.innerHTML = this.user.name || 'User Name';
+            console.log('Set userName to:', this.user.name);
+            console.log('userName element now contains:', userNameElement.textContent);
+          }
+          
+          if (userEmailElement) {
+            userEmailElement.textContent = this.user.email || 'user@example.com';
+            userEmailElement.innerHTML = this.user.email || 'user@example.com';
+            console.log('Set userEmail to:', this.user.email);
+            console.log('userEmail element now contains:', userEmailElement.textContent);
+          }
+          
+          if (userAvatarElement) {
+            userAvatarElement.src = this.user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(this.user.name || 'User')}&background=7c5cff&color=ffffff&size=200`;
+          }
+          
+          // Set phone number from API
+          if (userPhoneElement) {
+            userPhoneElement.textContent = this.user.phone || this.user.phoneNumber || '-';
+            console.log('Set userPhone to:', this.user.phone || this.user.phoneNumber);
+          }
+
+          // Set role - display the actual role from API
+          if (roleElement) {
+            roleElement.textContent = this.user.role || 'User';
+            console.log('Set userRole to:', roleElement.textContent);
+          }
+          
+          // Show organizer-specific elements
+          if (this.user.role === 'organizer' || this.user.userType === 'both' || this.user.userType === 'organizer') {
+            const myEventsTab = document.getElementById('myEventsTab');
+            const createEventBtn = document.getElementById('createEventBtn');
+            if (myEventsTab) myEventsTab.style.display = 'block';
+            if (createEventBtn) createEventBtn.style.display = 'inline-flex';
+          }
+        } catch (error) {
+          console.error('Error loading user profile:', error);
         }
       }
 
@@ -431,16 +443,10 @@
           // Load bookings
           await this.loadBookings();
           
-          // Load user events (if organizer)
-          if (this.user.role === 'organizer' || this.user.userType === 'both' || this.user.userType === 'organizer') {
-            await this.loadUserEvents();
-          }
+          // Don't load user events automatically - they will load when tab is clicked
           
-          // Load bookmarks
-          await this.loadBookmarks();
-          
-          // Update statistics
-          this.updateStatistics();
+          // Update statistics (needs events count, so fetch count from API)
+          await this.updateStatistics();
           
         } catch (error) {
           console.error('Error loading user data:', error);
@@ -449,8 +455,90 @@
       }
 
       async loadBookings() {
+        // Show loading state
+        document.getElementById('bookingsLoading').style.display = 'block';
+        document.getElementById('bookingsList').style.display = 'none';
+
+        // TODO: Replace with actual API call when endpoint is ready
+        // For now, use mock data for frontend testing
+        setTimeout(() => {
+          // Mock data - will be replaced with API response
+          this.bookings = [
+            {
+              id: 'BK001',
+              eventTitle: 'Jazz Night Live',
+              eventDate: '2025-12-15',
+              eventTime: '20:00',
+              eventLocation: 'Blue Note Jazz Club',
+              eventImage: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=400',
+              tickets: 2,
+              total: 120,
+              status: 'confirmed',
+              bookingDate: '2025-11-28T10:30:00',
+              attendeeInfo: {
+                name: this.user.name,
+                email: this.user.email
+              }
+            },
+            {
+              id: 'BK002',
+              eventTitle: 'Food & Wine Festival',
+              eventDate: '2025-12-20',
+              eventTime: '18:00',
+              eventLocation: 'Downtown Convention Center',
+              eventImage: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400',
+              tickets: 4,
+              total: 280,
+              status: 'confirmed',
+              bookingDate: '2025-11-25T14:15:00',
+              attendeeInfo: {
+                name: this.user.name,
+                email: this.user.email
+              }
+            },
+            {
+              id: 'BK003',
+              eventTitle: 'Comedy Show: Stand-Up Special',
+              eventDate: '2025-11-30',
+              eventTime: '21:00',
+              eventLocation: 'Comedy Club Main Stage',
+              eventImage: 'https://images.unsplash.com/photo-1527224538127-2104bb29aedb?w=400',
+              tickets: 2,
+              total: 80,
+              status: 'completed',
+              bookingDate: '2025-11-10T09:45:00',
+              attendeeInfo: {
+                name: this.user.name,
+                email: this.user.email
+              }
+            },
+            {
+              id: 'BK004',
+              eventTitle: 'Yoga & Meditation Retreat',
+              eventDate: '2026-01-05',
+              eventTime: '08:00',
+              eventLocation: 'Serenity Wellness Center',
+              eventImage: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
+              tickets: 1,
+              total: 0,
+              status: 'confirmed',
+              bookingDate: '2025-11-20T16:20:00',
+              attendeeInfo: {
+                name: this.user.name,
+                email: this.user.email
+              }
+            }
+          ];
+          
+          this.displayBookings();
+          
+          document.getElementById('bookingsLoading').style.display = 'none';
+          document.getElementById('bookingsList').style.display = 'block';
+        }, 500);
+
+        /*
+        // UNCOMMENT THIS WHEN API IS READY:
         const allBookings = JSON.parse(localStorage.getItem('eventify_bookings') || '[]');
-        // Filter bookings for current user (in a real app, this would be server-side)
         this.bookings = allBookings.filter(booking => 
           booking.attendeeInfo.email === this.user.email
         );
@@ -461,13 +549,88 @@
           document.getElementById('bookingsLoading').style.display = 'none';
           document.getElementById('bookingsList').style.display = 'block';
         }, 500);
+        */
       }
 
       async loadUserEvents() {
-        // In a real app, this would filter by organizer ID
-        // For demo, we'll show events created by user (stored in localStorage)
-        const customEvents = JSON.parse(localStorage.getItem('customEvents') || '[]');
-        this.userEvents = customEvents; // In real app: filter by organizerId
+        const token = localStorage.getItem('eventify_token');
+        if (!token) {
+          this.userEvents = [];
+          this.displayUserEvents();
+          return;
+        }
+
+        // Show loading state
+        document.getElementById('eventsLoading').style.display = 'block';
+        document.getElementById('eventsList').style.display = 'none';
+
+        // TODO: Replace with actual API call when endpoint is ready
+        // For now, use mock data for frontend testing
+        setTimeout(() => {
+          // Mock data - will be replaced with API response
+          this.userEvents = [
+            {
+              id: 1,
+              title: "Summer Music Festival 2025",
+              eventDate: "2025-07-15T18:00:00",
+              location: "Central Park, New York",
+              photoUrl: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400",
+              capacity: 5000,
+              availableSeats: 3200,
+              price: 75
+            },
+            {
+              id: 2,
+              title: "Tech Conference 2025",
+              eventDate: "2025-09-20T09:00:00",
+              location: "Convention Center",
+              photoUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400",
+              capacity: 1000,
+              availableSeats: 450,
+              price: 199
+            },
+            {
+              id: 3,
+              title: "Art Gallery Opening",
+              eventDate: "2025-06-10T19:00:00",
+              location: "Modern Art Museum",
+              photoUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400",
+              capacity: 200,
+              availableSeats: 85,
+              price: 0
+            }
+          ];
+
+          this.displayUserEvents();
+          
+          document.getElementById('eventsLoading').style.display = 'none';
+          document.getElementById('eventsList').style.display = 'block';
+        }, 500);
+
+        /* 
+        // UNCOMMENT THIS WHEN API IS READY:
+        try {
+          const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+          const response = await fetch(`${baseUrl}/api/events/user`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const events = await response.json();
+            this.userEvents = events || [];
+            console.log('Loaded user events from API:', this.userEvents);
+          } else {
+            console.error('Failed to fetch user events:', response.status);
+            this.userEvents = [];
+          }
+        } catch (error) {
+          console.error('Error fetching user events:', error);
+          this.userEvents = [];
+        }
         
         this.displayUserEvents();
         
@@ -475,21 +638,85 @@
           document.getElementById('eventsLoading').style.display = 'none';
           document.getElementById('eventsList').style.display = 'block';
         }, 500);
+        */
       }
 
-      async loadBookmarks() {
-        this.bookmarks = JSON.parse(localStorage.getItem('eventify_bookmarks') || '[]');
-        this.displayBookmarks();
+      async updateStatistics() {
+        // Fetch events count from API
+        await this.fetchEventsCount();
         
-        setTimeout(() => {
-          document.getElementById('bookmarksLoading').style.display = 'none';
-          document.getElementById('bookmarksList').style.display = 'block';
-        }, 500);
+        document.getElementById('ticketsBooked').textContent = this.bookings.reduce((total, booking) => total + booking.tickets, 0);
+        
+        // Fetch total revenue from API
+        await this.fetchTotalRevenue();
       }
 
-      updateStatistics() {
-        document.getElementById('eventsCreated').textContent = this.userEvents.length;
-        document.getElementById('ticketsBooked').textContent = this.bookings.reduce((total, booking) => total + booking.tickets, 0);
+      async fetchEventsCount() {
+        const token = localStorage.getItem('eventify_token');
+        if (!token) {
+          document.getElementById('eventsCreated').textContent = '0';
+          return;
+        }
+
+        // TODO: Replace with actual API call when endpoint is ready
+        // For now, use mock count
+        document.getElementById('eventsCreated').textContent = '3';
+
+        /* 
+        // UNCOMMENT THIS WHEN API IS READY:
+        try {
+          const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+          const response = await fetch(`${baseUrl}/api/events/user/count`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            document.getElementById('eventsCreated').textContent = data.count || data.total || 0;
+          } else {
+            document.getElementById('eventsCreated').textContent = this.userEvents.length;
+          }
+        } catch (error) {
+          console.error('Error fetching events count:', error);
+          document.getElementById('eventsCreated').textContent = this.userEvents.length;
+        }
+        */
+      }
+
+      async fetchTotalRevenue() {
+        const token = localStorage.getItem('eventify_token');
+        if (!token) return;
+
+        try {
+          const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+          const response = await fetch(`${baseUrl}/api/user/revenue`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const revenueElement = document.getElementById('totalRevenue');
+            if (revenueElement) {
+              // Format revenue as currency
+              const revenue = data.totalRevenue || data.revenue || 0;
+              revenueElement.textContent = `$${revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            }
+          } else {
+            console.error('Failed to fetch revenue:', response.status);
+            document.getElementById('totalRevenue').textContent = '$0.00';
+          }
+        } catch (error) {
+          console.error('Error fetching total revenue:', error);
+          document.getElementById('totalRevenue').textContent = '$0.00';
+        }
       }
 
       displayBookings() {
@@ -573,30 +800,49 @@
       }
 
       createEventCard(event) {
-        const eventDate = new Date(event.date + 'T' + event.time);
+        // Parse date - handle both formats
+        let eventDate;
+        if (event.eventDate) {
+          eventDate = new Date(event.eventDate);
+        } else if (event.date) {
+          eventDate = new Date(event.date + (event.time ? 'T' + event.time : ''));
+        } else {
+          eventDate = new Date();
+        }
+        
         const isPastEvent = eventDate < new Date();
-        const formattedDate = EventifyData.formatDate(event.date);
-        const formattedTime = EventifyData.formatTime(event.time);
+        const formattedDate = eventDate.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+        const formattedTime = eventDate.toLocaleTimeString('en-US', { 
+          hour: 'numeric', 
+          minute: '2-digit' 
+        });
+
+        // Use photoUrl from API or fallback to image property
+        const imageUrl = event.photoUrl || event.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=160&h=160&fit=crop';
 
         return `
           <div class="card" style="margin-bottom: var(--space-md);">
             <div class="flex gap-lg" style="align-items: center; flex-wrap: wrap;">
               <img 
-                src="${event.image}" 
-                alt="${event.title}"
+                src="${imageUrl}" 
+                alt="${event.title || event.eventName || 'Event'}"
                 style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md);"
                 onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=160&h=160&fit=crop'"
               >
               
               <div style="flex: 1; min-width: 200px;">
-                <h4 style="margin-bottom: var(--space-xs);">${event.title}</h4>
+                <h4 style="margin-bottom: var(--space-xs);">${event.title || event.eventName || 'Untitled Event'}</h4>
                 <p style="margin-bottom: var(--space-sm); color: var(--muted);">
                   📅 ${formattedDate} at ${formattedTime}<br>
-                  📍 ${event.location}
+                  📍 ${event.location || event.venue || 'TBA'}
                 </p>
                 <div class="flex gap-sm" style="align-items: center;">
-                  <span class="event-tag">${event.capacity} capacity</span>
-                  <span class="event-tag">${event.ticketsAvailable || 0} available</span>
+                  <span class="event-tag">${event.capacity || 0} capacity</span>
+                  <span class="event-tag">${event.availableSeats || event.ticketsAvailable || 0} available</span>
                   <span class="event-tag" style="background: ${isPastEvent ? 'var(--muted)' : 'var(--success)'}; color: white;">
                     ${isPastEvent ? 'Past' : 'Upcoming'}
                   </span>
@@ -605,89 +851,19 @@
               
               <div style="text-align: right;">
                 <div style="font-weight: 600; margin-bottom: var(--space-sm); color: var(--accent);">
-                  ${event.price === 0 ? 'Free' : app.formatCurrency(event.price)}
+                  ${event.price === 0 || !event.price ? 'Free' : '$' + (event.price || 0).toFixed(2)}
                 </div>
                 <div class="flex gap-sm">
+                  ${!isPastEvent ? `
                   <button 
                     class="btn btn-sm btn-outline" 
-                    onclick="dashboardPage.editEvent(${event.id})"
+                    onclick="dashboardPage.editEvent(${event.id || event.eventId})"
                   >
                     ✏️ Edit
                   </button>
+                  ` : ''}
                   <a 
-                    href="event.html?id=${event.id}" 
-                    class="btn btn-sm btn-primary"
-                  >
-                    View Event
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      displayBookmarks() {
-        const container = document.getElementById('bookmarksList');
-        const noBookmarks = document.getElementById('noBookmarks');
-        
-        if (this.bookmarks.length === 0) {
-          container.style.display = 'none';
-          noBookmarks.style.display = 'block';
-          return;
-        }
-
-        // Get full event data for bookmarks
-        const bookmarkEvents = this.bookmarks.map(bookmark => {
-          const event = EventifyData.getEventById(bookmark.id);
-          return event ? { ...event, bookmarkedAt: bookmark.bookmarkedAt } : null;
-        }).filter(Boolean);
-
-        container.innerHTML = bookmarkEvents.map(event => this.createBookmarkCard(event)).join('');
-        container.style.display = 'block';
-        noBookmarks.style.display = 'none';
-      }
-
-      createBookmarkCard(event) {
-        const formattedDate = EventifyData.formatDate(event.date);
-        const formattedTime = EventifyData.formatTime(event.time);
-
-        return `
-          <div class="card" style="margin-bottom: var(--space-md);">
-            <div class="flex gap-lg" style="align-items: center; flex-wrap: wrap;">
-              <img 
-                src="${event.image}" 
-                alt="${event.title}"
-                style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md);"
-                onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=160&h=160&fit=crop'"
-              >
-              
-              <div style="flex: 1; min-width: 200px;">
-                <h4 style="margin-bottom: var(--space-xs);">${event.title}</h4>
-                <p style="margin-bottom: var(--space-sm); color: var(--muted);">
-                  📅 ${formattedDate} at ${formattedTime}<br>
-                  📍 ${event.location}
-                </p>
-                <div class="flex gap-sm" style="align-items: center;">
-                  <span class="event-tag">${event.category}</span>
-                  <span class="event-tag">${event.price === 0 ? 'Free' : app.formatCurrency(event.price)}</span>
-                </div>
-              </div>
-              
-              <div style="text-align: right;">
-                <div style="font-size: var(--font-size-sm); color: var(--muted); margin-bottom: var(--space-md);">
-                  Bookmarked: ${new Date(event.bookmarkedAt).toLocaleDateString()}
-                </div>
-                <div class="flex gap-sm">
-                  <button 
-                    class="btn btn-sm btn-outline" 
-                    onclick="dashboardPage.removeBookmark(${event.id})"
-                    style="color: var(--danger);"
-                  >
-                    🗑️ Remove
-                  </button>
-                  <a 
-                    href="event.html?id=${event.id}" 
+                    href="event.html?id=${event.id || event.eventId}" 
                     class="btn btn-sm btn-primary"
                   >
                     View Event
@@ -713,9 +889,9 @@
           content.style.display = content.dataset.tab === tabName ? 'block' : 'none';
         });
         
-        // Load data if needed
-        if (tabName === 'bookmarks' && this.bookmarks.length === 0) {
-          this.loadBookmarks();
+        // Load data when switching to events tab
+        if (tabName === 'events' && this.userEvents.length === 0) {
+          this.loadUserEvents();
         }
       }
 
@@ -853,56 +1029,16 @@
         app.showNotification('Profile updated successfully!', 'success');
       }
 
-      // Bookmark management
-      removeBookmark(eventId) {
-        const bookmarks = JSON.parse(localStorage.getItem('eventify_bookmarks') || '[]');
-        const updatedBookmarks = bookmarks.filter(bookmark => bookmark.id !== eventId);
-        localStorage.setItem('eventify_bookmarks', JSON.stringify(updatedBookmarks));
-        
-        this.bookmarks = updatedBookmarks;
-        this.displayBookmarks();
-        
-        app.showNotification('Bookmark removed', 'info');
-      }
-
-      clearAllBookmarks() {
-        if (confirm('Are you sure you want to clear all bookmarks?')) {
-          localStorage.removeItem('eventify_bookmarks');
-          this.bookmarks = [];
-          this.displayBookmarks();
-          
-          app.showNotification('All bookmarks cleared', 'info');
-        }
-      }
-
       // Booking details
       viewBookingDetails(bookingId) {
-        const booking = this.bookings.find(b => b.id === bookingId);
-        if (!booking) return;
-
-        const details = `
-Booking Details:
-================
-
-Booking ID: ${booking.id}
-Event: ${booking.eventTitle}
-Date: ${EventifyData.formatDate(booking.eventDate)}
-Time: ${EventifyData.formatTime(booking.eventTime)}
-Location: ${booking.eventLocation}
-Tickets: ${booking.tickets}
-Total: ${booking.total === 0 ? 'Free' : app.formatCurrency(booking.total)}
-Status: ${booking.status}
-
-Booked on: ${new Date(booking.bookingDate).toLocaleDateString()}
-        `;
-
-        alert(details); // In a real app, this would be a proper modal
+        // Redirect to booking details page
+        window.location.href = `booking-details.html?id=${bookingId}`;
       }
 
-      // Event editing (placeholder)
+      // Event editing
       editEvent(eventId) {
-        app.showNotification('Event editing coming soon!', 'info');
-        // In a real app, this would redirect to an edit form
+        // Redirect to edit event page
+        window.location.href = `edit-event.html?id=${eventId}`;
       }
     }
 

@@ -4,7 +4,7 @@
 class AuthPage {
   constructor() {
     this.currentPage = this.getCurrentPage();
-    this.apiBaseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
+    this.apiBaseUrl = window.API_BASE_URL || 'https://localhost:7105';
     this.init();
   }
 
