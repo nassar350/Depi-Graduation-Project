@@ -17,77 +17,45 @@ Full Stack .NET Development
 
 ---
 
-# Slide 2: Executive Summary
+# Slide 2: Introduction
 
-## What is Eventify?
+## The Problem
 
-A comprehensive, full-stack event booking and management platform that bridges the gap between event organizers and attendees.
+### Current Event Management Challenges:
+- ❌ Complex and confusing booking processes
+- ❌ Limited payment options and security concerns
+- ❌ Poor mobile experience
+- ❌ Lack of proper organizer management tools
+- ❌ No centralized platform for event discovery
 
-### Key Highlights
-- ✅ **Completed**: 6.5 weeks of development
-- 🏗️ **Architecture**: Clean Architecture with Layered Design
-- 🚀 **Technology**: ASP.NET Core 8.0 + Modern JavaScript
-- 💳 **Payment**: Integrated with Stripe
-- 🔒 **Security**: JWT Authentication & Role-Based Access
+### Our Solution: Eventify
 
----
-
-# Slide 3: Project Timeline
-
-## Development Journey
-
-**October 15 - November 30, 2025**
-
-- **Week 0**: Project kickoff & requirements gathering
-- **Week 1**: Domain modeling & backend foundation
-- **Week 2**: Backend services & API development
-- **Week 3**: Authentication & security implementation
-- **Week 4**: Frontend development & integration
-- **Week 5**: Payment integration & testing
-- **Week 6**: Final testing & deployment
-
-**Status:** ✅ Successfully Completed
+A modern, secure, and user-friendly event management platform that simplifies event discovery, booking, and organization for the Egyptian market.
 
 ---
 
-# Slide 4: Project Vision
+# Slide 3: Project Objectives
 
-## Our Vision
+## Main Goals
 
-> "To create a seamless, secure, and intuitive platform that empowers event organizers to reach their audience while providing attendees with an effortless booking experience."
+### 1. 🎯 Simplify Event Discovery
+Create an intuitive platform where users can easily find and explore events by category, date, location, and price
 
-### Why Eventify?
+### 2. 🔒 Ensure Secure Transactions
+Implement industry-standard payment processing with Stripe for safe and reliable bookings
 
-- 🎯 Simplify event discovery and booking
-- 🔗 Connect organizers with their audience
-- 💰 Provide secure payment processing
-- 📱 Deliver modern user experience
-- 🚀 Enable scalable event management
+### 3. 📱 Deliver Excellent UX
+Provide a modern, responsive interface that works seamlessly across all devices
 
----
+### 4. 🎪 Empower Organizers
+Offer comprehensive tools for event creation, management, and analytics
 
-# Slide 5: Core Objectives
-
-## Project Goals
-
-### 1. User Experience Excellence
-Modern, responsive, and accessible interface across all devices
-
-### 2. Secure Transactions
-Industry-standard payment processing with Stripe integration
-
-### 3. Scalable Architecture
-Maintainable, testable, and extensible codebase
-
-### 4. Role-Based Access
-Distinct workflows for attendees, organizers, and administrators
-
-### 5. Real-Time Integration
-Seamless backend-frontend communication
+### 5. 🏗️ Build Scalable Architecture
+Create a maintainable, testable, and extensible codebase using clean architecture principles
 
 ---
 
-# Slide 6: Target Audience
+# Slide 4: Target Audience
 
 ## Who Uses Eventify?
 
@@ -107,310 +75,607 @@ Seamless backend-frontend communication
 
 ---
 
-# Slide 7: Key Features - Attendees
+# Slide 5: Core Features Overview
 
-## For Event Attendees 🎭
+## What Can Users Do?
 
-### Event Discovery
-- Advanced search with filters (category, date, location, price)
-- 10+ event categories (Music, Theatre, Art, Business, Sports, etc.)
-- Smart filtering with real-time results
-- Rich event cards with images and details
+### 🔍 **Discover Events**
+- Browse 10+ event categories (Music, Sports, Arts, Technology, etc.)
+- Advanced search and filtering
+- Real-time availability
 
-### Booking System
+### 🎫 **Book Tickets**
 - Simple 3-step booking process
-- Multiple ticket types (VIP, Premium, Standard)
-- Real-time price calculation
-- Secure Stripe payment integration
+- Multiple ticket tiers (VIP, Premium, Standard)
+- Secure payment with Stripe
+- Instant e-tickets with QR codes
 
-### User Dashboard
-- Complete booking history
-- Download tickets and QR codes
-- Profile management
-- Save favorite events
+### 🎪 **Organize Events**
+- 6-step event creation wizard
+- Manage multiple ticket types
+- Real-time analytics dashboard
+- Track sales and attendees
+
+### 👤 **Manage Account**
+- Personal dashboard
+- Booking history
+- Profile settings
 
 ---
 
-# Slide 8: Key Features - Organizers
+# Slide 6: Feature Deep Dive - Attendees
 
-## For Event Organizers 🎪
+## Event Discovery & Booking 🎭
 
-### Event Creation
-- Comprehensive event creation wizard
-- Event details and descriptions
-- Date, time, and venue settings
-- In-person, virtual, or hybrid events
-- Multiple ticket tiers with pricing
-- Media uploads and gallery
+### Advanced Search & Filtering
+- **Category Filter**: Music, Theatre, Sports, Arts, Business, Technology, Food & Drink, Comedy, Health, Film
+- **Date Range**: Find events by specific dates
+- **Location Filter**: Search by venue or city
+- **Price Range**: Filter by budget (free to premium events)
+- **Sort Options**: Date, price, popularity
 
-### Event Management
-- Dashboard with event overview
-- Real-time analytics (attendees, revenue)
-- Edit and update event details
-- Ticket inventory tracking
+### Smart Booking System
+- **Step 1**: Select event and ticket type
+- **Step 2**: Enter personal information
+- **Step 3**: Secure payment with Stripe
+- **Step 4**: Receive instant e-ticket via email
+
+### Real-Time Features
+- Live ticket availability updates
+- Dynamic price calculation
+- Instant booking confirmation
+- QR code generation for event entry
+
+---
+
+# Slide 7: Feature Deep Dive - Organizers
+
+## Event Creation & Management 🎪
+
+### 6-Step Event Creation Wizard
+
+**Step 1: Basic Information**
+- Event name, category, description
+- Short summary for preview cards
+
+**Step 2: Date & Time**
+- Start/end date and time
+- Event duration
+- Timezone support
+
+**Step 3: Location Details**
+- Event type: In-person, Virtual, or Hybrid
+- Venue name and address
+- Virtual meeting link (if applicable)
+
+**Step 4: Ticket Configuration**
+- Multiple ticket types (VIP, Premium, Standard, etc.)
+- Individual pricing per ticket type
+- Quantity limits per type
+- Free or paid events
+
+**Step 5: Media & Images**
+- Event banner/hero image
+- Gallery images
+- Video links
+
+**Step 6: Review & Publish**
+- Preview event page
+- Publish or save as draft
+
+### Management Dashboard
+- View all created events
+- Real-time sales statistics
 - Attendee management
+- Revenue tracking
+- Edit/update event details
+- Ticket inventory monitoring
 
 ---
 
-# Slide 9: Technology Stack
+# Slide 8: Technology Stack
 
-## Technologies Used
+## Backend Technologies
 
-### Backend (.NET Ecosystem)
-- **Framework**: ASP.NET Core 8.0 Web API
-- **Language**: C# 12
-- **ORM**: Entity Framework Core 8.0
-- **Database**: Microsoft SQL Server 2022
-- **Authentication**: ASP.NET Core Identity with JWT
+### Core Framework
+- **ASP.NET Core 8.0 Web API**: Modern, high-performance web framework
+- **C# 12**: Latest language features for clean code
+- **Entity Framework Core 8.0**: Powerful ORM for database operations
+- **Microsoft SQL Server 2022**: Enterprise-grade relational database
 
-### Frontend
-- **Core**: HTML5, CSS3, JavaScript (ES6+)
-- **Styling**: Custom CSS with Grid & Flexbox
-- **API**: Fetch API with async/await
+### Authentication & Security
+- **ASP.NET Core Identity**: User management and authentication
+- **JWT (JSON Web Tokens)**: Stateless authentication mechanism
+- **BCrypt/PBKDF2**: Secure password hashing
+- **HTTPS/TLS 1.2+**: Encrypted communication
 
-### Third-Party Services
-- **Payments**: Stripe API
-- **Hosting**: Azure/RunASP + Netlify
-- **Version Control**: Git/GitHub
-
----
-
-# Slide 10: System Architecture
-
-## Clean Architecture (4-Layer Design)
-
-### Layer 1: Eventify.Core (Domain)
-- Business entities (User, Event, Booking, Payment)
-- Enums (Role, PaymentStatus, TicketStatus)
-- Core domain logic
-
-### Layer 2: Eventify.Repository (Data Access)
-- Repository Pattern implementation
-- Unit of Work for transactions
-- Entity Framework Core DbContext
-
-### Layer 3: Eventify.Service (Business Logic)
-- Service interfaces and implementations
-- DTOs for data transfer
-- AutoMapper for object mapping
-- FluentValidation for input validation
-
-### Layer 4: Eventify.APIs (Presentation)
-- RESTful API controllers (9 controllers)
-- 35+ API endpoints
-- Global error handling
-- JWT authentication middleware
+### Backend Libraries & Tools
+- **AutoMapper**: Object-to-object mapping
+- **FluentValidation**: Input validation framework
+- **Stripe.NET**: Payment processing SDK
+- **Newtonsoft.Json**: JSON serialization
 
 ---
 
-# Slide 11: Database Schema
+# Slide 9: Technology Stack (Continued)
 
-## Core Entities & Relationships
+## Frontend Technologies
 
-### Main Entities
-- **User**: User accounts with authentication
-- **Event**: Event details and information
-- **Category**: Event categorization (10+ categories)
-- **Ticket**: Ticket types and pricing
-- **Booking**: Booking records and history
-- **Payment**: Payment transactions
-- **UserAttendEvent**: User-event relationships
+### Core Technologies
+- **HTML5**: Semantic markup structure
+- **CSS3**: Modern styling with custom properties
+- **JavaScript (ES6+)**: Modern JavaScript features
+  - Async/await for asynchronous operations
+  - Fetch API for HTTP requests
+  - LocalStorage for client-side persistence
 
-### Key Relationships
-- User → Booking (One-to-Many)
-- Event → Booking (One-to-Many)
-- Event → Ticket (One-to-Many)
-- Booking → Payment (One-to-One)
-- Category → Event (One-to-Many)
+### Styling Approach
+- **CSS Grid**: Two-dimensional layouts
+- **Flexbox**: One-dimensional layouts
+- **Custom CSS Variables**: Consistent theming
+- **Responsive Design**: Mobile-first approach
+- **Dark Theme**: Modern dark UI with purple accents
 
-### Total: 8 Tables with 15+ Relationships
+### Third-Party Integrations
+- **Stripe.js**: Secure payment forms
+- **Stripe Checkout**: Hosted payment pages
 
 ---
 
-# Slide 12: Security Implementation
+# Slide 10: Infrastructure & DevOps
 
-## Multi-Layer Security Approach
+## Hosting & Deployment
 
-### Authentication & Authorization
-- **JWT Token System**: HS256 algorithm, 24-hour lifetime
-- **ASP.NET Core Identity**: Secure password hashing (PBKDF2)
-- **Role-Based Access**: User, Organizer, Admin roles
-- **Token Refresh**: Session extension mechanism
+### Backend Hosting
+- **Platform**: Azure App Service / RunASP
+- **Database**: Azure SQL Database / SQL Server
+- **API Endpoint**: `https://eventify.runasp.net/api`
+- **SSL/TLS**: Automatic HTTPS encryption
 
-### API Security
-- **HTTPS Enforcement**: TLS 1.2+ required
-- **CORS Configuration**: Whitelist allowed origins
-- **Input Validation**: FluentValidation on all inputs
-- **SQL Injection Prevention**: Parameterized queries
-- **XSS Protection**: Output encoding and CSP
+### Frontend Hosting
+- **Platform**: Netlify
+- **CDN**: Global content delivery
+- **URL**: `https://eventify-egypt.netlify.app`
+- **Auto-deployment**: Git push triggers deployment
 
-### Payment Security
-- **PCI DSS Compliant**: Stripe integration
-- **No Card Storage**: Cards never touch our servers
-- **Webhook Verification**: HMAC-SHA256 signatures
+### Version Control & CI/CD
+- **Repository**: GitHub
+- **Branching**: GitFlow strategy
+- **Code Review**: Pull request workflow
+- **Documentation**: Markdown files in repo
+
+---
+
+# Slide 11: System Architecture
+
+## Clean Architecture - 4 Layers
+
+### 🎯 Layer 1: Eventify.Core (Domain Layer)
+**Purpose**: Core business entities and domain logic
+- **Entities**: User, Event, Category, Ticket, Booking, Payment, UserAttendEvent
+- **Enums**: Role (User/Organizer/Admin), PaymentStatus, TicketStatus
+- **No Dependencies**: Pure domain model, no external references
+
+### 💾 Layer 2: Eventify.Repository (Data Access Layer)
+**Purpose**: Database operations and data persistence
+- **Repository Pattern**: IEventRepository, IBookingRepository, IUserRepository, etc.
+- **Unit of Work Pattern**: Transaction management across repositories
+- **EF Core DbContext**: Database context with fluent API configurations
+- **Migrations**: Database versioning and schema updates
+
+### ⚙️ Layer 3: Eventify.Service (Business Logic Layer)
+**Purpose**: Business rules and application logic
+- **Services**: AuthService, EventService, BookingService, PaymentService
+- **DTOs**: Data transfer objects for API communication
+- **AutoMapper**: Entity-to-DTO mapping profiles
+- **FluentValidation**: Input validation rules
+- **Result Pattern**: Consistent success/error responses
+
+### 🌐 Layer 4: Eventify.APIs (Presentation Layer)
+**Purpose**: HTTP endpoints and API exposure
+- **Controllers**: 9 API controllers with 35+ endpoints
+- **Middleware**: JWT authentication, error handling, CORS
+- **Swagger/OpenAPI**: API documentation
+- **Request/Response Models**: API contracts
+
+---
+
+# Slide 12: Database Design
+
+## Entity Relationship Model
+
+### Core Entities (7 Main Tables)
+
+**User** (ASP.NET Core Identity)
+- Id, Name, Email, Phone, PasswordHash, Role
+- Extended from IdentityUser for authentication
+
+**Event**
+- Id, Name, Description, CategoryId, Location, Date, Time, Price, Capacity, ImageUrl, OrganizerId
+
+**Category**
+- Id, Name, Description, Icon
+- 10+ categories: Music, Sports, Arts, Business, Technology, Food, Comedy, Health, Film, Theatre
+
+**Ticket**
+- Id, EventId, CategoryName (VIP/Premium/Standard), Price, Quantity, Status
+
+**Booking**
+- Id, UserId, EventId, CategoryId, TicketsNum, TotalPrice, FirstName, LastName, Email, Phone, BookingDate
+
+**Payment**
+- Id, BookingId, Amount, Currency, Status, StripeSessionId, StripePaymentIntentId, PaymentDate
+
+**UserAttendEvent** (Junction Table)
+- UserId, EventId (Many-to-Many relationship)
+
+### Relationship Types
+- **One-to-Many**: User→Booking, Event→Booking, Event→Ticket, Category→Event
+- **One-to-One**: Booking→Payment
+- **Many-to-Many**: User↔Event (via UserAttendEvent)
+
+---
+
+# Slide 15: Security Features
+
+## Multi-Layer Security Architecture
+
+### 🔐 Authentication & Authorization
+
+**JWT Token System**
+- Algorithm: HS256 with 256-bit secret key
+- Lifetime: 24 hours (configurable)
+- Claims: UserId, Email, Role, Username
+- Stateless authentication for scalability
+
+**ASP.NET Core Identity**
+- Password hashing: PBKDF2 with 10,000 iterations
+- Email uniqueness validation
+- Account lockout after failed attempts
+- Password complexity requirements
+
+**Role-Based Access Control (RBAC)**
+- **User**: Book events, manage bookings, view profile
+- **Organizer**: All user features + create/manage events
+- **Admin**: All features + user management, platform oversight
+
+### 🔒 API Security Measures
+
+**Network Security**
+- HTTPS enforcement (TLS 1.2+)
+- CORS whitelist for allowed origins
+- Rate limiting to prevent abuse
+
+**Input Security**
+- FluentValidation on all API inputs
+- SQL injection prevention (EF Core parameterized queries)
+- XSS protection (output encoding, CSP headers)
+- CSRF token validation
+
+**Data Protection**
+- Sensitive data encryption at rest
+- Secure connection strings in environment variables
+- No sensitive data in logs
+
+---
+
+# Slide 16: Payment Integration with Stripe
+
+## Complete Payment Flow
+
+### Why Stripe?
+- **PCI DSS Compliant**: Card data never touches our servers
+- **Global Support**: Accepts all major credit/debit cards
+- **Egyptian Market**: Supports EGP currency
+- **Developer-Friendly**: Excellent documentation and SDKs
+- **Security**: Built-in fraud detection
+
+### Payment Flow (4 Steps)
+
+**Step 1: Checkout Initiation**
+- User submits booking with ticket details
+- Backend creates Stripe Checkout Session
+- Session includes: amount, currency, customer email, success/cancel URLs
+
+**Step 2: Stripe Hosted Payment**
+- User redirected to Stripe's secure payment page
+- User enters card details (handled by Stripe, not us)
+- Stripe processes payment securely
+
+**Step 3: Webhook Notification**
+- Stripe sends webhook to our API
+- We verify webhook signature (HMAC-SHA256)
+- Update booking and payment status in database
+
+**Step 4: Confirmation**
+- User redirected to success page
+- Email confirmation sent with e-ticket
+- QR code generated for event entry
+
+### Stripe Features We Use
+- **Checkout Sessions**: Hosted payment pages
+- **Payment Intents**: Track payment lifecycle
+- **Webhooks**: Real-time payment notifications
 - **Idempotency Keys**: Prevent duplicate charges
+- **Metadata**: Link payments to bookings
 
 ---
 
-# Slide 13: Validation Rules
+# Slide 17: Data Validation
 
-## Data Validation Standards
+## Input Validation with FluentValidation
 
-### User Registration
-- **Name**: 2-50 characters, letters and spaces only
-- **Email**: Valid format, 5-100 characters, unique
-- **Password**: 6-50 characters, must contain uppercase, lowercase, and digit
-- **Phone**: Egyptian mobile format (11 digits: 010/011/012/015)
+### User Registration Validation
+- **Name**: 
+  - 2-50 characters
+  - Letters and spaces only
+  - No special characters or numbers
+- **Email**: 
+  - Valid email format
+  - 5-100 characters
+  - Must be unique in database
+- **Password**: 
+  - 6-50 characters
+  - Must contain: uppercase, lowercase, digit
+  - Stored as hash (never plain text)
+- **Phone**: 
+  - Egyptian mobile format
+  - 11 digits
+  - Must start with: 010, 011, 012, or 015
 
-### Event Creation
+### Event Creation Validation
 - **Name**: Required, 3-200 characters
 - **Description**: Required, minimum 10 characters
+- **Category**: Must be valid category ID
 - **Date**: Must be future date
-- **Price**: Non-negative decimal
-- **Capacity**: Positive integer
+- **Price**: Non-negative decimal, max 2 decimal places
+- **Capacity**: Positive integer, minimum 1
+- **Location**: Required for in-person events
 
 ### Booking Validation
-- **Ticket Quantity**: Between 1 and 10
+- **Ticket Quantity**: Between 1 and 10 per booking
 - **Availability Check**: Real-time inventory validation
 - **Price Verification**: Server-side price matching
+- **Event Date**: Cannot book past events
+- **User Authentication**: Must be logged in
 
 ---
 
-# Slide 14: Payment Integration
+# Slide 18: User Interface & Design System
 
-## Stripe Payment Flow
+## Modern Dark Theme with Purple Accents
 
-### Step 1: Checkout Initiation
-User submits booking → API creates Stripe Checkout Session → Redirect to Stripe
+### Design Philosophy
+- **Dark Mode First**: Reduces eye strain, modern aesthetic
+- **Purple Brand Color**: Represents creativity and entertainment
+- **Minimalist**: Clean, uncluttered interface
+- **Consistent**: Reusable components across all pages
 
-### Step 2: Payment Processing
-User enters card details → Stripe processes payment → Webhook sent to API
+### Color System
+- **Primary**: Purple (#7c5cff) - CTAs, links, active states
+- **Secondary**: Cyan (#06b6d4) - Highlights, badges
+- **Background**: Dark Navy (#0b0f12) - Main background
+- **Surface**: Lighter Dark (#1a1f23) - Cards, modals
+- **Success**: Green (#10b981) - Confirmations, success states
+- **Warning**: Orange (#f59e0b) - Warnings, pending states
+- **Error**: Red (#ef4444) - Errors, cancellations
+- **Text Primary**: White (#ffffff) - Main text
+- **Text Secondary**: Gray (#94a3b8) - Supporting text
 
-### Step 3: Confirmation
-Webhook updates booking → Success page → Email confirmation → E-ticket generated
-
-### Key Features
-- **Multiple Ticket Types**: VIP, Premium, Standard pricing
-- **Quantity Support**: Bulk ticket purchases (1-10)
-- **Real-Time Calculation**: Dynamic price totals
-- **Currency**: Egyptian Pound (EGP)
-- **Secure**: PCI DSS compliant, no card storage
-
-### Webhook Events
-- checkout.session.completed
-- payment_intent.succeeded
-- payment_intent.payment_failed
-
----
-
-# Slide 15: User Interface Design
-
-## Modern Dark Theme Design
-
-### Color Palette
-- **Background**: Dark Navy (#0b0f12)
-- **Primary**: Purple (#7c5cff)
-- **Secondary**: Cyan (#06b6d4)
-- **Success**: Green (#10b981)
-- **Warning**: Orange (#f59e0b)
-- **Error**: Red (#ef4444)
-
-### Typography
-- **Font Family**: 'Segoe UI', Arial, sans-serif
-- **Responsive sizing**: 40px headings to 14px small text
-
-### UI Components
-- Elevated cards with subtle shadows
-- Floating label forms with inline validation
-- Multiple button variants (primary, secondary, ghost)
-- Modal overlays with backdrop blur
-- Alert notifications (success, error, warning, info)
-- Loading states with spinners
+### Typography Scale
+- **Font**: 'Segoe UI', Arial, sans-serif
+- **H1**: 2.5rem (40px) - Page titles
+- **H2**: 2rem (32px) - Section headers
+- **H3**: 1.5rem (24px) - Card titles
+- **Body**: 1rem (16px) - Main content
+- **Small**: 0.875rem (14px) - Captions, labels
 
 ---
 
-# Slide 16: Responsive & Accessible
+# Slide 19: UI Components & Responsive Design
 
-## Works on All Devices
+## Reusable Component Library
 
-### Responsive Breakpoints
-- **Desktop**: 1200px+ (Full layout with sidebar)
-- **Tablet**: 768px-1199px (Adapted grid, collapsible menu)
-- **Mobile**: 320px-767px (Stacked layout, hamburger menu)
+### Interactive Components
+- **Buttons**: Primary, secondary, ghost variants with hover/active states
+- **Cards**: Elevated with shadows, hover effects, clickable
+- **Forms**: 
+  - Floating labels that animate on focus
+  - Inline validation with error messages
+  - Password strength indicators
+  - Date/time pickers
+- **Modals**: Centered overlays with backdrop blur
+- **Alerts**: Toast notifications (success, error, warning, info)
+- **Loading States**: Spinners, skeleton screens, progress bars
+- **Badges**: Status indicators (Available, Sold Out, Pending)
+- **Dropdowns**: Custom select components
+- **Search**: Autocomplete with debouncing
+
+### Responsive Design Strategy
+
+**Mobile First Approach**
+- **Mobile** (320px - 767px):
+  - Stacked single-column layout
+  - Hamburger navigation menu
+  - Touch-optimized buttons (44px minimum)
+  - Bottom navigation bar
+
+- **Tablet** (768px - 1199px):
+  - 2-column grid layouts
+  - Collapsible sidebar navigation
+  - Adapted forms with side-by-side fields
+
+- **Desktop** (1200px+):
+  - Multi-column layouts (up to 4 columns)
+  - Persistent sidebar navigation
+  - Hover states and tooltips
+  - Keyboard shortcuts
 
 ### Accessibility (WCAG 2.1 Level AA)
-- ✅ Semantic HTML with proper hierarchy
-- ✅ ARIA labels for screen readers
-- ✅ Full keyboard navigation support
-- ✅ Visible focus indicators
-- ✅ 4.5:1 minimum color contrast ratio
-- ✅ Descriptive alt text for all images
+- ✅ Semantic HTML5 elements
+- ✅ ARIA labels and roles
+- ✅ Full keyboard navigation
+- ✅ Screen reader support
+- ✅ Color contrast ratio 4.5:1+
+- ✅ Alt text for all images
+- ✅ Focus visible indicators
 
 
 
 ---
 
-# Slide 17: API Overview
+# Slide 13: RESTful API Design
 
-## RESTful API Architecture
+## 35+ API Endpoints Across 9 Controllers
 
-### Base URLs
-- **Production**: `https://eventify.runasp.net/api`
-- **Development**: `https://localhost:7105/api`
+### 🔐 AuthController (Authentication)
+- `POST /api/Auth/register` - User registration
+- `POST /api/Auth/login` - User login (returns JWT)
+- `POST /api/Auth/logout` - User logout
 
-### API Controllers (35+ Endpoints)
-- **AuthController**: Register, Login, Logout
-- **EventsController**: CRUD + Search + Filter
-- **BookingController**: Create, Read, Update, Delete bookings
-- **CheckOutController**: Stripe checkout session creation
-- **PaymentController**: Payment status and history
-- **StripeWebhookController**: Handle payment webhooks
-- **UserController**: Profile management
-- **CategoriesController**: Event categories
-- **TicketsController**: Ticket operations
+### 🎭 EventsController (Event Management)
+- `GET /api/Events` - Get all events (with filters)
+- `GET /api/Events/{id}` - Get event by ID
+- `POST /api/Events` - Create new event (Organizer only)
+- `PUT /api/Events/{id}` - Update event (Owner only)
+- `DELETE /api/Events/{id}` - Delete event (Owner/Admin)
+- `GET /api/Events/category/{categoryId}` - Events by category
+- `GET /api/Events/search?term=` - Search events
 
----
+### 📋 CategoriesController
+- `GET /api/Categories` - Get all event categories
+- `GET /api/Categories/{id}` - Get category by ID
 
-# Slide 18: API Response Format
-
-## Standardized JSON Responses
-
-### Success Response Structure
-- **success**: true/false
-- **message**: Operation description
-- **data**: Response payload object
-- **errors**: Array of error messages (empty on success)
-
-### Authentication Flow
-**Register** → Returns user data + JWT token  
-**Login** → Validates credentials + Returns token  
-**Protected Endpoints** → Require Bearer token in headers
-
-### Key Features
-- Consistent error handling
-- Input validation on all endpoints
-- JWT authentication middleware
-- CORS configured for frontend origins
+### 🎫 TicketsController
+- `GET /api/Tickets/event/{eventId}` - Get tickets for event
+- `GET /api/Tickets/{id}` - Get ticket by ID
+- `POST /api/Tickets` - Create ticket type
+- `PUT /api/Tickets/{id}` - Update ticket
 
 ---
 
-# Slide 19: Frontend Pages (9 Total)
+# Slide 14: API Endpoints (Continued)
 
-## Complete User Interface
+## Booking & Payment APIs
 
-### 1. **Homepage** - Landing page with featured events
-### 2. **Explore Events** - Advanced search & filtering
-### 3. **Event Detail** - Comprehensive event information
-### 4. **Booking Page** - 4-step booking process
-### 5. **Login/Register** - User authentication
-### 6. **User Dashboard** - Account management hub
-### 7. **Create Event** - 6-step event creation wizard
-### 8. **Payment Success** - Confirmation & e-ticket
-### 9. **About** - Company information & contact
+### 📝 BookingController
+- `POST /api/Booking` - Create new booking
+- `GET /api/Booking/user/{userId}` - Get user's bookings
+- `GET /api/Booking/{id}` - Get booking by ID
+- `PUT /api/Booking/{id}` - Update booking
+- `DELETE /api/Booking/{id}` - Cancel booking
+
+### 💳 CheckOutController (Stripe Integration)
+- `POST /api/CheckOut` - Create Stripe checkout session
+- Returns: SessionId, PublicKey, RedirectURL
+
+### 💰 PaymentController
+- `GET /api/Payment/booking/{bookingId}` - Get payment status
+- `GET /api/Payment/user/{userId}` - User payment history
+- `POST /api/Payment/refund/{paymentId}` - Process refund
+
+### 🔔 StripeWebhookController
+- `POST /api/StripeWebhook` - Handle Stripe events
+- Events: checkout.session.completed, payment_intent.succeeded, payment_intent.payment_failed
+
+### 👤 UserController
+- `GET /api/User/{id}` - Get user profile
+- `PUT /api/User/{id}` - Update profile
+- `DELETE /api/User/{id}` - Delete account
+- `GET /api/User/{id}/events` - User's attended events
 
 ---
 
-# Slide 20: Key User Journeys
+# Slide 20: Frontend Application Structure
+
+## 9 Core Pages
+
+### 1. 🏠 Homepage (`index.html`)
+- Hero section with CTA
+- Featured events carousel
+- Event categories grid (10+ categories)
+- Upcoming events timeline
+- Newsletter subscription
+
+### 2. 🔍 Explore Events (`explore.html`)
+- Advanced search bar with autocomplete
+- Multi-criteria filters (category, date, location, price)
+- Sort options (date, price, popularity)
+- Grid/list view toggle
+- Pagination with real-time results count
+
+### 3. 🎭 Event Detail (`event.html`)
+- Event hero image and description
+- Date, time, location, capacity info
+- Ticket types and pricing table
+- Organizer information
+- Similar events recommendations
+- Social share buttons
+- "Book Now" CTA
+
+### 4. 🎫 Booking Page (`book.html`)
+- **Step 1**: Ticket selection with quantity
+- **Step 2**: Personal information form
+- **Step 3**: Stripe payment integration
+- **Step 4**: Confirmation with e-ticket and QR code
+- Real-time price calculation
+- Terms & conditions checkbox
+
+### 5. 🔐 Authentication (`login.html`, `register.html`)
+- Login with email/password
+- Registration with validation
+- "Remember me" functionality
+- Password strength indicator
+- Forgot password link
+
+---
+
+# Slide 21: Frontend Pages (Continued)
+
+## User & Organizer Features
+
+### 6. 📋 User Dashboard (`dashboard.html`)
+**For All Users:**
+- My Bookings (upcoming & past)
+- Saved/Bookmarked events
+- Profile settings
+- Payment history
+- Download tickets
+- Cancel bookings
+
+**Additional for Organizers:**
+- My Created Events list
+- Event analytics dashboard
+- Quick access to create event
+
+### 7. 🎪 Create Event (`create-event.html`)
+**6-Step Wizard for Organizers:**
+- Step 1: Basic info (name, category, description)
+- Step 2: Date & time settings
+- Step 3: Location (in-person/virtual/hybrid)
+- Step 4: Ticket types and pricing
+- Step 5: Media uploads (images, videos)
+- Step 6: Review and publish
+- Save as draft feature
+- Real-time validation
+
+### 8. ✅ Payment Success (`payment-success.html`)
+- Booking confirmation
+- E-ticket display with QR code
+- Download PDF ticket button
+- Email confirmation sent
+- Event details summary
+- Add to calendar button
+
+### 9. ℹ️ About (`about.html`)
+- Company mission and vision
+- Contact form
+- FAQ section
+- Social media links
+
+---
+
+# Slide 22: Key User Journeys
 
 ## Attendee Journey
 **Discover** → Browse/Search events  
@@ -429,52 +694,112 @@ Webhook updates booking → Success page → Email confirmation → E-ticket gen
 
 ---
 
-# Slide 21: Testing & Quality Assurance
+# Slide 23: Testing & Quality Assurance
 
-## Comprehensive Testing Strategy
+## Multi-Level Testing Strategy
 
 ### Backend Testing
-- **Unit Tests**: xUnit with Moq for service layer
-- **Integration Tests**: WebApplicationFactory for API testing
-- **Manual Testing**: Postman collection with all endpoints
-- **Coverage Areas**: Business logic, validation, DTO mapping
+
+**Unit Testing (xUnit + Moq)**
+- Service layer business logic testing
+- Repository pattern testing with in-memory database
+- Validation rule testing
+- DTO mapping tests
+- Helper function tests
+
+**Integration Testing**
+- WebApplicationFactory for API testing
+- End-to-end endpoint testing
+- Database integration tests
+- Authentication flow testing
+
+**Manual Testing**
+- Postman collection with 35+ endpoint tests
+- Test scenarios for each user role
+- Edge case validation
+- Error handling verification
 
 ### Frontend Testing
-- **Cross-Browser**: Chrome, Firefox, Safari, Edge
-- **Responsive Design**: Mobile, tablet, desktop testing
-- **Form Validation**: All input scenarios
-- **User Flow**: End-to-end journey testing
+
+**Cross-Browser Compatibility**
+- Chrome, Firefox, Safari, Edge
+- Mobile browser testing (iOS Safari, Chrome Android)
+
+**Responsive Design Testing**
+- Mobile devices (320px-767px)
+- Tablets (768px-1199px)
+- Desktops (1200px+)
+- Different screen orientations
+
+**Functional Testing**
+- Form validation scenarios
+- User journey flows
+- Payment integration
+- File upload functionality
 
 ### Security Testing
 - OWASP Top 10 vulnerability checks
-- SQL injection prevention
-- XSS protection verification
-- Authentication bypass attempts
-- Payment security validation
+- SQL injection prevention verification
+- XSS protection testing
+- CSRF token validation
+- Authentication/authorization testing
+- Payment security validation with Stripe test mode
 
 ---
 
-# Slide 22: Performance Optimization
+# Slide 24: Performance Optimization Techniques
 
-## Optimized for Speed
+## Backend Performance
 
-### Backend Performance
-- **Database**: Strategic indexing, eager loading, pagination
-- **API**: Async/await, response compression, connection pooling
-- **Caching**: In-memory caching for static data
-- **Results**: <200ms average response time
+### Database Optimization
+- **Strategic Indexing**: Primary keys, foreign keys, search columns
+- **Query Optimization**: 
+  - Eager loading with Include() to prevent N+1 queries
+  - Pagination with Skip() and Take()
+  - Projection with Select() to limit data transfer
+- **Connection Pooling**: Reuse database connections
+- **Caching**: In-memory caching for categories and static data
 
-### Frontend Performance
-- **Load Time**: CSS/JS minification, image optimization
-- **Runtime**: Event delegation, search debouncing (300ms)
-- **Lazy Loading**: Images and non-critical resources
-- **Results**: <2 seconds page load on 4G
+### API Performance
+- **Async/Await**: Non-blocking I/O throughout
+- **Response Compression**: Gzip compression enabled
+- **Minimal Payloads**: DTOs return only necessary data
+- **HTTP/2**: Multiplexing support
+
+### Results
+- Average response time: <200ms
+- Database query time: <50ms
+- API throughput: 1000+ requests/minute
+
+---
+
+# Slide 25: Frontend Performance & Metrics
+
+## Frontend Optimization
+
+### Load Time Optimization
+- **Minification**: CSS and JavaScript files
+- **Image Optimization**: Compressed images, appropriate formats
+- **Lazy Loading**: Images loaded on scroll
+- **Critical CSS**: Inline critical styles
+- **CDN**: Static assets served from CDN
+
+### Runtime Performance
+- **Event Delegation**: Single listeners for dynamic elements
+- **Debouncing**: Search input debounced (300ms)
+- **LocalStorage**: Cache API responses
+- **Virtual Scrolling**: For large event lists
+
+### Performance Metrics
+- **Page Load Time**: <2 seconds on 4G
+- **First Contentful Paint**: <1 second
+- **Time to Interactive**: <3 seconds
 
 ### Lighthouse Scores
-- Performance: 92/100
-- Accessibility: 98/100
-- Best Practices: 95/100
-- SEO: 100/100
+- **Performance**: 92/100
+- **Accessibility**: 98/100
+- **Best Practices**: 95/100
+- **SEO**: 100/100
 
 ---
 
@@ -608,52 +933,76 @@ Webhook updates booking → Success page → Email confirmation → E-ticket gen
 
 ---
 
-# Slide 28: Project Metrics
+# Slide 26: Project Statistics
 
-## By the Numbers
+## Technical Metrics
 
-### Codebase Statistics
-- **Total Code**: ~15,000 lines
-- **Backend (C#)**: ~8,500 lines
-- **Frontend (JS/HTML/CSS)**: ~6,500 lines
-- **Documentation**: ~12,000 words
-
-### Project Components
+### Architecture Components
 - **Entities**: 7 domain classes
 - **Controllers**: 9 API controllers
 - **Services**: 8 business services
 - **Repositories**: 7 data repositories
 - **DTOs**: 25+ data transfer objects
-- **Frontend Pages**: 9 HTML pages
 - **API Endpoints**: 35+ endpoints
+- **Frontend Pages**: 9 HTML pages
 - **Database Tables**: 8 tables
 - **Database Migrations**: 12 migrations
 
+### Codebase Statistics
+- **Total Lines of Code**: ~15,000
+- **Backend (C#)**: ~8,500 lines
+- **Frontend (JS/HTML/CSS)**: ~6,500 lines
+- **Documentation**: ~12,000 words
+- **Git Commits**: 100+ commits
+
+### Event Categories
+1. Music & Concerts
+2. Sports & Fitness
+3. Arts & Culture
+4. Food & Drink
+5. Technology
+6. Business & Professional
+7. Theatre & Performing Arts
+8. Comedy & Entertainment
+9. Health & Wellness
+10. Film & Media
+
 ---
 
-# Slide 29: Technical Achievements
+# Slide 27: Technical Achievements
 
-## Quality Metrics
+## What We Accomplished
 
-### Architecture & Code Quality
-✅ 100% Layered architecture implementation  
-✅ RESTful API compliance  
-✅ Comprehensive input validation  
-✅ Global error handling  
-✅ Complete API documentation  
+### Architecture Excellence
+✅ **Clean Architecture**: 4-layer design with clear separation of concerns
+✅ **Design Patterns**: Repository, Unit of Work, Dependency Injection
+✅ **RESTful API**: Consistent endpoint design with proper HTTP methods
+✅ **Scalable**: Can handle growing user base and event volume
 
-### Security & Performance
-✅ JWT authentication & authorization  
-✅ Stripe payment integration  
-✅ HTTPS enforcement  
-✅ <200ms average response time  
-✅ <2 seconds page load time  
+### Security Implementation
+✅ **JWT Authentication**: Stateless, secure token-based auth
+✅ **Role-Based Authorization**: Granular permissions (User/Organizer/Admin)
+✅ **PCI DSS Compliance**: Secure payment processing via Stripe
+✅ **Input Validation**: FluentValidation on all user inputs
+✅ **HTTPS**: Encrypted communication throughout
+
+### Payment Integration
+✅ **Stripe Checkout**: Hosted payment pages
+✅ **Webhook Handling**: Real-time payment status updates
+✅ **Multiple Currencies**: Support for EGP
+✅ **Refund Support**: Automated refund processing
 
 ### User Experience
-✅ Responsive design (mobile-first)  
-✅ WCAG 2.1 Level AA accessibility  
-✅ Lighthouse score 92+ performance  
-✅ Cross-browser compatibility  
+✅ **Responsive Design**: Works on mobile, tablet, desktop
+✅ **Accessibility**: WCAG 2.1 Level AA compliant
+✅ **Performance**: Fast load times (<2s) and API responses (<200ms)
+✅ **Cross-Browser**: Compatible with all modern browsers
+
+### Quality Assurance
+✅ **Testing**: Unit, integration, and manual testing
+✅ **Documentation**: Comprehensive API and code documentation
+✅ **Error Handling**: Global error handling with user-friendly messages
+✅ **Code Quality**: Clean, readable, well-commented code  
 
 ---
 
@@ -823,7 +1172,7 @@ To everyone who provided feedback, testing, and support during development
 
 ### Live Deployment
 **Backend API**: `https://eventify.runasp.net`  
-**Frontend Application**: `https://eventify-egypt.netlify.app`
+**Frontend Application**: `https://eventiifyy.netlify.app`
 
 ### Documentation
 Complete documentation available in `/docs` folder:

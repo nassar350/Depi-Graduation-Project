@@ -107,6 +107,20 @@
                   <div class="form-hint">Make it clear and engaging (3-100 characters)</div>
                 </div>
 
+                <div class="form-group">
+                  <label for="eventCategory" class="form-label">Event Category *</label>
+                  <select 
+                    id="eventCategory" 
+                    name="eventCategory"
+                    class="form-input" 
+                    required
+                  >
+                    <option value="">Select a category...</option>
+                    <!-- Options will be populated dynamically from backend -->
+                  </select>
+                  <div class="form-hint">Choose the category that best describes your event</div>
+                </div>
+
                 <div class="form-row">
                   <div class="form-group">
                     <label for="startDate" class="form-label">Start Date & Time *</label>
@@ -241,26 +255,6 @@
                     <label class="checkbox-option">
                       <input type="checkbox" name="agreeToTerms" required>
                       <span>I agree to Eventify's <a href="#" onclick="app.showNotification('Terms of service coming soon!', 'info')">Terms of Service</a> and <a href="#" onclick="app.showNotification('Event creation guidelines coming soon!', 'info')">Event Creation Guidelines</a> *</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="publish-options" style="background: var(--card-bg); padding: var(--space-lg); border-radius: var(--radius-md); margin-bottom: var(--space-lg);">
-                  <h4 style="margin-bottom: var(--space-md);">Publish Options</h4>
-                  <div class="radio-group">
-                    <label class="radio-option">
-                      <input type="radio" name="publishStatus" value="published" checked>
-                      <span>
-                        <strong>Publish Now</strong><br>
-                        <small class="text-muted">Make your event visible immediately</small>
-                      </span>
-                    </label>
-                    <label class="radio-option">
-                      <input type="radio" name="publishStatus" value="draft">
-                      <span>
-                        <strong>Save as Draft</strong><br>
-                        <small class="text-muted">Save and publish later</small>
-                      </span>
                     </label>
                   </div>
                 </div>
