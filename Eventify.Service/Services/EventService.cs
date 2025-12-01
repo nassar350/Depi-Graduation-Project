@@ -9,6 +9,7 @@ using Eventify.Service.Helpers;
 using Eventify.Service.Interfaces;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
+using SendGrid.Helpers.Errors.Model;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Eventify.Service.Services
@@ -18,12 +19,14 @@ namespace Eventify.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
+        private readonly IZoomService _zoomService;
 
-        public EventService(IMapper mapper, IUnitOfWork unitOfWork, IPhotoService photoService)
+        public EventService(IMapper mapper, IUnitOfWork unitOfWork, IPhotoService photoService, IZoomService zoomService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _photoService = photoService;
+            _zoomService = zoomService;
         }
 
         public async Task<IEnumerable<EventDto>> GetAllAsync()
@@ -76,6 +79,19 @@ namespace Eventify.Service.Services
                 {
                     string photoUrl = await _photoService.UploadPhotoAsync(dto.Photo);
                     ev.PhotoUrl = photoUrl;
+                }
+                if (dto.IsOnline)
+                { 
+                    var zoom = await _zoomService.CreateMeeting(
+                    dto.Name,
+                    dto.StartDate,
+                    dto.DurationMinutes ?? 60
+                    );
+                    if (zoom == null)
+                        throw new BadRequestException("Failed to create Zoom meeting. Please try again later.");
+                    ev.ZoomJoinUrl = zoom.JoinUrl;
+                    ev.ZoomPassword = zoom.Password;
+                    ev.ZoomMeetingId = zoom.MeetingId;
                 }
                 var curEvent = await _unitOfWork._eventRepository.AddAsync(ev);
                 await _unitOfWork.SaveChangesAsync();
