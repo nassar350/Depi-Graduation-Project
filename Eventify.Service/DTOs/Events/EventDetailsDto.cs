@@ -19,7 +19,7 @@ namespace Eventify.Service.DTOs.Events
 
         public DateTime EndDate { get; set; }
 
-        public byte[] Photo { get; set; }
+        public string? PhotoUrl { get; set; }
 
         public int OrganizerID { get; set; }
 

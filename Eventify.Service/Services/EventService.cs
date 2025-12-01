@@ -17,11 +17,13 @@ namespace Eventify.Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
 
-        public EventService(IMapper mapper, IUnitOfWork unitOfWork)
+        public EventService(IMapper mapper, IUnitOfWork unitOfWork, IPhotoService photoService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _photoService = photoService;
         }
 
         public async Task<IEnumerable<EventDto>> GetAllAsync()
@@ -70,6 +72,11 @@ namespace Eventify.Service.Services
             {
                 var ev = _mapper.Map<Event>(dto);
                 ev.OrganizerID = int.Parse(id);
+                if (dto.Photo != null)
+                {
+                    string photoUrl = await _photoService.UploadPhotoAsync(dto.Photo);
+                    ev.PhotoUrl = photoUrl;
+                }
                 var curEvent = await _unitOfWork._eventRepository.AddAsync(ev);
                 await _unitOfWork.SaveChangesAsync();
                 var CategoriesToCreate = new List<CreateCategoryDto>();
@@ -78,7 +85,7 @@ namespace Eventify.Service.Services
                 {
                     foreach (var category in Categories)
                     {
-                        CategoriesToCreate.Add(new CreateCategoryDto(curEvent.Id, category.Title, category.Seats));
+                        CategoriesToCreate.Add(new CreateCategoryDto(curEvent.Id, category.Title, category.Seats , category.TicketPrice));
                     }
                 }
                 var mappedCateories = _mapper.Map<List<Category>>(CategoriesToCreate);
@@ -88,7 +95,7 @@ namespace Eventify.Service.Services
                 {
                     for (int i = 0; i < category.Seats; i++)
                     {
-                        ticketsToCreate.Add(new CreateTicketDto(curEvent.Address, category.Title, category.Id, curEvent.Id));
+                        ticketsToCreate.Add(new CreateTicketDto(curEvent.Address, category.Title, category.Id, curEvent.Id , category.TicketPrice));
                     }
                 }
                 var mappedTickets = _mapper.Map<List<Ticket>>(ticketsToCreate);
@@ -110,6 +117,15 @@ namespace Eventify.Service.Services
         {
             var ev = await _unitOfWork._eventRepository.GetByIdAsync(id);
             if (ev == null) return false;
+            if (dto.Photo != null)
+            {
+                var uploadResult = await _photoService.UploadPhotoAsync(dto.Photo);
+
+                if (uploadResult == null)
+                    throw new Exception("Photo upload failed");
+
+                ev.PhotoUrl = uploadResult; 
+            }
             _mapper.Map(dto, ev);
             _unitOfWork._eventRepository.Update(ev);
             await _unitOfWork.SaveChangesAsync();
@@ -124,18 +140,11 @@ namespace Eventify.Service.Services
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
-
-        // Methods for frontend integration
         public async Task<ServiceResult<IEnumerable<EventDto>>> GetUpcomingEventsAsync(int take = 10)
         {
             try
             {
-                var allEvents = await _unitOfWork._eventRepository.GetAllAsync();
-                var upcomingEvents = allEvents
-                    .Where(e => e.StartDate > DateTime.UtcNow)
-                    .OrderBy(e => e.StartDate)
-                    .Take(take)
-                    .ToList();
+                var upcomingEvents = await _unitOfWork._eventRepository.GetUpcommingAsync(take);
 
                 if (!upcomingEvents.Any())
                 {
@@ -189,7 +198,7 @@ namespace Eventify.Service.Services
                     .Where(e => e.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                                e.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                                e.Address.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-                    .Where(e => e.StartDate > DateTime.UtcNow) // Only upcoming events
+                    .Where(e => e.StartDate > DateTime.UtcNow) 
                     .OrderBy(e => e.StartDate)
                     .ToList();
 

@@ -47,6 +47,10 @@ namespace Eventify.Service.DependencyInjection
             // Tickets
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<ITicketService, TicketService>();
+            services.AddScoped<IQrCodeService, QrCodeService>();
+            services.AddScoped<ITicketPdfService, TicketPdfService>();
+            services.AddScoped<ITicketVerificationService, TicketVerificationService>();
+            services.AddScoped<ITicketDownloadService, TicketDownloadService>();
 
             return services;
         }

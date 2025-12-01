@@ -67,5 +67,10 @@ namespace Eventify.Service.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public int GetAvailableTicketsCount(int eventId, string categoryName)
+        {
+            return _repo.CountNotBookedTickets(eventId, categoryName);
+        }
     }
 }

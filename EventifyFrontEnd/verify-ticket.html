@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticket Verification - Eventify</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .verification-container {
+      padding: var(--space-xl) 0;
+      min-height: calc(100vh - 80px);
+    }
+    
+    .verification-card {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .status-icon {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-xl);
+      font-size: 4rem;
+    }
+    
+    .status-icon.valid {
+      background: var(--success);
+      color: var(--bg);
+    }
+    
+    .status-icon.invalid {
+      background: var(--danger);
+      color: var(--bg);
+    }
+    
+    .status-icon.loading {
+      background: var(--muted);
+      color: var(--bg);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .ticket-details {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: var(--space-xl);
+      text-align: left;
+      margin-top: var(--space-xl);
+    }
+    
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+    
+    .detail-label {
+      color: var(--muted);
+      font-weight: 500;
+    }
+    
+    .detail-value {
+      color: var(--text);
+      font-weight: 600;
+    }
+    
+    .event-status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .event-status-badge.upcoming {
+      background: rgba(0, 212, 255, 0.1);
+      color: var(--accent-2);
+    }
+    
+    .event-status-badge.ongoing {
+      background: rgba(0, 217, 122, 0.1);
+      color: var(--success);
+    }
+    
+    .event-status-badge.ended {
+      background: rgba(152, 160, 171, 0.1);
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <span class="text-gradient">Eventify</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Verification Section -->
+  <section class="verification-container">
+    <div class="container">
+      <div class="card verification-card">
+        <div id="verificationStatus">
+          <!-- Status will be populated here -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Set API Base URL
+    const API_BASE_URL = window.API_BASE_URL || 'https://eventify.runasp.net';
+    
+    // Get token from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+    const statusContainer = document.getElementById('verificationStatus');
+    
+    // Show loading state
+    function showLoading() {
+      statusContainer.innerHTML = `
+        <div class="status-icon loading">⏳</div>
+        <h1 style="color: var(--text); margin-bottom: var(--space-md);">Verifying Ticket...</h1>
+        <p class="text-lg" style="color: var(--muted);">Please wait while we validate your ticket.</p>
+      `;
+    }
+    
+    // Show valid ticket
+    function showValidTicket(data) {
+      const eventDate = new Date(data.eventDate).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      const eventTime = new Date(data.eventDate).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      statusContainer.innerHTML = `
+        <div class="status-icon valid">✓</div>
+        <h1 style="color: var(--success); margin-bottom: var(--space-md);">Valid Ticket</h1>
+        <p class="text-lg" style="color: var(--muted); margin-bottom: var(--space-xl);">
+          This ticket is authentic and ready for entry.
+        </p>
+        
+        <div class="ticket-details">
+          <h3 style="margin-bottom: var(--space-lg); color: var(--text);">Ticket Details</h3>
+          
+          <div class="detail-row">
+            <span class="detail-label">Event</span>
+            <span class="detail-value">${data.eventName}</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="detail-label">Attendee</span>
+            <span class="detail-value">${data.attendeeName}</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="detail-label">Email</span>
+            <span class="detail-value">${data.email}</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="detail-label">Category</span>
+            <span class="detail-value">${data.categoryName}</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="detail-label">Date & Time</span>
+            <span class="detail-value">${eventDate} at ${eventTime}</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="detail-label">Event Status</span>
+            <span class="detail-value">
+              <span class="event-status-badge ${data.eventStatus.toLowerCase()}">${data.eventStatus}</span>
+            </span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="detail-label">Booking ID</span>
+            <span class="detail-value">#${data.bookingId}</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="detail-label">Ticket ID</span>
+            <span class="detail-value">#${data.ticketId}</span>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Show invalid ticket
+    function showInvalidTicket(message, data) {
+      let detailsHtml = '';
+      
+      if (data) {
+        const eventDate = new Date(data.eventDate).toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        
+        detailsHtml = `
+          <div class="ticket-details">
+            <h3 style="margin-bottom: var(--space-lg); color: var(--text);">Ticket Information</h3>
+            
+            <div class="detail-row">
+              <span class="detail-label">Event</span>
+              <span class="detail-value">${data.eventName}</span>
+            </div>
+            
+            <div class="detail-row">
+              <span class="detail-label">Attendee</span>
+              <span class="detail-value">${data.attendeeName}</span>
+            </div>
+            
+            <div class="detail-row">
+              <span class="detail-label">Event Date</span>
+              <span class="detail-value">${eventDate}</span>
+            </div>
+            
+            <div class="detail-row">
+              <span class="detail-label">Event Status</span>
+              <span class="detail-value">
+                <span class="event-status-badge ${data.eventStatus.toLowerCase()}">${data.eventStatus}</span>
+              </span>
+            </div>
+            
+            <div class="detail-row">
+              <span class="detail-label">Booking ID</span>
+              <span class="detail-value">#${data.bookingId}</span>
+            </div>
+          </div>
+        `;
+      }
+      
+      statusContainer.innerHTML = `
+        <div class="status-icon invalid">✗</div>
+        <h1 style="color: var(--danger); margin-bottom: var(--space-md);">Invalid Ticket</h1>
+        <p class="text-lg" style="color: var(--muted); margin-bottom: var(--space-xl);">
+          ${message}
+        </p>
+        ${detailsHtml}
+        <div style="margin-top: var(--space-xl);">
+          <a href="index.html" class="btn btn-primary">Return to Home</a>
+        </div>
+      `;
+    }
+    
+    // Show error
+    function showError(message) {
+      statusContainer.innerHTML = `
+        <div class="status-icon invalid">⚠</div>
+        <h1 style="color: var(--danger); margin-bottom: var(--space-md);">Verification Error</h1>
+        <p class="text-lg" style="color: var(--muted); margin-bottom: var(--space-xl);">
+          ${message}
+        </p>
+        <div>
+          <a href="index.html" class="btn btn-primary">Return to Home</a>
+        </div>
+      `;
+    }
+    
+    // Verify ticket
+    async function verifyTicket() {
+      if (!token) {
+        showError('No ticket token provided. Please scan a valid QR code.');
+        return;
+      }
+      
+      showLoading();
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/Tickets/verify/${encodeURIComponent(token)}`);
+        const result = await response.json();
+        
+        if (result.success && result.data && result.data.isValid) {
+          showValidTicket(result.data);
+        } else if (result.data) {
+          showInvalidTicket(result.message || 'This ticket is no longer valid.', result.data);
+        } else {
+          showError(result.message || 'Unable to verify ticket. Please contact support.');
+        }
+      } catch (error) {
+        console.error('Verification error:', error);
+        showError('Failed to connect to verification service. Please try again.');
+      }
+    }
+    
+    // Run verification on page load
+    verifyTicket();
+  </script>
+</body>
+</html>

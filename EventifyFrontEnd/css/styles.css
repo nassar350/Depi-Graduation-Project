@@ -1091,6 +1091,19 @@ a:hover, a:focus {
   color: var(--text);
 }
 
+.category-price {
+  text-align: right;
+}
+
+.price-amount {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(124, 92, 255, 0.1);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+}
+
 .category-capacity {
   text-align: right;
 }

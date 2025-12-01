@@ -3,7 +3,7 @@
 
 class ExplorePage {
   constructor() {
-    this.apiBaseUrl = 'https://localhost:7105';
+    this.apiBaseUrl = window.API_BASE_URL || 'https://localhost:7105/';
     this.allEvents = [];
     this.filteredEvents = [];
     this.currentPage = 1;
@@ -459,9 +459,9 @@ class ExplorePage {
     const formattedDate = this.formatDate(startDate);
     const formattedTime = this.formatTime(startDate);
     
-    // Handle photo - use Base64 if available, otherwise placeholder
-    const imageUrl = event.photoBase64 
-      ? `data:image/jpeg;base64,${event.photoBase64}`
+    // Handle photo - use photoUrl if available, otherwise placeholder
+    const imageUrl = event.photoUrl 
+      ? event.photoUrl
       : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop';
     
     const isListView = this.currentViewMode === 'list';

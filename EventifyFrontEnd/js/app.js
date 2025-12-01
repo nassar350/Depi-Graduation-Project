@@ -576,7 +576,7 @@ class EventifyApp {
   // API utility: Make authenticated API calls
   async apiCall(endpoint, options = {}) {
     const token = this.getToken();
-    const baseUrl = 'https://localhost:7105';
+    const baseUrl = window.API_BASE_URL || 'https://localhost:7105/';
     
     const defaultOptions = {
       headers: {

@@ -52,5 +52,20 @@ namespace Eventify.Repository.Repositories
         {
             _context.Tickets.Remove(ticket);
         }
+
+        public int CountNotBookedTickets(int eventid , string catName)
+        {
+            int CatID = _context.Categories.Where(c => c.EventId == eventid && c.Title == catName).Select(c => c.Id).FirstOrDefault();
+            return _context.Tickets.Count(t => t.BookingId == null && t.CategoryId == CatID);
+        }
+
+
+        public async Task<IEnumerable<Ticket>> GetNotBookedTickets(int eventid, string catName , int q)
+        {
+            int CatID = _context.Categories.Where(c => c.EventId == eventid && c.Title == catName).Select(c => c.Id).FirstOrDefault();
+            return await _context.Tickets.Where(t => t.BookingId == null && t.CategoryId == CatID).OrderBy(t => t.ID).Take(q).ToListAsync();
+        }
+
+        public  void UpdateRange(IEnumerable<Ticket> tickets) =>  _context.Tickets.UpdateRange(tickets);
     }
 }

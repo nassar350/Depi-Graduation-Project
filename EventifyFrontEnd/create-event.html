@@ -69,7 +69,7 @@
           <div class="step-divider"></div>
           <div class="step">
             <div class="step-number">3</div>
-            <div class="step-label">Tickets</div>
+            <div class="step-label">Categories</div>
           </div>
           <div class="step-divider"></div>
           <div class="step">
@@ -88,117 +88,74 @@
         <div class="col-md-8" style="margin: 0 auto;">
           <div class="card">
             <!-- Step 1: Event Details -->
-            <form id="createEventForm" class="create-event-form" novalidate>
+            <form id="createEventForm" class="create-event-form" enctype="multipart/form-data" novalidate>
               <div class="step-content active" data-step="1">
                 <h2 style="margin-bottom: var(--space-lg);">Event Details</h2>
                 
                 <div class="form-group">
-                  <label for="eventTitle" class="form-label">Event Title *</label>
+                  <label for="eventTitle" class="form-label">Event Name *</label>
                   <input 
                     type="text" 
                     id="eventTitle" 
-                    name="title"
+                    name="name"
                     class="form-input" 
                     required
                     placeholder="Give your event a catchy title"
+                    minlength="3"
                     maxlength="100"
                   >
-                  <div class="form-hint">Make it clear and engaging (max 100 characters)</div>
+                  <div class="form-hint">Make it clear and engaging (3-100 characters)</div>
                 </div>
 
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="eventCategory" class="form-label">Category *</label>
-                    <select id="eventCategory" name="category" class="form-select" required>
-                      <option value="">Select a category</option>
-                      <option value="Conferences & Conventions">Conferences & Conventions</option>
-                      <option value="Workshops & Classes">Workshops & Classes</option>
-                      <option value="Networking & Meetups">Networking & Meetups</option>
-                      <option value="Entertainment">Entertainment</option>
-                      <option value="Sports & Fitness">Sports & Fitness</option>
-                      <option value="Food & Drink">Food & Drink</option>
-                      <option value="Arts & Culture">Arts & Culture</option>
-                      <option value="Business & Professional">Business & Professional</option>
-                      <option value="Health & Wellness">Health & Wellness</option>
-                      <option value="Charity & Community">Charity & Community</option>
-                      <option value="Technology">Technology</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="eventFormat" class="form-label">Event Format *</label>
-                    <select id="eventFormat" name="format" class="form-select" required>
-                      <option value="">Select format</option>
-                      <option value="in-person">In-Person</option>
-                      <option value="virtual">Virtual</option>
-                      <option value="hybrid">Hybrid</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="eventDate" class="form-label">Event Date *</label>
+                    <label for="startDate" class="form-label">Start Date & Time *</label>
                     <input 
-                      type="date" 
-                      id="eventDate" 
-                      name="date"
+                      type="datetime-local" 
+                      id="startDate" 
+                      name="startDate"
                       class="form-input" 
                       required
                     >
                   </div>
 
                   <div class="form-group">
-                    <label for="eventTime" class="form-label">Start Time *</label>
+                    <label for="endDate" class="form-label">End Date & Time *</label>
                     <input 
-                      type="time" 
-                      id="eventTime" 
-                      name="time"
+                      type="datetime-local" 
+                      id="endDate" 
+                      name="endDate"
                       class="form-input" 
                       required
                     >
-                  </div>
-
-                  <div class="form-group">
-                    <label for="eventDuration" class="form-label">Duration</label>
-                    <select id="eventDuration" name="duration" class="form-select">
-                      <option value="">Select duration</option>
-                      <option value="1 hour">1 hour</option>
-                      <option value="2 hours">2 hours</option>
-                      <option value="3 hours">3 hours</option>
-                      <option value="Half day">Half day (4 hours)</option>
-                      <option value="Full day">Full day (8 hours)</option>
-                      <option value="2 days">2 days</option>
-                      <option value="3 days">3 days</option>
-                      <option value="Multiple days">Multiple days</option>
-                    </select>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="eventLocation" class="form-label">Event Location *</label>
+                  <label for="eventLocation" class="form-label">Event Address *</label>
                   <input 
                     type="text" 
                     id="eventLocation" 
-                    name="location"
+                    name="address"
                     class="form-input" 
                     required
-                    placeholder="Enter venue name or address"
+                    minlength="5"
+                    maxlength="200"
+                    placeholder="Enter venue address"
                   >
-                  <div class="form-hint" id="locationHint">For virtual events, you can enter "Online" or the platform name</div>
+                  <div class="form-hint" id="locationHint">Full address or venue location (5-200 characters)</div>
                 </div>
 
                 <div class="form-group">
-                  <label for="eventImage" class="form-label">Event Image</label>
+                  <label for="eventImage" class="form-label">Event Photo</label>
                   <input 
-                    type="url" 
+                    type="file" 
                     id="eventImage" 
-                    name="image"
+                    name="photo"
                     class="form-input" 
-                    placeholder="https://example.com/image.jpg"
+                    accept="image/*"
                   >
-                  <div class="form-hint">Add an engaging image URL to make your event stand out</div>
+                  <div class="form-hint">Upload an engaging image to make your event stand out (JPG, PNG, GIF)</div>
                 </div>
 
                 <div class="form-actions">
@@ -221,45 +178,12 @@
                     required
                     rows="6"
                     placeholder="Describe what attendees can expect from your event..."
-                    maxlength="2000"
+                    minlength="10"
+                    maxlength="1000"
                   ></textarea>
                   <div class="form-hint">
-                    <span id="descCharCount">0</span>/2000 characters
+                    <span id="descCharCount">0</span>/1000 characters (10 minimum required)
                   </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="eventAgenda" class="form-label">Agenda/Schedule</label>
-                  <textarea 
-                    id="eventAgenda" 
-                    name="agenda"
-                    class="form-textarea" 
-                    rows="4"
-                    placeholder="Optional: Add a detailed schedule or agenda..."
-                  ></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label for="eventRequirements" class="form-label">Requirements & What to Bring</label>
-                  <textarea 
-                    id="eventRequirements" 
-                    name="requirements"
-                    class="form-textarea" 
-                    rows="3"
-                    placeholder="What should attendees bring or know before attending?"
-                  ></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label for="eventTags" class="form-label">Tags</label>
-                  <input 
-                    type="text" 
-                    id="eventTags" 
-                    name="tags"
-                    class="form-input" 
-                    placeholder="conference, networking, professional, tech (comma-separated)"
-                  >
-                  <div class="form-hint">Add relevant tags to help people discover your event</div>
                 </div>
 
                 <div class="form-actions">
@@ -272,90 +196,23 @@
                 </div>
               </div>
 
-              <!-- Step 3: Tickets -->
+              <!-- Step 3: Categories -->
               <div class="step-content" data-step="3">
-                <h2 style="margin-bottom: var(--space-lg);">Tickets & Pricing</h2>
+                <h2 style="margin-bottom: var(--space-lg);">Event Categories & Seating</h2>
                 
                 <div class="form-group">
-                  <label class="form-label">Event Type</label>
-                  <div class="radio-group">
-                    <label class="radio-option">
-                      <input type="radio" name="ticketType" value="free" checked onchange="createEventPage.togglePricing()">
-                      <span>Free Event</span>
-                    </label>
-                    <label class="radio-option">
-                      <input type="radio" name="ticketType" value="paid" onchange="createEventPage.togglePricing()">
-                      <span>Paid Event</span>
-                    </label>
-                  </div>
+                  <label class="form-label">Ticket Categories *</label>
+                  <div class="form-hint">Add different ticket categories with seating capacity for each</div>
                 </div>
 
-                <div id="pricingSection" style="display: none;">
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="ticketPrice" class="form-label">Ticket Price *</label>
-                      <div style="position: relative;">
-                        <span style="position: absolute; left: 12px; top: 12px; color: var(--muted);">$</span>
-                        <input 
-                          type="number" 
-                          id="ticketPrice" 
-                          name="price"
-                          class="form-input" 
-                          style="padding-left: 32px;"
-                          min="0"
-                          step="0.01"
-                          placeholder="0.00"
-                        >
-                      </div>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="currency" class="form-label">Currency</label>
-                      <select id="currency" name="currency" class="form-select">
-                        <option value="USD">USD ($)</option>
-                        <option value="EUR">EUR (€)</option>
-                        <option value="GBP">GBP (£)</option>
-                        <option value="CAD">CAD ($)</option>
-                        <option value="AUD">AUD ($)</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="eventCapacity" class="form-label">Event Capacity *</label>
-                    <input 
-                      type="number" 
-                      id="eventCapacity" 
-                      name="capacity"
-                      class="form-input" 
-                      required
-                      min="1"
-                      max="10000"
-                      placeholder="50"
-                    >
-                    <div class="form-hint">Maximum number of attendees</div>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="registrationDeadline" class="form-label">Registration Deadline</label>
-                    <input 
-                      type="datetime-local" 
-                      id="registrationDeadline" 
-                      name="registrationDeadline"
-                      class="form-input"
-                    >
-                  </div>
+                <div id="categoriesContainer">
+                  <!-- Categories will be dynamically added here -->
                 </div>
 
                 <div class="form-group">
-                  <div class="checkbox-group">
-                    <label class="checkbox-option">
-                      <input type="checkbox" name="requireApproval" value="true">
-                      <span>Require approval for registration</span>
-                    </label>
-                  </div>
+                  <button type="button" class="btn btn-outline" onclick="createEventPage.addCategory()" id="addCategoryBtn">
+                    + Add Category
+                  </button>
                 </div>
 
                 <div class="form-actions">

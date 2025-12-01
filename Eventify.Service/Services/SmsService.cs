@@ -25,6 +25,8 @@ namespace Eventify.Service.Services
         public async Task SendSmsAsync(string toNumber, string message)
         {
             TwilioClient.Init(Environment.GetEnvironmentVariable("TwilioAccountSID"), Environment.GetEnvironmentVariable("TwilioAuthToken"));
+            //TwilioClient.Init("", "");
+
             var msg = await MessageResource.CreateAsync(
                 body: message,
                 from: new Twilio.Types.PhoneNumber(_config["Notification:TwilioFromNumber"]),

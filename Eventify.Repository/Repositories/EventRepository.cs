@@ -54,4 +54,15 @@ public class EventRepository : IEventRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Id == id);
     }
+
+    public async Task<IEnumerable<Event>> GetUpcommingAsync(int take)
+    {
+        return await _context.Events
+            .Where(e => e.StartDate > DateTime.UtcNow)
+            .OrderBy(e => e.StartDate)
+            .Take(take)
+            .Include(e => e.Organizer)
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }

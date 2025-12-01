@@ -1,3 +1,4 @@
+using Eventify.Service.Helpers;
 using System.ComponentModel.DataAnnotations;
 
 namespace Eventify.Service.DTOs.Auth

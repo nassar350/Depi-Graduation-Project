@@ -10,9 +10,8 @@ namespace Eventify.Service.Mappings
         public EventProfile()
         {
             CreateMap<CreateEventDto, Event>()
-                .ForMember(dest => dest.Photo,
-                    opt => opt.MapFrom(src => ConvertFormFileToByteArray(src.Photo))) // handle IFormFile -> byte[]
-                .ForMember(dest => dest.Categories, opt => opt.Ignore()) // map CategoryIds manually in service
+               .ForMember(dest => dest.PhotoUrl, opt => opt.Ignore())
+               .ForMember(dest => dest.Categories, opt => opt.Ignore()) // map CategoryIds manually in service
                 .ForMember(dest => dest.Organizer, opt => opt.Ignore())
                 .ForMember(dest => dest.EventsAttendedByUsers, opt => opt.Ignore())
                 .ForMember(dest => dest.Tickets, opt => opt.Ignore());
@@ -20,8 +19,7 @@ namespace Eventify.Service.Mappings
             CreateMap<Event, EventDto>()
                 .ForMember(dest => dest.OrganizerName,
                     opt => opt.MapFrom(src => src.Organizer != null ? src.Organizer.Name : "Unknown"))
-                .ForMember(dest => dest.PhotoBase64,
-                    opt => opt.MapFrom(src => src.Photo != null ? Convert.ToBase64String(src.Photo) : ""))
+                .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.PhotoUrl ?? ""))
                 .ForMember(dest => dest.AvailableTickets,
                     opt => opt.MapFrom(src => src.Tickets != null ? src.Tickets.Count(t => t.BookingId == null) : 0))
                 .ForMember(dest => dest.IsUpcoming,
@@ -40,8 +38,7 @@ namespace Eventify.Service.Mappings
                     opt => opt.Ignore());
 
             CreateMap<UpdateEventDto, Event>()
-                .ForMember(dest => dest.Photo,
-                    opt => opt.MapFrom(src => ConvertFormFileToByteArray(src.Photo)))
+               .ForMember(dest => dest.PhotoUrl, opt => opt.Ignore())
                 .ForAllMembers(opt =>
                     opt.Condition((src, dest, srcMember) => srcMember != null));
         }

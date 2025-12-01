@@ -1,15 +1,16 @@
-// Create Event Page JavaScript
+// Create Event Page JavaScript - Backend API Integration
 class CreateEventPage {
   constructor() {
     this.currentStep = 1;
     this.maxStep = 4;
-    this.eventData = {};
+    this.categories = [];
+    this.apiBaseUrl = window.API_BASE_URL || 'https://localhost:7105/';
     
     this.init();
   }
 
   init() {
-    // Check authentication - require organizer access
+    // Check authentication - require login
     const user = app.getCurrentUser();
     if (!user) {
       app.showNotification('Please log in to create events', 'warning');
@@ -19,18 +20,10 @@ class CreateEventPage {
       return;
     }
 
-    // Check if user can create events (organizers only)
-    if (user.userType === 'attendee') {
-      app.showNotification('Only event organizers can create events. Please contact us to upgrade your account.', 'warning');
-      setTimeout(() => {
-        window.location.href = 'about.html';
-      }, 2000);
-      return;
-    }
-
     this.setupEventHandlers();
     this.setupFormValidation();
-    this.setMinDate();
+    this.setMinDateTime();
+    this.initializeCategories();
   }
 
   setupEventHandlers() {
@@ -48,21 +41,13 @@ class CreateEventPage {
       });
     }
 
-    // Location format handling
-    const formatSelect = document.getElementById('eventFormat');
-    if (formatSelect) {
-      formatSelect.addEventListener('change', (e) => this.handleFormatChange(e.target.value));
-    }
+    // Start/End date validation
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
 
-    // Date/time validation
-    const dateInput = document.getElementById('eventDate');
-    const timeInput = document.getElementById('eventTime');
-    const deadlineInput = document.getElementById('registrationDeadline');
-
-    if (dateInput && timeInput && deadlineInput) {
-      [dateInput, timeInput].forEach(input => {
-        input.addEventListener('change', () => this.updateRegistrationDeadline());
-      });
+    if (startDateInput && endDateInput) {
+      startDateInput.addEventListener('change', () => this.validateDateRange());
+      endDateInput.addEventListener('change', () => this.validateDateRange());
     }
 
     // Real-time preview updates
@@ -78,7 +63,7 @@ class CreateEventPage {
   }
 
   setupPreviewUpdates() {
-    const previewFields = ['eventTitle', 'eventCategory', 'eventDate', 'eventTime', 'eventLocation', 'eventDescription'];
+    const previewFields = ['eventTitle', 'startDate', 'endDate', 'eventLocation', 'eventDescription'];
     
     previewFields.forEach(fieldId => {
       const field = document.getElementById(fieldId);
@@ -92,82 +77,149 @@ class CreateEventPage {
     });
   }
 
-  setMinDate() {
-    const dateInput = document.getElementById('eventDate');
-    const deadlineInput = document.getElementById('registrationDeadline');
+  setMinDateTime() {
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
     
-    if (dateInput) {
-      // Set minimum date to tomorrow
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      dateInput.min = tomorrow.toISOString().split('T')[0];
-    }
-
-    if (deadlineInput) {
-      // Set minimum datetime to now
-      const now = new Date();
-      deadlineInput.min = now.toISOString().slice(0, 16);
-    }
-  }
-
-  handleFormatChange(format) {
-    const locationInput = document.getElementById('eventLocation');
-    const locationHint = document.getElementById('locationHint');
+    // Set minimum datetime to current time
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 60); // At least 1 hour from now
+    const minDateTime = now.toISOString().slice(0, 16);
     
-    if (!locationInput || !locationHint) return;
-
-    switch (format) {
-      case 'virtual':
-        locationInput.placeholder = 'Platform name (e.g., Zoom, Teams, YouTube Live)';
-        locationHint.textContent = 'Specify the virtual platform or provide a link';
-        break;
-      case 'hybrid':
-        locationInput.placeholder = 'Venue name + Virtual platform';
-        locationHint.textContent = 'Include both physical venue and virtual platform details';
-        break;
-      default:
-        locationInput.placeholder = 'Enter venue name or address';
-        locationHint.textContent = 'Provide the full address or venue name';
+    if (startDateInput) {
+      startDateInput.min = minDateTime;
+    }
+    
+    if (endDateInput) {
+      endDateInput.min = minDateTime;
     }
   }
 
-  updateRegistrationDeadline() {
-    const dateInput = document.getElementById('eventDate');
-    const timeInput = document.getElementById('eventTime');
-    const deadlineInput = document.getElementById('registrationDeadline');
+  validateDateRange() {
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
     
-    if (dateInput.value && timeInput.value && deadlineInput) {
-      // Set default deadline to 24 hours before event
-      const eventDateTime = new Date(`${dateInput.value}T${timeInput.value}`);
-      eventDateTime.setHours(eventDateTime.getHours() - 24);
+    if (startDateInput.value && endDateInput.value) {
+      const startDate = new Date(startDateInput.value);
+      const endDate = new Date(endDateInput.value);
       
-      // Don't set deadline in the past
-      const now = new Date();
-      if (eventDateTime > now) {
-        deadlineInput.value = eventDateTime.toISOString().slice(0, 16);
-      }
-      
-      // Set max deadline to event start time
-      const maxDeadline = new Date(`${dateInput.value}T${timeInput.value}`);
-      deadlineInput.max = maxDeadline.toISOString().slice(0, 16);
-    }
-  }
-
-  togglePricing() {
-    const pricingSection = document.getElementById('pricingSection');
-    const ticketType = document.querySelector('input[name="ticketType"]:checked').value;
-    const priceInput = document.getElementById('ticketPrice');
-    
-    if (pricingSection) {
-      pricingSection.style.display = ticketType === 'paid' ? 'block' : 'none';
-      
-      if (priceInput) {
-        priceInput.required = ticketType === 'paid';
-        if (ticketType === 'free') {
-          priceInput.value = '0';
-        }
+      if (endDate <= startDate) {
+        this.showFieldError(endDateInput, 'End date must be after start date');
+        return false;
+      } else {
+        this.clearFieldError(endDateInput);
+        return true;
       }
     }
+    return true;
+  }
+
+  // Categories Management
+  initializeCategories() {
+    // Add a default category
+    this.addCategory();
+  }
+
+  addCategory() {
+    const container = document.getElementById('categoriesContainer');
+    if (!container) return;
+
+    const categoryId = `category-${Date.now()}`;
+    const categoryHtml = `
+      <div class="category-item" id="${categoryId}" style="
+        border: 2px solid var(--border); 
+        border-radius: var(--radius-md); 
+        padding: var(--space-lg); 
+        margin-bottom: var(--space-md);
+        position: relative;
+      ">
+        <div class="form-row">
+          <div class="form-group" style="flex: 2;">
+            <label class="form-label">Category Title *</label>
+            <input 
+              type="text" 
+              class="form-input category-title" 
+              placeholder="e.g., VIP, Premium, Regular"
+              required
+            >
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Seats *</label>
+            <input 
+              type="number" 
+              class="form-input category-seats" 
+              placeholder="50"
+              min="1"
+              max="10000"
+              required
+            >
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Ticket Price *</label>
+            <input 
+              type="number" 
+              class="form-input category-price" 
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+              required
+            >
+          </div>
+          <div class="form-group" style="flex: 0 0 auto;">
+            <label class="form-label" style="visibility: hidden;">Remove</label>
+            <button 
+              type="button" 
+              class="btn btn-outline" 
+              style="background: var(--danger); color: white; border-color: var(--danger);"
+              onclick="createEventPage.removeCategory('${categoryId}')"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', categoryHtml);
+    this.updateAddButtonState();
+  }
+
+  removeCategory(categoryId) {
+    const categoryElement = document.getElementById(categoryId);
+    if (categoryElement) {
+      categoryElement.remove();
+      this.updateAddButtonState();
+    }
+  }
+
+  updateAddButtonState() {
+    const container = document.getElementById('categoriesContainer');
+    const addBtn = document.getElementById('addCategoryBtn');
+    if (container && addBtn) {
+      const categoryCount = container.children.length;
+      addBtn.style.display = categoryCount >= 5 ? 'none' : 'block';
+    }
+  }
+
+  getCategoriesData() {
+    const categories = [];
+    const categoryItems = document.querySelectorAll('.category-item');
+    
+    categoryItems.forEach(item => {
+      const titleInput = item.querySelector('.category-title');
+      const seatsInput = item.querySelector('.category-seats');
+      const priceInput = item.querySelector('.category-price');
+      
+      if (titleInput && seatsInput && priceInput && titleInput.value.trim() && seatsInput.value && priceInput.value) {
+        categories.push({
+          title: titleInput.value.trim(),
+          seats: parseInt(seatsInput.value),
+          TicketPrice: parseFloat(priceInput.value)
+        });
+      }
+    });
+    
+    return categories;
   }
 
   // Step navigation
@@ -214,19 +266,55 @@ class CreateEventPage {
     const currentStepContent = document.querySelector(`.step-content[data-step="${this.currentStep}"]`);
     if (!currentStepContent) return true;
 
-    const requiredFields = currentStepContent.querySelectorAll('[required]');
     let isValid = true;
 
-    requiredFields.forEach(field => {
-      if (!this.validateField(field)) {
+    // Step 1: Basic details
+    if (this.currentStep === 1) {
+      const requiredFields = currentStepContent.querySelectorAll('[required]');
+      requiredFields.forEach(field => {
+        if (!this.validateField(field)) {
+          isValid = false;
+        }
+      });
+
+      // Validate date range
+      if (!this.validateDateRange()) {
         isValid = false;
       }
-    });
+    }
+
+    // Step 2: Description
+    if (this.currentStep === 2) {
+      const descField = document.getElementById('eventDescription');
+      if (!this.validateField(descField)) {
+        isValid = false;
+      }
+    }
+
+    // Step 3: Categories
+    if (this.currentStep === 3) {
+      const categories = this.getCategoriesData();
+      if (categories.length === 0) {
+        app.showNotification('Please add at least one category', 'error');
+        isValid = false;
+      }
+    }
+
+    // Step 4: Terms agreement
+    if (this.currentStep === 4) {
+      const termsCheckbox = document.querySelector('input[name="agreeToTerms"]');
+      if (termsCheckbox && !termsCheckbox.checked) {
+        app.showNotification('Please agree to the Terms of Service', 'error');
+        isValid = false;
+      }
+    }
 
     return isValid;
   }
 
   validateField(field) {
+    if (!field) return true;
+    
     const value = field.value.trim();
     let isValid = true;
     let errorMessage = '';
@@ -242,53 +330,49 @@ class CreateEventPage {
 
     // Specific field validations
     if (isValid && value) {
-      switch (field.id) {
+      switch (field.name || field.id) {
+        case 'name':
         case 'eventTitle':
-          if (value.length < 5) {
-            errorMessage = 'Event title must be at least 5 characters';
+          if (value.length < 3 || value.length > 100) {
+            errorMessage = 'Event name must be 3-100 characters';
             isValid = false;
           }
           break;
           
-        case 'eventDate':
-          const eventDate = new Date(value);
-          const tomorrow = new Date();
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          tomorrow.setHours(0, 0, 0, 0);
-          
-          if (eventDate < tomorrow) {
-            errorMessage = 'Event date must be at least tomorrow';
-            isValid = false;
-          }
-          break;
-          
+        case 'description':
         case 'eventDescription':
-          if (value.length < 50) {
-            errorMessage = 'Description should be at least 50 characters';
+          if (value.length < 10 || value.length > 1000) {
+            errorMessage = 'Description must be 10-1000 characters';
             isValid = false;
           }
           break;
           
-        case 'eventCapacity':
-          const capacity = parseInt(value);
-          if (capacity < 1 || capacity > 10000) {
-            errorMessage = 'Capacity must be between 1 and 10,000';
+        case 'address':
+        case 'eventLocation':
+          if (value.length < 5 || value.length > 200) {
+            errorMessage = 'Address must be 5-200 characters';
             isValid = false;
           }
           break;
           
-        case 'ticketPrice':
-          const price = parseFloat(value);
-          if (price < 0) {
-            errorMessage = 'Price cannot be negative';
+        case 'startDate':
+          const startDate = new Date(value);
+          const now = new Date();
+          if (startDate <= now) {
+            errorMessage = 'Start date must be in the future';
             isValid = false;
           }
           break;
           
-        case 'eventImage':
-          if (value && !this.isValidUrl(value)) {
-            errorMessage = 'Please enter a valid URL';
-            isValid = false;
+        case 'endDate':
+          const endDate = new Date(value);
+          const startValue = document.getElementById('startDate')?.value;
+          if (startValue) {
+            const startDateTime = new Date(startValue);
+            if (endDate <= startDateTime) {
+              errorMessage = 'End date must be after start date';
+              isValid = false;
+            }
           }
           break;
       }
@@ -330,33 +414,25 @@ class CreateEventPage {
     if (!previewContainer) return;
 
     const formData = this.getFormData();
-    const isVirtual = formData.format === 'virtual';
-    const isFree = formData.ticketType === 'free';
+    const categories = this.getCategoriesData();
 
     previewContainer.innerHTML = `
       <div style="display: flex; gap: var(--space-lg); margin-bottom: var(--space-lg); flex-wrap: wrap;">
-        <img 
-          src="${formData.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=300&h=200&fit=crop'}" 
-          alt="Event preview"
-          style="width: 200px; height: 120px; object-fit: cover; border-radius: var(--radius-md);"
-          onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=300&h=200&fit=crop'"
-        >
+        <div style="width: 200px; height: 120px; background: var(--accent); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+          🎉
+        </div>
         
         <div style="flex: 1; min-width: 250px;">
-          <h4 style="margin-bottom: var(--space-sm);">${formData.title || 'Event Title'}</h4>
+          <h4 style="margin-bottom: var(--space-sm);">${formData.get('name') || 'Event Name'}</h4>
           <p style="margin-bottom: var(--space-md); color: var(--muted);">
-            📅 ${formData.date ? EventifyData.formatDate(formData.date) : 'Date'} 
-            ${formData.time ? 'at ' + EventifyData.formatTime(formData.time) : ''}<br>
-            ${isVirtual ? '🌐' : '📍'} ${formData.location || 'Location'}<br>
-            👥 ${formData.capacity || 'Capacity'} attendees
+            📅 ${formData.get('startDate') ? new Date(formData.get('startDate')).toLocaleString() : 'Start Date'}<br>
+            📅 ${formData.get('endDate') ? new Date(formData.get('endDate')).toLocaleString() : 'End Date'}<br>
+            📍 ${formData.get('address') || 'Address'}<br>
+            👥 ${categories.reduce((total, cat) => total + cat.seats, 0)} total seats
           </p>
           
           <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
-            <span class="event-tag">${formData.category || 'Category'}</span>
-            <span class="event-tag">${formData.format || 'Format'}</span>
-            <span class="event-tag" style="background: var(--accent); color: white;">
-              ${isFree ? 'Free' : (formData.price ? app.formatCurrency(formData.price) : 'Paid')}
-            </span>
+            ${categories.map(cat => `<span class="event-tag">${cat.title}: ${cat.seats} seats - $${cat.TicketPrice}</span>`).join('')}
           </div>
         </div>
       </div>
@@ -364,50 +440,14 @@ class CreateEventPage {
       <div style="margin-bottom: var(--space-lg);">
         <h5 style="margin-bottom: var(--space-sm);">Description</h5>
         <p style="line-height: 1.6; color: var(--muted);">
-          ${formData.description || 'Event description will appear here...'}
+          ${formData.get('description') || 'Event description will appear here...'}
         </p>
       </div>
-      
-      ${formData.agenda ? `
-        <div style="margin-bottom: var(--space-lg);">
-          <h5 style="margin-bottom: var(--space-sm);">Agenda</h5>
-          <p style="line-height: 1.6; color: var(--muted); white-space: pre-line;">
-            ${formData.agenda}
-          </p>
-        </div>
-      ` : ''}
-      
-      ${formData.requirements ? `
-        <div style="margin-bottom: var(--space-lg);">
-          <h5 style="margin-bottom: var(--space-sm);">Requirements</h5>
-          <p style="line-height: 1.6; color: var(--muted); white-space: pre-line;">
-            ${formData.requirements}
-          </p>
-        </div>
-      ` : ''}
     `;
   }
 
   getFormData() {
-    const formData = new FormData(document.getElementById('createEventForm'));
-    const data = {};
-    
-    for (let [key, value] of formData.entries()) {
-      data[key] = value;
-    }
-    
-    // Get radio button values
-    const ticketType = document.querySelector('input[name="ticketType"]:checked');
-    if (ticketType) {
-      data.ticketType = ticketType.value;
-    }
-    
-    const publishStatus = document.querySelector('input[name="publishStatus"]:checked');
-    if (publishStatus) {
-      data.publishStatus = publishStatus.value;
-    }
-
-    return data;
+    return new FormData(document.getElementById('createEventForm'));
   }
 
   async handleFormSubmit(event) {
@@ -419,106 +459,117 @@ class CreateEventPage {
     }
 
     const formData = this.getFormData();
+    const categories = this.getCategoriesData();
     
-    // Create event object
-    const eventObject = this.createEventObject(formData);
-    
+    if (categories.length === 0) {
+      app.showNotification('Please add at least one category', 'error');
+      return;
+    }
+
     try {
-      // In a real app, this would be an API call
-      await this.saveEvent(eventObject);
-      
-      // Show success
-      this.showSuccessModal(eventObject);
-      
+      await this.createEvent(formData, categories);
     } catch (error) {
       console.error('Error creating event:', error);
       app.showNotification('Error creating event. Please try again.', 'error');
     }
   }
 
-  createEventObject(formData) {
+  async createEvent(formData, categories) {
     const user = app.getCurrentUser();
-    const now = new Date();
-    
-    // Generate a unique ID (in a real app, this would be done server-side)
-    const id = Date.now() + Math.random().toString(36).substr(2, 9);
-    
-    const eventObject = {
-      id: id,
-      title: formData.title,
-      description: formData.description,
-      category: formData.category,
-      date: formData.date,
-      time: formData.time,
-      duration: formData.duration,
-      location: formData.location,
-      format: formData.format,
-      image: formData.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
-      price: formData.ticketType === 'free' ? 0 : parseFloat(formData.price || 0),
-      currency: formData.currency || 'USD',
-      capacity: parseInt(formData.capacity),
-      ticketsAvailable: parseInt(formData.capacity),
-      registrationDeadline: formData.registrationDeadline,
-      requireApproval: formData.requireApproval === 'true',
-      agenda: formData.agenda,
-      requirements: formData.requirements,
-      tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
-      status: formData.publishStatus || 'published',
-      
-      // Organizer info
-      organizerId: user.id || user.email,
-      organizerName: user.name,
-      organizerEmail: user.email,
-      organizerAvatar: user.avatar,
-      
-      // Metadata
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString()
-    };
+    const token = localStorage.getItem('eventify_token');
 
-    return eventObject;
-  }
-
-  async saveEvent(eventObject) {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Save to localStorage (simulating database)
-    const customEvents = JSON.parse(localStorage.getItem('customEvents') || '[]');
-    customEvents.push(eventObject);
-    localStorage.setItem('customEvents', JSON.stringify(customEvents));
-    
-    // Also add to main events data if published
-    if (eventObject.status === 'published') {
-      // In a real app, this would be handled server-side
-      const mainEvents = JSON.parse(localStorage.getItem('eventify_events') || '[]');
-      mainEvents.push(eventObject);
-      localStorage.setItem('eventify_events', JSON.stringify(mainEvents));
-      
-      // Update EventifyData
-      if (window.EventifyData && EventifyData.customEvents) {
-        EventifyData.customEvents.push(eventObject);
-      }
+    if (!token) {
+      app.showNotification('Authentication required. Please log in again.', 'error');
+      window.location.href = 'login.html?redirect=create-event.html';
+      return;
     }
-    
-    return eventObject;
+
+    // Show loading state
+    const submitBtn = document.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Creating Event...';
+    submitBtn.disabled = true;
+
+    try {
+      // Prepare form data for API
+      const apiFormData = new FormData();
+      
+      // Required fields
+      apiFormData.append('name', formData.get('name'));
+      apiFormData.append('description', formData.get('description'));
+      apiFormData.append('address', formData.get('address'));
+      
+      // Convert datetime-local to ISO 8601 format
+      const startDate = new Date(formData.get('startDate')).toISOString();
+      const endDate = new Date(formData.get('endDate')).toISOString();
+      apiFormData.append('startDate', startDate);
+      apiFormData.append('endDate', endDate);
+      
+      // Categories as JSON string
+      apiFormData.append('categoriesJson', JSON.stringify(categories));
+      
+      // Photo (if provided)
+      const photoFile = document.getElementById('eventImage').files[0];
+      if (photoFile) {
+        apiFormData.append('photo', photoFile);
+      }
+
+      // Call API
+      const response = await fetch(`${this.apiBaseUrl}/api/Events`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: apiFormData
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        app.showNotification('Event created successfully!', 'success');
+        this.showSuccessModal(result);
+      } else {
+        const errorData = await response.json().catch(() => null);
+        let errorMessage = 'Failed to create event';
+        
+        if (errorData) {
+          if (errorData.errors && Array.isArray(errorData.errors)) {
+            errorMessage = errorData.errors[0];
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          } else if (typeof errorData === 'string') {
+            errorMessage = errorData;
+          }
+        }
+        
+        app.showNotification(errorMessage, 'error');
+      }
+
+    } catch (error) {
+      console.error('API call failed:', error);
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        app.showNotification('Unable to connect to server. Please check your connection and try again.', 'error');
+      } else {
+        app.showNotification('An unexpected error occurred. Please try again.', 'error');
+      }
+    } finally {
+      // Restore button state
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    }
   }
 
-  showSuccessModal(eventObject) {
+  showSuccessModal(eventData) {
     const modal = document.getElementById('successModal');
     const actionsContainer = document.getElementById('eventActions');
     
-    if (actionsContainer) {
+    if (actionsContainer && eventData) {
       actionsContainer.innerHTML = `
-        <a href="event.html?id=${eventObject.id}" class="btn btn-primary">
-          👁️ View Event
-        </a>
-        <a href="dashboard.html" class="btn btn-outline">
+        <a href="dashboard.html" class="btn btn-primary">
           📊 Go to Dashboard
         </a>
         <button 
           class="btn btn-outline" 
-          onclick="createEventPage.shareEvent('${eventObject.id}')"
+          onclick="createEventPage.shareEvent('${eventData.id || eventData.eventId}')"
         >
           📤 Share Event
         </button>
@@ -550,15 +601,6 @@ class CreateEventPage {
         // Final fallback: show URL in alert
         alert(`Share this event: ${shareUrl}`);
       });
-    }
-  }
-
-  isValidUrl(string) {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
     }
   }
 }
@@ -673,6 +715,54 @@ style.textContent = `
     box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
   }
   
+  /* Category management styles */
+  .category-item {
+    position: relative;
+    background: var(--card-bg);
+    transition: all var(--anim-speed) ease;
+  }
+  
+  .category-item:hover {
+    border-color: var(--accent) !important;
+  }
+  
+  .category-title,
+  .category-seats {
+    background: var(--bg);
+  }
+  
+  /* File input styling */
+  input[type="file"] {
+    padding: var(--space-sm) !important;
+    border: 2px dashed var(--border) !important;
+    background: var(--bg) !important;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--anim-speed) ease;
+  }
+  
+  input[type="file"]:hover {
+    border-color: var(--accent) !important;
+    background: var(--card-bg) !important;
+  }
+  
+  input[type="file"]:focus {
+    outline: none;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 2px rgba(124, 92, 255, 0.1) !important;
+  }
+  
+  /* Event tag styles for preview */
+  .event-tag {
+    display: inline-block;
+    padding: 4px 8px;
+    background: var(--border);
+    color: var(--text);
+    font-size: 0.75rem;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  
   @media (max-width: 900px) {
     .create-steps {
       display: grid;
@@ -688,6 +778,19 @@ style.textContent = `
     .form-actions {
       flex-direction: column;
     }
+    
+    .form-row {
+      flex-direction: column;
+    }
+    
+    .category-item .form-row {
+      flex-direction: row;
+      align-items: end;
+    }
+    
+    .category-item .form-group:last-child {
+      margin-top: 0;
+    }
   }
   
   @media (max-width: 600px) {
@@ -700,6 +803,14 @@ style.textContent = `
     
     .step-divider {
       display: none;
+    }
+    
+    .category-item .form-row {
+      flex-direction: column;
+    }
+    
+    .category-item .form-group {
+      flex: 1 !important;
     }
   }
 `;

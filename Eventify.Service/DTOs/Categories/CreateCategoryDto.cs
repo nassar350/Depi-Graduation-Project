@@ -3,7 +3,7 @@
 namespace Eventify.Service.DTOs.Categories
 {
     public class CreateCategoryDto
-    {    //seeeeeeee
+    {
         [Required(ErrorMessage = "Event ID is required")]
         [Range(1, int.MaxValue, ErrorMessage = "Event ID must be a positive number")]
         public int EventId { get; set; }
@@ -14,11 +14,13 @@ namespace Eventify.Service.DTOs.Categories
         [Required(ErrorMessage = "Total seats are required")]
         [Range(1, 10000, ErrorMessage = "Seats must be between 1 and 10000")]
         public int Seats { get; set; }
-        public CreateCategoryDto(int eventid , string title , int seats)
+        public decimal TicketPrice {  get; set; }
+        public CreateCategoryDto(int eventid , string title , int seats , decimal price)
         {
             EventId = eventid;
             Title = title;
             Seats = seats;
+            TicketPrice = price;
         }
     }
 

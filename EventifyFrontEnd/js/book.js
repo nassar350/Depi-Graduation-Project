@@ -25,6 +25,7 @@ class BookingPage {
   getEventId() {
     const params = app.getUrlParams();
     this.eventId = params.eventId ? parseInt(params.eventId) : null;
+    this.ticketPrice = params.price ? parseFloat(params.price) : 0;
     
     if (!this.eventId) {
       this.showError('No event selected for booking');
@@ -151,7 +152,7 @@ class BookingPage {
     if (!this.event) return;
 
     const ticketQuantity = parseInt(document.getElementById('ticketQuantity')?.value || 0);
-    const ticketPrice = this.event.price;
+    const ticketPrice = this.ticketPrice || 0;
     const subtotal = ticketPrice * ticketQuantity;
     const discount = subtotal * (this.promoDiscount / 100);
     const total = subtotal - discount;
@@ -477,7 +478,7 @@ class BookingPage {
         phone: this.formData.phone || ''
       },
       tickets: parseInt(this.formData.ticketQuantity),
-      pricePerTicket: this.event.price,
+      pricePerTicket: this.ticketPrice || 0,
       subtotal: this.formData.subtotal,
       discount: this.formData.discount,
       total: this.formData.total,

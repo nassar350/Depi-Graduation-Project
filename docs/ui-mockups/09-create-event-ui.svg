@@ -1,0 +1,304 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 3200" width="1440" height="3200">
+  <title>Eventify - Create Event UI Mockup (Organizer)</title>
+  
+  <defs>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7C5CFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00D4FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1440" height="3200" fill="#F9FAFB"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="1440" height="80" fill="url(#headerGrad)"/>
+  <circle cx="60" cy="40" r="20" fill="#FFFFFF" opacity="0.3"/>
+  <text x="90" y="48" font-family="'Segoe UI', Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF">Eventify</text>
+  
+  <text x="1300" y="48" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#FFFFFF" font-weight="600">← Back to Dashboard</text>
+  
+  <!-- Main Container -->
+  <text x="140" y="150" font-family="'Segoe UI', Arial, sans-serif" font-size="36" font-weight="bold" fill="#1A1A2E">Create Your Event</text>
+  <text x="140" y="185" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280">Fill in the details below to create and publish your event</text>
+  
+  <!-- Main Form Section -->
+  <g filter="url(#shadow)">
+    <rect x="140" y="230" width="820" height="2870" rx="24" fill="#FFFFFF"/>
+    
+    <!-- Basic Information Section -->
+    <text x="180" y="280" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="bold" fill="#1A1A2E">Basic Information</text>
+    
+    <!-- Event Name -->
+    <text x="180" y="330" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">Event Name *</text>
+    <rect x="180" y="345" width="720" height="50" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="200" y="377" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E">Summer Music Festival 2024</text>
+    
+    <!-- Category and Type Row -->
+    <text x="180" y="440" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">Category *</text>
+    <rect x="180" y="455" width="340" height="50" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="200" y="487" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E">Music</text>
+    <text x="500" y="487" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280">▼</text>
+    
+    <text x="560" y="440" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">Event Type *</text>
+    <rect x="560" y="455" width="340" height="50" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+    
+    <!-- Radio Buttons for Event Type -->
+    <circle cx="590" cy="480" r="10" fill="transparent" stroke="#7C5CFF" stroke-width="2"/>
+    <circle cx="590" cy="480" r="5" fill="#7C5CFF"/>
+    <text x="610" y="487" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">In-Person</text>
+    
+    <circle cx="720" cy="480" r="10" fill="transparent" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="740" y="487" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#6B7280">Online</text>
+    
+    <circle cx="830" cy="480" r="10" fill="transparent" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="850" y="487" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#6B7280">Hybrid</text>
+    
+    <!-- Event Image Upload -->
+    <text x="180" y="560" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">Event Cover Image *</text>
+    <rect x="180" y="575" width="720" height="220" rx="12" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="2" stroke-dasharray="8,4"/>
+    <circle cx="540" cy="660" r="36" fill="#E5E7EB"/>
+    <text x="540" y="672" font-family="'Segoe UI', Arial, sans-serif" font-size="28" fill="#6B7280" text-anchor="middle">📷</text>
+    <text x="540" y="720" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E" text-anchor="middle" font-weight="600">Drop your image here or click to browse</text>
+    <text x="540" y="745" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280" text-anchor="middle">Recommended: 1200x630px, JPG or PNG, max 5MB</text>
+    <rect x="470" y="760" width="140" height="36" rx="18" fill="#7C5CFF"/>
+    <text x="540" y="784" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle" font-weight="600">Choose File</text>
+    
+    <!-- Description -->
+    <text x="180" y="850" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">Event Description *</text>
+    <rect x="180" y="865" width="720" height="200" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+    
+    <!-- Rich Text Editor Toolbar -->
+    <rect x="180" y="865" width="720" height="45" rx="12" fill="#F9FAFB"/>
+    <text x="200" y="893" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280" font-weight="bold">B</text>
+    <text x="230" y="893" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280" font-style="italic">I</text>
+    <text x="260" y="893" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280" text-decoration="underline">U</text>
+    <line x1="285" y1="878" x2="285" y2="898" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="300" y="893" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280">🔗</text>
+    <text x="330" y="893" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280">📝</text>
+    <text x="360" y="893" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280">📊</text>
+    
+    <!-- Editor Content -->
+    <text x="200" y="940" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">Join us for an unforgettable night of live music featuring top artists from around the</text>
+    <text x="200" y="965" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">region. Experience world-class performances in an electrifying atmosphere...</text>
+    
+    <!-- Character Count -->
+    <text x="850" y="1055" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#9CA3AF" text-anchor="end">146 / 5000</text>
+    
+    <line x1="180" y1="1100" x2="900" y2="1100" stroke="#E5E7EB" stroke-width="1"/>
+    
+    <!-- Date & Time Section -->
+    <text x="180" y="1150" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="bold" fill="#1A1A2E">Date & Time</text>
+    
+    <!-- Start Date/Time -->
+    <text x="180" y="1200" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">Start Date & Time *</text>
+    <rect x="180" y="1215" width="340" height="50" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="200" y="1247" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E">July 15, 2024</text>
+    <text x="490" y="1247" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280">📅</text>
+    
+    <rect x="560" y="1215" width="340" height="50" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="580" y="1247" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E">6:00 PM</text>
+    <text x="870" y="1247" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280">🕐</text>
+    
+    <!-- End Date/Time -->
+    <text x="180" y="1310" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">End Date & Time *</text>
+    <rect x="180" y="1325" width="340" height="50" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="200" y="1357" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E">July 16, 2024</text>
+    <text x="490" y="1357" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280">📅</text>
+    
+    <rect x="560" y="1325" width="340" height="50" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="580" y="1357" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E">11:00 PM</text>
+    <text x="870" y="1357" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280">🕐</text>
+    
+    <line x1="180" y1="1410" x2="900" y2="1410" stroke="#E5E7EB" stroke-width="1"/>
+    
+    <!-- Location Section -->
+    <text x="180" y="1460" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="bold" fill="#1A1A2E">Location</text>
+    
+    <text x="180" y="1510" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">Venue Name *</text>
+    <rect x="180" y="1525" width="720" height="50" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="200" y="1557" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E">Cairo Stadium</text>
+    
+    <text x="180" y="1620" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">Full Address *</text>
+    <rect x="180" y="1635" width="720" height="50" rx="12" fill="#FFFFFF" stroke="#7C5CFF" stroke-width="2"/>
+    <text x="200" y="1667" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E">Nasr City, Cairo</text>
+    <text x="870" y="1667" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280">📍</text>
+    
+    <!-- Autocomplete Suggestions -->
+    <g filter="url(#shadow)">
+      <rect x="180" y="1695" width="720" height="120" rx="12" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      <rect x="180" y="1695" width="720" height="40" rx="12" fill="#F9FAFB"/>
+      <text x="200" y="1721" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#1A1A2E">📍 Cairo Stadium, Nasr City, Cairo Governorate, Egypt</text>
+      
+      <line x1="180" y1="1735" x2="900" y2="1735" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="200" y="1761" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280">📍 Cairo International Stadium, El-Nasr Street, Cairo</text>
+      
+      <line x1="180" y1="1775" x2="900" y2="1775" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="200" y="1801" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280">📍 Cairo Stadium - Gate 1, Nasr City</text>
+    </g>
+    
+    <text x="180" y="1860" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">City</text>
+    <rect x="180" y="1875" width="340" height="50" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="200" y="1907" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E">Cairo</text>
+    
+    <text x="560" y="1860" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">Country</text>
+    <rect x="560" y="1875" width="340" height="50" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="580" y="1907" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E">Egypt</text>
+    <text x="870" y="1907" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280">▼</text>
+    
+    <line x1="180" y1="1960" x2="900" y2="1960" stroke="#E5E7EB" stroke-width="1"/>
+    
+    <!-- Ticket Categories Section -->
+    <text x="180" y="2010" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="bold" fill="#1A1A2E">Ticket Categories</text>
+    <text x="180" y="2040" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280">Add different ticket types for your event</text>
+    
+    <!-- Ticket Category 1 -->
+    <g filter="url(#shadow)">
+      <rect x="180" y="2060" width="720" height="240" rx="16" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+      
+      <text x="200" y="2095" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E" font-weight="600">VIP Ticket</text>
+      <circle cx="880" cy="2087" r="16" fill="transparent" stroke="#D1D5DB" stroke-width="2"/>
+      <text x="880" y="2094" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280" text-anchor="middle">✕</text>
+      
+      <text x="200" y="2130" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Category Name</text>
+      <rect x="200" y="2140" width="680" height="40" rx="8" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+      <text x="215" y="2166" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#1A1A2E">VIP Access - Front Row Seats + Meet & Greet</text>
+      
+      <text x="200" y="2205" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Price (EGP)</text>
+      <rect x="200" y="2215" width="215" height="40" rx="8" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+      <text x="215" y="2241" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#1A1A2E">500</text>
+      
+      <text x="440" y="2205" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Available Seats</text>
+      <rect x="440" y="2215" width="215" height="40" rx="8" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+      <text x="455" y="2241" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#1A1A2E">100</text>
+      
+      <text x="680" y="2205" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Max/Person</text>
+      <rect x="680" y="2215" width="200" height="40" rx="8" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+      <text x="695" y="2241" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#1A1A2E">4</text>
+    </g>
+    
+    <!-- Ticket Category 2 -->
+    <g filter="url(#shadow)">
+      <rect x="180" y="2320" width="720" height="240" rx="16" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1"/>
+      
+      <text x="200" y="2355" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E" font-weight="600">Regular Ticket</text>
+      <circle cx="880" cy="2347" r="16" fill="transparent" stroke="#D1D5DB" stroke-width="2"/>
+      <text x="880" y="2354" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280" text-anchor="middle">✕</text>
+      
+      <text x="200" y="2390" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Category Name</text>
+      <rect x="200" y="2400" width="680" height="40" rx="8" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+      <text x="215" y="2426" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#1A1A2E">Regular Access - General Admission</text>
+      
+      <text x="200" y="2465" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Price (EGP)</text>
+      <rect x="200" y="2475" width="215" height="40" rx="8" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+      <text x="215" y="2501" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#1A1A2E">200</text>
+      
+      <text x="440" y="2465" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Available Seats</text>
+      <rect x="440" y="2475" width="215" height="40" rx="8" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+      <text x="455" y="2501" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#1A1A2E">500</text>
+      
+      <text x="680" y="2465" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Max/Person</text>
+      <rect x="680" y="2475" width="200" height="40" rx="8" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
+      <text x="695" y="2501" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#1A1A2E">8</text>
+    </g>
+    
+    <!-- Add Category Button -->
+    <rect x="180" y="2580" width="720" height="56" rx="12" fill="transparent" stroke="#7C5CFF" stroke-width="2" stroke-dasharray="8,4"/>
+    <text x="540" y="2614" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#7C5CFF" text-anchor="middle" font-weight="600">+ Add Another Ticket Category</text>
+    
+    <!-- Settings Section -->
+    <text x="180" y="2700" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="bold" fill="#1A1A2E">Additional Settings</text>
+    
+    <!-- Checkboxes -->
+    <rect x="180" y="2730" width="20" height="20" rx="4" fill="#7C5CFF" stroke="#7C5CFF" stroke-width="2"/>
+    <text x="188" y="2747" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle">✓</text>
+    <text x="210" y="2747" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">Make this event public</text>
+    
+    <rect x="180" y="2770" width="20" height="20" rx="4" fill="transparent" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="210" y="2787" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">Enable early bird discounts</text>
+    
+    <rect x="180" y="2810" width="20" height="20" rx="4" fill="#7C5CFF" stroke="#7C5CFF" stroke-width="2"/>
+    <text x="188" y="2827" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle">✓</text>
+    <text x="210" y="2827" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">Allow ticket transfers</text>
+    
+    <rect x="180" y="2850" width="20" height="20" rx="4" fill="#7C5CFF" stroke="#7C5CFF" stroke-width="2"/>
+    <text x="188" y="2867" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle">✓</text>
+    <text x="210" y="2867" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#1A1A2E">Send email reminders to attendees</text>
+    
+    <!-- Action Buttons -->
+    <rect x="180" y="2940" width="335" height="56" rx="28" fill="transparent" stroke="#D1D5DB" stroke-width="2"/>
+    <text x="347" y="2975" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280" text-anchor="middle" font-weight="600">Save as Draft</text>
+    
+    <rect x="545" y="2940" width="355" height="56" rx="28" fill="#7C5CFF"/>
+    <text x="722" y="2975" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#FFFFFF" text-anchor="middle" font-weight="600">Publish Event →</text>
+  </g>
+  
+  <!-- Preview Sidebar -->
+  <g filter="url(#shadow)">
+    <rect x="1000" y="230" width="360" height="2870" rx="24" fill="#FFFFFF"/>
+    
+    <text x="1180" y="280" font-family="'Segoe UI', Arial, sans-serif" font-size="20" font-weight="bold" fill="#1A1A2E" text-anchor="middle">Live Preview</text>
+    <text x="1180" y="310" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280" text-anchor="middle">How your event will look</text>
+    
+    <line x1="1040" y1="340" x2="1320" y2="340" stroke="#E5E7EB" stroke-width="1"/>
+    
+    <!-- Preview Card -->
+    <g filter="url(#shadow)">
+      <rect x="1040" y="360" width="280" height="380" rx="16" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="1"/>
+      
+      <!-- Preview Image -->
+      <rect x="1060" y="380" width="240" height="140" rx="12" fill="#E5E7EB"/>
+      <text x="1180" y="455" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#6B7280" text-anchor="middle">Event Image</text>
+      
+      <!-- Badge -->
+      <rect x="1075" y="395" width="70" height="26" rx="13" fill="#7C5CFF"/>
+      <text x="1110" y="413" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#FFFFFF" text-anchor="middle" font-weight="600">Music</text>
+      
+      <!-- Event Info -->
+      <text x="1080" y="555" font-family="'Segoe UI', Arial, sans-serif" font-size="17" fill="#1A1A2E" font-weight="bold">Summer Music</text>
+      <text x="1080" y="577" font-family="'Segoe UI', Arial, sans-serif" font-size="17" fill="#1A1A2E" font-weight="bold">Festival 2024</text>
+      
+      <text x="1080" y="605" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">📅 July 15, 2024</text>
+      <text x="1080" y="627" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">📍 Cairo Stadium</text>
+      <text x="1080" y="649" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">🎫 600 Seats Available</text>
+      
+      <text x="1080" y="680" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#7C5CFF" font-weight="bold">From 200 EGP</text>
+      
+      <rect x="1080" y="695" width="200" height="36" rx="18" fill="#7C5CFF"/>
+      <text x="1180" y="719" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#FFFFFF" text-anchor="middle" font-weight="600">View Details</text>
+    </g>
+    
+    <!-- Tips Section -->
+    <rect x="1040" y="770" width="280" height="280" rx="16" fill="#FFF4E6" stroke="#FFD600" stroke-width="2"/>
+    <text x="1060" y="805" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E" font-weight="bold">💡 Tips for Success</text>
+    
+    <text x="1060" y="840" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">• Use high-quality images</text>
+    <text x="1075" y="858" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#9CA3AF">(1200x630px recommended)</text>
+    
+    <text x="1060" y="890" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">• Write clear descriptions</text>
+    <text x="1075" y="908" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#9CA3AF">Include what attendees can</text>
+    <text x="1075" y="926" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#9CA3AF">expect</text>
+    
+    <text x="1060" y="958" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">• Set competitive prices</text>
+    <text x="1075" y="976" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#9CA3AF">Research similar events</text>
+    
+    <text x="1060" y="1008" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">• Publish early</text>
+    <text x="1075" y="1026" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#9CA3AF">Give people time to plan</text>
+    
+    <!-- Stats Section -->
+    <rect x="1040" y="1080" width="280" height="160" rx="16" fill="#F0E7FF" stroke="#7C5CFF" stroke-width="2"/>
+    <text x="1060" y="1115" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E" font-weight="bold">📊 Expected Reach</text>
+    
+    <text x="1060" y="1150" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Potential viewers:</text>
+    <text x="1270" y="1150" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#7C5CFF" font-weight="bold" text-anchor="end">~2,500</text>
+    
+    <text x="1060" y="1180" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Similar events avg:</text>
+    <text x="1270" y="1180" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#7C5CFF" font-weight="bold" text-anchor="end">67% sold</text>
+    
+    <text x="1060" y="1210" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Estimated revenue:</text>
+    <text x="1270" y="1210" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#00C853" font-weight="bold" text-anchor="end">120,000 EGP</text>
+  </g>
+</svg>

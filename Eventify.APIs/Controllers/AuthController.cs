@@ -82,28 +82,5 @@ namespace Eventify.API.Controllers
 
             return Ok(result.Data);
         }
-
-        [HttpPost("refresh")]
-        public async Task<IActionResult> RefreshToken()
-        {
-            return Ok(new ApiResponseDto<object>
-            {
-                Success = false,
-                Message = "Token refresh not implemented yet"
-            });
-        }
-
-        [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            var result = await _authService.LogoutAsync();
-            
-            return Ok(new ApiResponseDto<object>
-            {
-                Success = result.Success,
-                Message = result.Data,
-                Errors = result.Errors.Select(e => e.Message).ToList()
-            });
-        }
     }
 }
