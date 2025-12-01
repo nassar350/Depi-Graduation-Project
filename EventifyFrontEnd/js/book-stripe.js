@@ -2,7 +2,7 @@
 console.log('🚀 Booking with Stripe script loaded');
 
 // Prefer global API_BASE_URL set by pages; fallback to production default
-const API_BASE_URL = window.API_BASE_URL || 'https://eventify.runasp.net/api';
+const API_BASE_URL = window.API_BASE_URL || 'https://localhost:7105/api';
 
 // Initialize Stripe (you'll need to replace with your publishable key)
 const STRIPE_PUBLISHABLE_KEY = 'pk_test_51SSOEXK93KknicwiI9yfrki50Y5mUj1rhwwL1brt2VaoVZqfafneC0naPTuTXLufC8Ero4hQpcFNjyh28rfc344V00RDIkQ0ie'; // Replace with your actual key

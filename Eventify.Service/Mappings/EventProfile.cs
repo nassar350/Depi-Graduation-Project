@@ -24,10 +24,12 @@ namespace Eventify.Service.Mappings
                     opt => opt.MapFrom(src => src.Tickets != null ? src.Tickets.Count(t => t.BookingId == null) : 0))
                 .ForMember(dest => dest.IsUpcoming,
                     opt => opt.MapFrom(src => src.StartDate > DateTime.UtcNow))
+                .ForMember(dest => dest.EventCategory, opt => opt.MapFrom(src => src.EventCategory.ToString()))
                 .ForMember(dest => dest.Status,
                     opt => opt.MapFrom(src => GetEventStatus(src.StartDate, src.EndDate)));
 
             CreateMap<Event, EventDetailsDto>()
+                .ForMember(dest => dest.EventCategory, opt => opt.MapFrom(src => src.EventCategory.ToString()))
                 .ForMember(dest => dest.Categories,
                     opt => opt.MapFrom(src => src.Categories))
                 .ForMember(dest => dest.Attendees,

@@ -90,11 +90,11 @@
     
     <line x1="180" y1="1100" x2="900" y2="1100" stroke="#E5E7EB" stroke-width="1"/>
     
-    <!-- Date & Time Section -->
-    <text x="180" y="1150" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="bold" fill="#1A1A2E">Date & Time</text>
+    <!-- Date &amp; Time Section -->
+    <text x="180" y="1150" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="bold" fill="#1A1A2E">Date &amp; Time</text>
     
     <!-- Start Date/Time -->
-    <text x="180" y="1200" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">Start Date & Time *</text>
+    <text x="180" y="1200" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">Start Date &amp; Time *</text>
     <rect x="180" y="1215" width="340" height="50" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
     <text x="200" y="1247" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E">July 15, 2024</text>
     <text x="490" y="1247" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280">📅</text>
@@ -104,7 +104,7 @@
     <text x="870" y="1247" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280">🕐</text>
     
     <!-- End Date/Time -->
-    <text x="180" y="1310" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">End Date & Time *</text>
+    <text x="180" y="1310" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568" font-weight="600">End Date &amp; Time *</text>
     <rect x="180" y="1325" width="340" height="50" rx="12" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
     <text x="200" y="1357" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#1A1A2E">July 16, 2024</text>
     <text x="490" y="1357" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280">📅</text>
@@ -165,7 +165,7 @@
       
       <text x="200" y="2130" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Category Name</text>
       <rect x="200" y="2140" width="680" height="40" rx="8" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>
-      <text x="215" y="2166" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#1A1A2E">VIP Access - Front Row Seats + Meet & Greet</text>
+      <text x="215" y="2166" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#1A1A2E">VIP Access - Front Row Seats + Meet &amp; Greet</text>
       
       <text x="200" y="2205" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">Price (EGP)</text>
       <rect x="200" y="2215" width="215" height="40" rx="8" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="1"/>

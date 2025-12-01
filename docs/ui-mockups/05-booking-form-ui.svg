@@ -140,10 +140,10 @@
       
       <line x1="160" y1="1695" x2="880" y2="1695" stroke="#E5E7EB" stroke-width="1"/>
       
-      <!-- Terms & Conditions -->
+      <!-- Terms &amp; Conditions -->
       <rect x="160" y="1730" width="22" height="22" rx="4" fill="#7C5CFF"/>
       <text x="169" y="1747" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#FFFFFF" font-weight="bold">✓</text>
-      <text x="195" y="1747" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568">I agree to the <tspan fill="#7C5CFF" font-weight="600">Terms & Conditions</tspan> and <tspan fill="#7C5CFF" font-weight="600">Privacy Policy</tspan></text>
+      <text x="195" y="1747" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568">I agree to the <tspan fill="#7C5CFF" font-weight="600">Terms &amp; Conditions</tspan> and <tspan fill="#7C5CFF" font-weight="600">Privacy Policy</tspan></text>
       
       <!-- Action Buttons -->
       <rect x="160" y="1800" width="320" height="56" rx="28" fill="transparent" stroke="#D1D5DB" stroke-width="2"/>
