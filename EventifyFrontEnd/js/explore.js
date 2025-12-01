@@ -13,6 +13,21 @@ class ExplorePage {
     this.currentSort = 'date-asc';
     this.currentSearch = '';
     
+    // EventCategory enum mapping
+    this.eventCategoryMap = {
+      1: 'Music',
+      2: 'Sports',
+      3: 'Arts',
+      4: 'Food',
+      5: 'Technology',
+      6: 'Business',
+      7: 'Education',
+      8: 'Entertainment',
+      9: 'Health',
+      10: 'Community',
+      11: 'Other'
+    };
+    
     this.init();
   }
 
@@ -96,23 +111,23 @@ class ExplorePage {
     const categorySelect = document.getElementById('categoryFilter');
     if (!categorySelect) return;
 
-    // Extract unique categories from events
-    const categories = [...new Set(this.allEvents.map(event => {
-      // Since API doesn't return categories directly, we'll create some common ones
-      // This should be updated when category data is available from API
-      const eventName = event.name.toLowerCase();
-      if (eventName.includes('tech') || eventName.includes('conference')) return 'Technology';
-      if (eventName.includes('business') || eventName.includes('corporate')) return 'Business';
-      if (eventName.includes('music') || eventName.includes('concert')) return 'Music';
-      if (eventName.includes('art') || eventName.includes('culture')) return 'Arts & Culture';
-      if (eventName.includes('food') || eventName.includes('dining')) return 'Food & Drink';
-      if (eventName.includes('sport') || eventName.includes('fitness')) return 'Sports & Fitness';
-      if (eventName.includes('education') || eventName.includes('workshop')) return 'Education';
-      return 'Other';
-    }))];
+    // EventCategory enum values from backend (matching create-event.js)
+    const eventCategories = [
+      { value: 1, label: 'Music' },
+      { value: 2, label: 'Sports' },
+      { value: 3, label: 'Arts' },
+      { value: 4, label: 'Food' },
+      { value: 5, label: 'Technology' },
+      { value: 6, label: 'Business' },
+      { value: 7, label: 'Education' },
+      { value: 8, label: 'Entertainment' },
+      { value: 9, label: 'Health' },
+      { value: 10, label: 'Community' },
+      { value: 11, label: 'Other' }
+    ];
     
     categorySelect.innerHTML = '<option value="">All Categories</option>' +
-      categories.sort().map(category => `<option value="${category}">${category}</option>`).join('');
+      eventCategories.map(category => `<option value="${category.value}">${category.label}</option>`).join('');
   }
 
   // Setup filter event handlers
@@ -358,20 +373,14 @@ class ExplorePage {
   // Filter results based on current filters
   filterResults(events) {
     return events.filter(event => {
-      // Category filter (using derived categories)
+      // Category filter (using EventCategory enum from backend)
       if (this.currentFilters.category) {
-        const eventName = event.name.toLowerCase();
-        let eventCategory = 'Other';
-        
-        if (eventName.includes('tech') || eventName.includes('conference')) eventCategory = 'Technology';
-        else if (eventName.includes('business') || eventName.includes('corporate')) eventCategory = 'Business';
-        else if (eventName.includes('music') || eventName.includes('concert')) eventCategory = 'Music';
-        else if (eventName.includes('art') || eventName.includes('culture')) eventCategory = 'Arts & Culture';
-        else if (eventName.includes('food') || eventName.includes('dining')) eventCategory = 'Food & Drink';
-        else if (eventName.includes('sport') || eventName.includes('fitness')) eventCategory = 'Sports & Fitness';
-        else if (eventName.includes('education') || eventName.includes('workshop')) eventCategory = 'Education';
-        
-        if (eventCategory !== this.currentFilters.category) {
+        // event.eventCategory should contain the enum value (1-11) from backend
+        // Convert filter value to number for comparison
+        const filterCategory = parseInt(this.currentFilters.category);
+        // Handle both number and string format from backend
+        const eventCat = typeof event.eventCategory === 'number' ? event.eventCategory : parseInt(event.eventCategory);
+        if (eventCat !== filterCategory) {
           return false;
         }
       }
@@ -423,10 +432,16 @@ class ExplorePage {
     
     if (!resultsGrid) return;
 
+    // Reset page if needed
+    if (reset) {
+      this.currentPage = 1;
+    }
+
     // Show/hide empty state
     if (this.filteredEvents.length === 0) {
       if (emptyResults) emptyResults.style.display = 'block';
       if (container) container.style.display = 'none';
+      if (resultsGrid) resultsGrid.style.display = 'none';
       return;
     } else {
       if (emptyResults) emptyResults.style.display = 'none';
@@ -450,6 +465,7 @@ class ExplorePage {
       resultsGrid.innerHTML += eventsHtml;
     }
 
+    // Ensure grid is visible
     resultsGrid.style.display = this.currentViewMode === 'grid' ? 'grid' : 'block';
   }
 
@@ -597,7 +613,8 @@ class ExplorePage {
     if (this.currentSearch) {
       title = `Search Results for "${this.currentSearch}"`;
     } else if (this.currentFilters.category) {
-      title = `${this.currentFilters.category} Events`;
+      const categoryLabel = this.eventCategoryMap[parseInt(this.currentFilters.category)] || 'Unknown';
+      title = `${categoryLabel} Events`;
     }
     
     if (resultsTitle) resultsTitle.textContent = title;

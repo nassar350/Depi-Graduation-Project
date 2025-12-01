@@ -61,7 +61,21 @@ namespace Eventify.Service.Services
 
     public async Task SendPaymentSuccessAsync(int bookingId, decimal amount, string email, string phoneNumber = null)
         {
-            await _emailService.SendEmailAsync(email, $"Payment Successful for Booking #{bookingId}", $"Your payment of ${amount} was successful!");
+            // Send professional email with PDF tickets attached
+            try
+            {
+                // Extract customer name from email or use a default
+                var customerName = email.Split('@')[0];
+                await _emailService.SendPaymentSuccessEmailWithTicketsAsync(bookingId, email, customerName);
+                _logger.LogInformation($"Payment success email with tickets sent for booking {bookingId}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to send payment success email with tickets for booking {bookingId}");
+                // Fallback to simple email
+                await _emailService.SendEmailAsync(email, $"Payment Successful for Booking #{bookingId}", $"Your payment of ${amount} was successful!");
+            }
+            
             if (!string.IsNullOrEmpty(phoneNumber))
                 await _smsService.SendSmsAsync(phoneNumber, $"Payment of ${amount} for Booking #{bookingId} successful!");
         }

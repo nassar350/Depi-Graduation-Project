@@ -181,8 +181,11 @@ class BookingPage {
       // Load available tickets for this category (with automatic fallback to category capacity)
       await this.loadAvailableTickets();
       
+      // Fetch available ticket count from API
+      await this.fetchAvailableTicketCount();
+      
       // Check if tickets are available
-      const availableCount = this.category.availableTickets?.length || 0;
+      const availableCount = this.category.availableTicketsCount || this.category.availableTickets?.length || 0;
       if (availableCount <= 0) {
         this.showError('Sorry, this category is sold out');
         return;
@@ -191,7 +194,7 @@ class BookingPage {
       // Update page title
       document.title = `Book ${this.event.name} - Eventify`;
       
-      // Display booking interface
+      // Display booking interface (after fetching ticket count)
       this.displayEventSummary();
       this.setupTicketQuantityOptions();
       this.prefillUserData();
@@ -274,6 +277,45 @@ class BookingPage {
     console.log('🚀 Mock tickets created:', this.category.availableTickets.length);
   }
 
+  async fetchAvailableTicketCount() {
+    try {
+      const token = getAuthToken();
+      const categoryName = this.category.title || this.category.name || this.categoryNameFromUrl;
+      
+      if (!categoryName) {
+        console.log('🚀 No category name available for ticket count fetch');
+        return;
+      }
+      
+      console.log('🚀 Fetching available ticket count for:', this.eventId, categoryName);
+      console.log('🚀 API URL:', `${API_BASE_URL}/Tickets/available?eventId=${this.eventId}&categoryName=${encodeURIComponent(categoryName)}`);
+      
+      const response = await fetch(
+        `${API_BASE_URL}/Tickets/available?eventId=${this.eventId}&categoryName=${encodeURIComponent(categoryName)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      console.log('🚀 Response status:', response.status);
+      const data = await response.json();
+      console.log('🚀 Full API response:', JSON.stringify(data, null, 2));
+      
+      if (response.ok && data.success && data.data) {
+        this.category.availableTicketsCount = data.data.availableTickets;
+        console.log('🚀 Set availableTicketsCount to:', this.category.availableTicketsCount);
+        console.log('🚀 Category seats:', this.category.seats, 'booked:', this.category.booked);
+      } else {
+        console.log('🚀 API call failed or returned no data');
+      }
+    } catch (error) {
+      console.error('🚀 Error fetching available ticket count:', error);
+    }
+  }
+
   mountCardElement() {
     const cardElementContainer = document.getElementById('card-element');
     if (cardElementContainer && !this.cardMounted) {
@@ -352,8 +394,19 @@ class BookingPage {
     });
 
     let imageUrl = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=160&h=160&fit=crop';
+    
+    // Check for different photo property names from API
     if (this.event.photoBase64) {
       imageUrl = `data:image/jpeg;base64,${this.event.photoBase64}`;
+    } else if (this.event.photo) {
+      // If photo is already base64 string
+      if (this.event.photo.startsWith('data:')) {
+        imageUrl = this.event.photo;
+      } else {
+        imageUrl = `data:image/jpeg;base64,${this.event.photo}`;
+      }
+    } else if (this.event.photoUrl) {
+      imageUrl = this.event.photoUrl;
     }
 
     container.innerHTML = `
@@ -373,13 +426,15 @@ class BookingPage {
           </p>
         </div>
       </div>
-      <div style="padding: var(--space-md); background: #f8f9fa; border-radius: var(--radius-md);">
-        <p style="margin: 0; font-weight: 600;">${this.category.name}</p>
+      <div style="padding: var(--space-md); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md);">
+        <p style="margin: 0; font-weight: 600; color: var(--text);">${this.category.title || this.category.name || 'Category'}</p>
         <p style="margin: var(--space-xs) 0 0 0; color: var(--muted);">
-          ${this.category.availableTickets?.length || 0} tickets available
+          ${this.category.availableTicketsCount !== undefined ? this.category.availableTicketsCount : ((this.category.seats || 0) - (this.category.booked || 0))} Tickets Available
         </p>
       </div>
     `;
+    
+    console.log('🚀 Displaying event summary with ticket count:', this.category.availableTicketsCount);
   }
 
   updateOrderSummary() {
