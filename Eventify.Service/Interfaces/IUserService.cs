@@ -15,6 +15,10 @@ namespace Eventify.Service.Interfaces
         Task<ServiceResult<UserDto>> GetByIdAsync(int id);
         Task<ServiceResult<bool>> DeleteAsync(int id);
         Task<ServiceResult<UserUpdateDto>> UpdateAsync(int id, UserUpdateDto user);
+        
+        
+        int GetTicketsBookedCount(int UserId);
+
 
 
     }
