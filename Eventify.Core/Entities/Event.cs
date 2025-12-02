@@ -13,6 +13,10 @@ public class Event
     public EventCategory EventCategory { get; set; }
     public int  OrganizerID { get; set; }  // Reference to PK in User
     public string? PhotoUrl { get; set; }
+    public bool IsOnline { get; set; }
+    public string? ZoomJoinUrl { get; set; }
+    public string? ZoomPassword { get; set; }
+    public string? ZoomMeetingId { get; set; }
     public ICollection<UserAttendEvent> EventsAttendedByUsers { get; set; }
         = new HashSet<UserAttendEvent>();
     public User Organizer { get; set; } 
