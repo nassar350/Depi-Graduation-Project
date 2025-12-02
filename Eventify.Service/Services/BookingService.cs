@@ -2,6 +2,8 @@ using AutoMapper;
 using Eventify.Core.Entities;
 using Eventify.Repository.Interfaces;
 using Eventify.Service.DTOs.Bookings;
+using Eventify.Service.DTOs.Events;
+using Eventify.Service.Helpers;
 using Eventify.Service.Interfaces;
 
 namespace Eventify.Service.Services;
@@ -60,4 +62,20 @@ public class BookingService : IBookingService
             return await _repo.DeleteAsync(id);
 
         }
+
+    public async Task<ServiceResult<IEnumerable<BookingDetailsDto>>> GetByUserId(int userId)
+    {
+        var bookings = await _repo.GetDetailedByUserId(userId);
+        if (!bookings.Any())
+        {
+            return ServiceResult<IEnumerable<BookingDetailsDto>>.Fail("No Bookings", $"No Bookings found for User with ID {userId}.");
+        }
+        var BookingsDetailDto = _mapper.Map<IEnumerable<BookingDetailsDto>>(bookings);
+        foreach (var booking in BookingsDetailDto)
+        {
+            var e = await _unitOfWork._eventRepository.GetByIdAsync(booking.Tickets[0].EventId);
+            booking.Event = _mapper.Map<EventDto>(e);
+        }
+        return ServiceResult<IEnumerable<BookingDetailsDto>>.Ok(BookingsDetailDto);
+    }
 }

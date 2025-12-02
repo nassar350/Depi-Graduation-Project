@@ -198,9 +198,11 @@ class EventifyApp {
         errorMessage = 'Please enter a valid email address';
       }
     }
-    // Password validation (minimum 8 characters)
+    // Password validation (minimum 8 characters) - skip for login page
     else if (type === 'password' && value) {
-      if (value.length < 8) {
+      // Only validate password length on register page, not login page
+      const isLoginPage = window.location.pathname.includes('login');
+      if (!isLoginPage && value.length < 8) {
         isValid = false;
         errorMessage = 'Password must be at least 8 characters long';
       }
@@ -487,9 +489,9 @@ class EventifyApp {
 
   // Utility: Format currency
   formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-EG', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EGP'
     }).format(amount);
   }
 

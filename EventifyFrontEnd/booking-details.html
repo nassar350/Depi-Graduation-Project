@@ -219,78 +219,19 @@
     });
 
     async function loadBookingDetails(bookingId) {
-      // TODO: Replace with actual API call when endpoint is ready
-      // For now, use mock data
+      // Get bookings from localStorage (populated by dashboard)
+      const bookingsJson = localStorage.getItem('eventify_user_bookings');
       
-      // Mock bookings data
-      const mockBookings = [
-        {
-          id: 'BK001',
-          eventTitle: 'Jazz Night Live',
-          eventDate: '2025-12-15',
-          eventTime: '20:00',
-          eventLocation: 'Blue Note Jazz Club',
-          eventImage: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=400',
-          tickets: 2,
-          total: 120,
-          status: 'confirmed',
-          bookingDate: '2025-11-28T10:30:00',
-          attendeeInfo: {
-            name: app.getCurrentUser().name,
-            email: app.getCurrentUser().email
-          }
-        },
-        {
-          id: 'BK002',
-          eventTitle: 'Food & Wine Festival',
-          eventDate: '2025-12-20',
-          eventTime: '18:00',
-          eventLocation: 'Downtown Convention Center',
-          eventImage: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400',
-          tickets: 4,
-          total: 280,
-          status: 'confirmed',
-          bookingDate: '2025-11-25T14:15:00',
-          attendeeInfo: {
-            name: app.getCurrentUser().name,
-            email: app.getCurrentUser().email
-          }
-        },
-        {
-          id: 'BK003',
-          eventTitle: 'Comedy Show: Stand-Up Special',
-          eventDate: '2025-11-30',
-          eventTime: '21:00',
-          eventLocation: 'Comedy Club Main Stage',
-          eventImage: 'https://images.unsplash.com/photo-1527224538127-2104bb29aedb?w=400',
-          tickets: 2,
-          total: 80,
-          status: 'completed',
-          bookingDate: '2025-11-10T09:45:00',
-          attendeeInfo: {
-            name: app.getCurrentUser().name,
-            email: app.getCurrentUser().email
-          }
-        },
-        {
-          id: 'BK004',
-          eventTitle: 'Yoga & Meditation Retreat',
-          eventDate: '2026-01-05',
-          eventTime: '08:00',
-          eventLocation: 'Serenity Wellness Center',
-          eventImage: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
-          tickets: 1,
-          total: 0,
-          status: 'confirmed',
-          bookingDate: '2025-11-20T16:20:00',
-          attendeeInfo: {
-            name: app.getCurrentUser().name,
-            email: app.getCurrentUser().email
-          }
-        }
-      ];
+      if (!bookingsJson) {
+        app.showNotification('Please load your bookings from the dashboard first', 'warning');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 1500);
+        return;
+      }
 
-      currentBooking = mockBookings.find(b => b.id === bookingId);
+      const bookings = JSON.parse(bookingsJson);
+      currentBooking = bookings.find(b => b.id.toString() === bookingId.toString());
 
       if (!currentBooking) {
         app.showNotification('Booking not found', 'error');
@@ -301,35 +242,6 @@
       }
 
       displayBookingDetails(currentBooking);
-
-      /*
-      // UNCOMMENT THIS WHEN API IS READY:
-      try {
-        const token = localStorage.getItem('eventify_token');
-        const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
-        
-        const response = await fetch(`${baseUrl}/api/bookings/${bookingId}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          currentBooking = await response.json();
-          displayBookingDetails(currentBooking);
-        } else {
-          app.showNotification('Failed to load booking details', 'error');
-          setTimeout(() => {
-            window.location.href = 'dashboard.html';
-          }, 1000);
-        }
-      } catch (error) {
-        console.error('Error loading booking details:', error);
-        app.showNotification('Error loading booking details', 'error');
-      }
-      */
     }
 
     function displayBookingDetails(booking) {
@@ -339,7 +251,7 @@
       const statusElement = document.getElementById('bookingStatus');
       statusElement.textContent = booking.status.charAt(0).toUpperCase() + booking.status.slice(1);
       
-      // Set status color
+      // Set status color based on booking status
       if (booking.status === 'confirmed') {
         statusElement.style.background = 'var(--success)';
         statusElement.style.color = 'white';
@@ -372,7 +284,7 @@
 
       // Booking Information
       document.getElementById('ticketCount').textContent = booking.tickets;
-      document.getElementById('totalAmount').textContent = booking.total === 0 ? 'Free' : `$${booking.total.toFixed(2)}`;
+      document.getElementById('totalAmount').textContent = booking.total === 0 ? 'Free' : `EGP ${booking.total.toFixed(2)}`;
       
       const bookingDate = new Date(booking.bookingDate);
       document.getElementById('bookingDate').textContent = bookingDate.toLocaleDateString('en-US', { 
@@ -386,6 +298,7 @@
       document.getElementById('attendeeEmail').textContent = booking.attendeeInfo.email;
 
       // Show cancel button only for upcoming confirmed bookings
+      // Status depends on event start date (upcoming/past) and payment status
       const isPastEvent = eventDate < new Date();
       const canCancel = booking.status === 'confirmed' && !isPastEvent;
       

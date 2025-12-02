@@ -18,6 +18,6 @@ namespace Eventify.Repository.Interfaces
         Task<bool> CheckPasswordAsync(User user, string password);
         
         int CountTicketBooked(int userId );
-
+        decimal GetTotalRevenueById(int id);
     }
 }

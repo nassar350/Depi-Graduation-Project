@@ -11,11 +11,9 @@ namespace Eventify.Service.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly ITicketRepository _repo;
 
         public UserService(ITicketRepository repo , IUserRepository userRepository , IMapper mapper)
         {
-            _repo = repo;
             _userRepository = userRepository;
             _mapper = mapper;
         }
@@ -72,6 +70,12 @@ namespace Eventify.Service.Services
         public int GetTicketsBookedCount(int userId)
         {
             return _userRepository.CountTicketBooked(userId);
+        }
+
+        public ServiceResult<decimal> GetTotalRevenueById(int id)
+        {
+            var revenue = _userRepository.GetTotalRevenueById(id);
+            return ServiceResult<decimal>.Ok(revenue);
         }
     }
 }

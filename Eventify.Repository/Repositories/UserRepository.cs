@@ -83,5 +83,16 @@ namespace Eventify.Repository.Repositories
             return totalTickets;
         }
 
+        public decimal GetTotalRevenueById(int id)
+        {
+            var totalRevenue = _context.Payments
+                .Include(p => p.Booking)
+                    .ThenInclude(b => b.Tickets)
+                        .ThenInclude(t => t.Event)
+                .Where(p => p.Booking.Tickets.Any(t => t.Event.OrganizerID == id))
+                .Sum(p => (decimal?)p.TotalPrice) ?? 0;
+
+            return totalRevenue;
+        }
     }
 }

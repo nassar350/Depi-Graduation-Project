@@ -18,8 +18,6 @@ namespace Eventify.Service.Interfaces
         
         
         int GetTicketsBookedCount(int UserId);
-
-
-
+        ServiceResult<decimal> GetTotalRevenueById(int id);
     }
 }

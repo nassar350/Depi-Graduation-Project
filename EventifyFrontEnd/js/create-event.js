@@ -93,6 +93,10 @@ class CreateEventPage {
   }
 
   setupFormValidation() {
+    // DISABLED: app.js already handles form validation
+    // This was causing duplicate error messages
+    return;
+    
     if (this.validationInitialized) return;
     this.validationInitialized = true;
     
