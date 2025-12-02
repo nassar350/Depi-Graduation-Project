@@ -174,8 +174,11 @@ namespace Eventify.Service.Services
                 {
                     return ServiceResult<IEnumerable<EventDto>>.Fail("NoEvents", $"No events found for organizer with ID {organizerId}.");
                 }
-
                 var eventDtos = _mapper.Map<IEnumerable<EventDto>>(organizerEvents);
+                foreach (var e in eventDtos) 
+                {
+                    e.BookedTickets = _unitOfWork._ticketRepository.CountBookedTickets(e.Id);
+                }
                 return ServiceResult<IEnumerable<EventDto>>.Ok(eventDtos);
             }
             catch (Exception ex)

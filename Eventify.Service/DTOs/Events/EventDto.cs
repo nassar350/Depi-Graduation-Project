@@ -27,6 +27,7 @@ namespace Eventify.Service.DTOs.Events
         public string PhotoBase64 { get; set; } = string.Empty;
 
         public int AvailableTickets { get; set; }
+        public int BookedTickets { get; set; }
 
         public bool IsUpcoming { get; set; }
 

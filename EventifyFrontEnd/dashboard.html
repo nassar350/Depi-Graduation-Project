@@ -560,58 +560,22 @@
           return;
         }
 
+        // Get organizer ID from user data
+        const organizerId = this.user.id;
+        if (!organizerId) {
+          console.error('No organizer ID found');
+          this.userEvents = [];
+          this.displayUserEvents();
+          return;
+        }
+
         // Show loading state
         document.getElementById('eventsLoading').style.display = 'block';
         document.getElementById('eventsList').style.display = 'none';
 
-        // TODO: Replace with actual API call when endpoint is ready
-        // For now, use mock data for frontend testing
-        setTimeout(() => {
-          // Mock data - will be replaced with API response
-          this.userEvents = [
-            {
-              id: 1,
-              title: "Summer Music Festival 2025",
-              eventDate: "2025-07-15T18:00:00",
-              location: "Central Park, New York",
-              photoUrl: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400",
-              capacity: 5000,
-              availableSeats: 3200,
-              price: 75
-            },
-            {
-              id: 2,
-              title: "Tech Conference 2025",
-              eventDate: "2025-09-20T09:00:00",
-              location: "Convention Center",
-              photoUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400",
-              capacity: 1000,
-              availableSeats: 450,
-              price: 199
-            },
-            {
-              id: 3,
-              title: "Art Gallery Opening",
-              eventDate: "2025-06-10T19:00:00",
-              location: "Modern Art Museum",
-              photoUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400",
-              capacity: 200,
-              availableSeats: 85,
-              price: 0
-            }
-          ];
-
-          this.displayUserEvents();
-          
-          document.getElementById('eventsLoading').style.display = 'none';
-          document.getElementById('eventsList').style.display = 'block';
-        }, 500);
-
-        /* 
-        // UNCOMMENT THIS WHEN API IS READY:
         try {
           const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
-          const response = await fetch(`${baseUrl}/api/events/user`, {
+          const response = await fetch(`${baseUrl}/api/Events/organizer/${organizerId}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -620,9 +584,38 @@
           });
 
           if (response.ok) {
-            const events = await response.json();
-            this.userEvents = events || [];
-            console.log('Loaded user events from API:', this.userEvents);
+            const result = await response.json();
+            console.log('API Response:', result);
+            console.log('API Response Data (first event):', result.data && result.data[0] ? result.data[0] : 'No events');
+            
+            if (result.success && result.data) {
+              // Map API response to our event format
+              this.userEvents = result.data.map(event => {
+                console.log('Mapping event:', JSON.stringify(event, null, 2));
+                return {
+                  id: event.id,
+                  title: event.name,  // API uses 'name' not 'title'
+                  description: event.description,
+                  location: event.address,  // API uses 'address' not 'location'
+                  eventDate: event.startDate,
+                  startDate: event.startDate,
+                  endDate: event.endDate,
+                  photoUrl: event.photoUrl,
+                  image: event.photoUrl,
+                  capacity: event.capacity || 0,
+                  availableSeats: event.availableTickets || 0,
+                  bookedTickets: event.bookedTickets || 0,
+                  price: event.price || 0,
+                  isUpcoming: event.isUpcoming,
+                  status: event.status
+                };
+              });
+              
+              console.log('Loaded user events from API:', this.userEvents);
+            } else {
+              console.error('API response not successful:', result.message);
+              this.userEvents = [];
+            }
           } else {
             console.error('Failed to fetch user events:', response.status);
             this.userEvents = [];
@@ -638,7 +631,6 @@
           document.getElementById('eventsLoading').style.display = 'none';
           document.getElementById('eventsList').style.display = 'block';
         }, 500);
-        */
       }
 
       async updateStatistics() {
@@ -658,15 +650,15 @@
           return;
         }
 
-        // TODO: Replace with actual API call when endpoint is ready
-        // For now, use mock count
-        document.getElementById('eventsCreated').textContent = '3';
+        const organizerId = this.user.id;
+        if (!organizerId) {
+          document.getElementById('eventsCreated').textContent = '0';
+          return;
+        }
 
-        /* 
-        // UNCOMMENT THIS WHEN API IS READY:
         try {
           const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
-          const response = await fetch(`${baseUrl}/api/events/user/count`, {
+          const response = await fetch(`${baseUrl}/api/Events/organizer/${organizerId}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -675,8 +667,12 @@
           });
 
           if (response.ok) {
-            const data = await response.json();
-            document.getElementById('eventsCreated').textContent = data.count || data.total || 0;
+            const result = await response.json();
+            if (result.success && result.data) {
+              document.getElementById('eventsCreated').textContent = result.data.length || 0;
+            } else {
+              document.getElementById('eventsCreated').textContent = this.userEvents.length;
+            }
           } else {
             document.getElementById('eventsCreated').textContent = this.userEvents.length;
           }
@@ -684,7 +680,6 @@
           console.error('Error fetching events count:', error);
           document.getElementById('eventsCreated').textContent = this.userEvents.length;
         }
-        */
       }
 
       async fetchTotalRevenue() {
@@ -788,27 +783,46 @@
         const container = document.getElementById('eventsList');
         const noEvents = document.getElementById('noEvents');
         
+        console.log('displayUserEvents called with:', this.userEvents);
+        console.log('Container element:', container);
+        console.log('No events element:', noEvents);
+        
         if (this.userEvents.length === 0) {
+          console.log('No events to display');
           container.style.display = 'none';
           noEvents.style.display = 'block';
           return;
         }
 
-        container.innerHTML = this.userEvents.map(event => this.createEventCard(event)).join('');
+        console.log('Generating event cards...');
+        const cardsHTML = this.userEvents.map(event => {
+          const card = this.createEventCard(event);
+          console.log('Generated card for event:', event.title, card.substring(0, 100));
+          return card;
+        }).join('');
+        
+        container.innerHTML = cardsHTML;
         container.style.display = 'block';
         noEvents.style.display = 'none';
+        console.log('Events displayed successfully');
       }
 
       createEventCard(event) {
+        console.log('createEventCard called with:', event);
+        
         // Parse date - handle both formats
         let eventDate;
         if (event.eventDate) {
           eventDate = new Date(event.eventDate);
+        } else if (event.startDate) {
+          eventDate = new Date(event.startDate);
         } else if (event.date) {
           eventDate = new Date(event.date + (event.time ? 'T' + event.time : ''));
         } else {
           eventDate = new Date();
         }
+        
+        console.log('Parsed event date:', eventDate);
         
         const isPastEvent = eventDate < new Date();
         const formattedDate = eventDate.toLocaleDateString('en-US', { 
@@ -841,8 +855,8 @@
                   📍 ${event.location || event.venue || 'TBA'}
                 </p>
                 <div class="flex gap-sm" style="align-items: center;">
-                  <span class="event-tag">${event.capacity || 0} capacity</span>
-                  <span class="event-tag">${event.availableSeats || event.ticketsAvailable || 0} available</span>
+                  ${event.capacity && event.capacity > 0 ? `<span class="event-tag">${event.capacity} capacity</span>` : ''}
+                  ${event.bookedTickets !== undefined && event.bookedTickets >= 0 ? `<span class="event-tag">${event.bookedTickets} booked</span>` : ''}
                   <span class="event-tag" style="background: ${isPastEvent ? 'var(--muted)' : 'var(--success)'}; color: white;">
                     ${isPastEvent ? 'Past' : 'Upcoming'}
                   </span>
@@ -850,9 +864,6 @@
               </div>
               
               <div style="text-align: right;">
-                <div style="font-weight: 600; margin-bottom: var(--space-sm); color: var(--accent);">
-                  ${event.price === 0 || !event.price ? 'Free' : '$' + (event.price || 0).toFixed(2)}
-                </div>
                 <div class="flex gap-sm">
                   ${!isPastEvent ? `
                   <button 

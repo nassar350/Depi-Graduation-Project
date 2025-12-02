@@ -1,15 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Eventify.Core.Entities;
+using Eventify.Repository.Data.Contexts;
+using Eventify.Repository.Interfaces;
+using Eventify.Service.DTOs.Tickets;
+using Eventify.Service.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
-using Eventify.Service.DTOs.Tickets;
-using Eventify.Core.Entities;
-using Eventify.Repository.Data.Contexts;
-using Eventify.Repository.Interfaces;
-using Eventify.Service.Interfaces;
 
 
 namespace Eventify.Service.Services
@@ -72,5 +73,10 @@ namespace Eventify.Service.Services
         {
             return _repo.CountNotBookedTickets(eventId, categoryName);
         }
+        public int GetBookedTicketsCount(int eventId)
+        {
+            return _repo.CountBookedTickets(eventId);
+        }
+
     }
 }
