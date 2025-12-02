@@ -19,5 +19,8 @@ namespace Eventify.Repository.Interfaces
         void UpdateRange(IEnumerable<Ticket> tickets);
         void Update(Ticket ticket);
         void Delete(Ticket ticket);
+        
+        
+
     }
 }

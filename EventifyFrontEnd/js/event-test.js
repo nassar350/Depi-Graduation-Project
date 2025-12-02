@@ -6,7 +6,7 @@ class EventPage {
   constructor() {
     console.log('🚀 EventPage constructor working!');
     // Use global API base if available (set in pages), fallback to production
-    this.apiBaseUrl = (window.API_BASE_URL) ? window.API_BASE_URL : 'https://localhost:7105/';
+    this.apiBaseUrl = (window.API_BASE_URL) ? window.API_BASE_URL : 'https://localhost:7105';
     this.eventId = this.getEventId();
     this.loadEvent();
   }

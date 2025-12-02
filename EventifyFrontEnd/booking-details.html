@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Details - Eventify</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a href="index.html">
+          <span style="font-size: var(--font-size-xl); font-weight: 700;">🎉 Eventify</span>
+        </a>
+      </div>
+      <ul class="navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="explore.html">Explore</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="#" onclick="app.logout(); return false;" class="btn btn-outline">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container" style="max-width: 900px; padding-top: var(--space-xl); padding-bottom: var(--space-xl);">
+      
+      <!-- Back Button -->
+      <div style="margin-bottom: var(--space-lg);">
+        <a href="dashboard.html" class="btn btn-outline">
+          ← Back to Dashboard
+        </a>
+      </div>
+
+      <!-- Booking Details Card -->
+      <div class="card">
+        <div style="border-bottom: 2px solid var(--border); padding-bottom: var(--space-lg); margin-bottom: var(--space-lg);">
+          <div class="flex-between" style="align-items: flex-start; flex-wrap: wrap; gap: var(--space-md);">
+            <div>
+              <h1 style="margin-bottom: var(--space-xs);">Booking Details</h1>
+              <p class="text-muted">Booking ID: <span id="bookingId" style="font-weight: 600;">-</span></p>
+            </div>
+            <span id="bookingStatus" class="event-tag" style="font-size: var(--font-size-base); padding: var(--space-sm) var(--space-md);">
+              -
+            </span>
+          </div>
+        </div>
+
+        <!-- Event Information -->
+        <div style="margin-bottom: var(--space-xl);">
+          <h3 style="margin-bottom: var(--space-md);">Event Information</h3>
+          
+          <div class="flex gap-lg" style="flex-wrap: wrap;">
+            <img 
+              id="eventImage"
+              alt="Event"
+              style="width: 200px; height: 200px; object-fit: cover; border-radius: var(--radius-md);"
+              onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=400&fit=crop'"
+            >
+            
+            <div style="flex: 1; min-width: 250px;">
+              <h2 id="eventTitle" style="margin-bottom: var(--space-md);">-</h2>
+              
+              <div class="flex-column gap-md">
+                <div class="flex gap-sm" style="align-items: flex-start;">
+                  <span style="font-size: 1.5rem;">📅</span>
+                  <div>
+                    <div style="font-weight: 600; margin-bottom: 2px;">Date & Time</div>
+                    <div id="eventDateTime" class="text-muted">-</div>
+                  </div>
+                </div>
+                
+                <div class="flex gap-sm" style="align-items: flex-start;">
+                  <span style="font-size: 1.5rem;">📍</span>
+                  <div>
+                    <div style="font-weight: 600; margin-bottom: 2px;">Location</div>
+                    <div id="eventLocation" class="text-muted">-</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Information -->
+        <div style="margin-bottom: var(--space-xl);">
+          <h3 style="margin-bottom: var(--space-md);">Booking Information</h3>
+          
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-lg);">
+            <div>
+              <div class="text-muted" style="margin-bottom: var(--space-xs);">Number of Tickets</div>
+              <div style="font-size: var(--font-size-xl); font-weight: 600;" id="ticketCount">-</div>
+            </div>
+            
+            <div>
+              <div class="text-muted" style="margin-bottom: var(--space-xs);">Total Amount</div>
+              <div style="font-size: var(--font-size-xl); font-weight: 600; color: var(--accent);" id="totalAmount">-</div>
+            </div>
+            
+            <div>
+              <div class="text-muted" style="margin-bottom: var(--space-xs);">Booking Date</div>
+              <div style="font-size: var(--font-size-lg); font-weight: 600;" id="bookingDate">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendee Information -->
+        <div style="margin-bottom: var(--space-xl);">
+          <h3 style="margin-bottom: var(--space-md);">Attendee Information</h3>
+          
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-md);">
+            <div>
+              <div class="text-muted" style="margin-bottom: var(--space-xs);">Name</div>
+              <div style="font-weight: 600;" id="attendeeName">-</div>
+            </div>
+            
+            <div>
+              <div class="text-muted" style="margin-bottom: var(--space-xs);">Email</div>
+              <div style="font-weight: 600;" id="attendeeEmail">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div id="bookingActions" style="border-top: 2px solid var(--border); padding-top: var(--space-lg); display: none;">
+          <div class="flex gap-md" style="flex-wrap: wrap; justify-content: flex-end;">
+            <a href="dashboard.html" class="btn btn-outline">
+              Back to Bookings
+            </a>
+            <button id="cancelBookingBtn" class="btn" style="background: var(--danger); color: white;" onclick="cancelBooking()">
+              Cancel Booking
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cancellation Confirmation Modal -->
+      <div id="cancelModal" class="modal-overlay">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Cancel Booking</h3>
+            <button class="modal-close" onclick="app.closeModal('cancelModal')">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to cancel this booking?</p>
+            <p class="text-muted" style="margin-top: var(--space-sm);">This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline" onclick="app.closeModal('cancelModal')">No, Keep Booking</button>
+            <button class="btn" style="background: var(--danger); color: white;" onclick="confirmCancellation()">Yes, Cancel Booking</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Eventify</h4>
+          <p class="text-muted">Discover and book amazing events in your area.</p>
+        </div>
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="explore.html">Explore Events</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 Eventify. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script>
+    let currentBooking = null;
+
+    // Get booking ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookingId = urlParams.get('id');
+
+    // Load booking details on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check authentication
+      const user = app.getCurrentUser();
+      if (!user) {
+        app.showNotification('Please log in to view booking details', 'warning');
+        setTimeout(() => {
+          window.location.href = 'login.html?redirect=dashboard.html';
+        }, 1000);
+        return;
+      }
+
+      if (!bookingId) {
+        app.showNotification('Invalid booking ID', 'error');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 1000);
+        return;
+      }
+
+      await loadBookingDetails(bookingId);
+    });
+
+    async function loadBookingDetails(bookingId) {
+      // TODO: Replace with actual API call when endpoint is ready
+      // For now, use mock data
+      
+      // Mock bookings data
+      const mockBookings = [
+        {
+          id: 'BK001',
+          eventTitle: 'Jazz Night Live',
+          eventDate: '2025-12-15',
+          eventTime: '20:00',
+          eventLocation: 'Blue Note Jazz Club',
+          eventImage: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=400',
+          tickets: 2,
+          total: 120,
+          status: 'confirmed',
+          bookingDate: '2025-11-28T10:30:00',
+          attendeeInfo: {
+            name: app.getCurrentUser().name,
+            email: app.getCurrentUser().email
+          }
+        },
+        {
+          id: 'BK002',
+          eventTitle: 'Food & Wine Festival',
+          eventDate: '2025-12-20',
+          eventTime: '18:00',
+          eventLocation: 'Downtown Convention Center',
+          eventImage: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400',
+          tickets: 4,
+          total: 280,
+          status: 'confirmed',
+          bookingDate: '2025-11-25T14:15:00',
+          attendeeInfo: {
+            name: app.getCurrentUser().name,
+            email: app.getCurrentUser().email
+          }
+        },
+        {
+          id: 'BK003',
+          eventTitle: 'Comedy Show: Stand-Up Special',
+          eventDate: '2025-11-30',
+          eventTime: '21:00',
+          eventLocation: 'Comedy Club Main Stage',
+          eventImage: 'https://images.unsplash.com/photo-1527224538127-2104bb29aedb?w=400',
+          tickets: 2,
+          total: 80,
+          status: 'completed',
+          bookingDate: '2025-11-10T09:45:00',
+          attendeeInfo: {
+            name: app.getCurrentUser().name,
+            email: app.getCurrentUser().email
+          }
+        },
+        {
+          id: 'BK004',
+          eventTitle: 'Yoga & Meditation Retreat',
+          eventDate: '2026-01-05',
+          eventTime: '08:00',
+          eventLocation: 'Serenity Wellness Center',
+          eventImage: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
+          tickets: 1,
+          total: 0,
+          status: 'confirmed',
+          bookingDate: '2025-11-20T16:20:00',
+          attendeeInfo: {
+            name: app.getCurrentUser().name,
+            email: app.getCurrentUser().email
+          }
+        }
+      ];
+
+      currentBooking = mockBookings.find(b => b.id === bookingId);
+
+      if (!currentBooking) {
+        app.showNotification('Booking not found', 'error');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 1000);
+        return;
+      }
+
+      displayBookingDetails(currentBooking);
+
+      /*
+      // UNCOMMENT THIS WHEN API IS READY:
+      try {
+        const token = localStorage.getItem('eventify_token');
+        const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+        
+        const response = await fetch(`${baseUrl}/api/bookings/${bookingId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          currentBooking = await response.json();
+          displayBookingDetails(currentBooking);
+        } else {
+          app.showNotification('Failed to load booking details', 'error');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 1000);
+        }
+      } catch (error) {
+        console.error('Error loading booking details:', error);
+        app.showNotification('Error loading booking details', 'error');
+      }
+      */
+    }
+
+    function displayBookingDetails(booking) {
+      // Booking ID and Status
+      document.getElementById('bookingId').textContent = booking.id;
+      
+      const statusElement = document.getElementById('bookingStatus');
+      statusElement.textContent = booking.status.charAt(0).toUpperCase() + booking.status.slice(1);
+      
+      // Set status color
+      if (booking.status === 'confirmed') {
+        statusElement.style.background = 'var(--success)';
+        statusElement.style.color = 'white';
+      } else if (booking.status === 'cancelled') {
+        statusElement.style.background = 'var(--danger)';
+        statusElement.style.color = 'white';
+      } else if (booking.status === 'completed') {
+        statusElement.style.background = 'var(--muted)';
+        statusElement.style.color = 'white';
+      }
+
+      // Event Information
+      document.getElementById('eventImage').src = booking.eventImage;
+      document.getElementById('eventTitle').textContent = booking.eventTitle;
+      
+      const eventDate = new Date(booking.eventDate + 'T' + booking.eventTime);
+      const formattedDate = eventDate.toLocaleDateString('en-US', { 
+        weekday: 'long',
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+      const formattedTime = eventDate.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit' 
+      });
+      
+      document.getElementById('eventDateTime').textContent = `${formattedDate} at ${formattedTime}`;
+      document.getElementById('eventLocation').textContent = booking.eventLocation;
+
+      // Booking Information
+      document.getElementById('ticketCount').textContent = booking.tickets;
+      document.getElementById('totalAmount').textContent = booking.total === 0 ? 'Free' : `$${booking.total.toFixed(2)}`;
+      
+      const bookingDate = new Date(booking.bookingDate);
+      document.getElementById('bookingDate').textContent = bookingDate.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+
+      // Attendee Information
+      document.getElementById('attendeeName').textContent = booking.attendeeInfo.name;
+      document.getElementById('attendeeEmail').textContent = booking.attendeeInfo.email;
+
+      // Show cancel button only for upcoming confirmed bookings
+      const isPastEvent = eventDate < new Date();
+      const canCancel = booking.status === 'confirmed' && !isPastEvent;
+      
+      if (canCancel) {
+        document.getElementById('bookingActions').style.display = 'block';
+      }
+    }
+
+    function cancelBooking() {
+      app.openModal('cancelModal');
+    }
+
+    async function confirmCancellation() {
+      app.closeModal('cancelModal');
+
+      // TODO: Replace with actual API call when endpoint is ready
+      // For now, show success message
+      app.showNotification('Booking cancelled successfully', 'success');
+      
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1500);
+
+      /*
+      // UNCOMMENT THIS WHEN API IS READY:
+      try {
+        const token = localStorage.getItem('eventify_token');
+        const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+        
+        const response = await fetch(`${baseUrl}/api/bookings/${currentBooking.id}/cancel`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          app.showNotification('Booking cancelled successfully', 'success');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 1500);
+        } else {
+          app.showNotification('Failed to cancel booking', 'error');
+        }
+      } catch (error) {
+        console.error('Error cancelling booking:', error);
+        app.showNotification('Error cancelling booking', 'error');
+      }
+      */
+    }
+  </script>
+</body>
+</html>

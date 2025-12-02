@@ -1,4 +1,5 @@
-﻿using Eventify.Service.DTOs.Bookings;
+﻿using Eventify.Core.Enums;
+using Eventify.Service.DTOs.Bookings;
 using Eventify.Service.DTOs.Categories;
 using Eventify.Service.DTOs.Tickets;
 using Eventify.Service.DTOs.Users;
@@ -18,6 +19,8 @@ namespace Eventify.Service.DTOs.Events
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
+
+        public EventCategory EventCategory { get; set; }
 
         public string? PhotoUrl { get; set; }
 

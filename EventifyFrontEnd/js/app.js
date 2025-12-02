@@ -312,6 +312,61 @@ class EventifyApp {
     }
   }
 
+  // Fetch current user from API
+  async fetchCurrentUser() {
+    const token = localStorage.getItem('eventify_token');
+    
+    if (!token) {
+      console.log('No token found in localStorage');
+      return null;
+    }
+
+    try {
+      const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+      console.log('Fetching current user from:', `${baseUrl}/api/user/current`);
+      
+      const response = await fetch(`${baseUrl}/api/user/current`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('API Response status:', response.status);
+
+      if (response.ok) {
+        const userData = await response.json();
+        console.log('Received user data from API:', userData);
+        
+        // Update localStorage with fresh data
+        const existingUser = this.getCurrentUser();
+        const updatedUser = {
+          ...existingUser,
+          name: userData.name,
+          email: userData.email,
+          phone: userData.phoneNumber,
+          role: userData.role
+        };
+        
+        console.log('Updated user object:', updatedUser);
+        localStorage.setItem('eventifyUser', JSON.stringify(updatedUser));
+        return updatedUser;
+      } else if (response.status === 401) {
+        // Token is invalid or expired
+        console.error('Unauthorized - logging out');
+        this.logout();
+        return null;
+      } else {
+        console.error('Failed to fetch user data:', response.status);
+        return this.getCurrentUser(); // Fallback to localStorage
+      }
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+      return this.getCurrentUser(); // Fallback to localStorage
+    }
+  }
+
   // Set current user in localStorage
   setCurrentUser(user) {
     localStorage.setItem('eventifyUser', JSON.stringify(user));
@@ -535,14 +590,60 @@ class EventifyApp {
   }
 
   // Initialize dashboard page
-  initDashboardPage() {
+  async initDashboardPage() {
     // Redirect if not logged in
-    if (!this.getCurrentUser()) {
+    const localUser = this.getCurrentUser();
+    if (!localUser) {
       this.showNotification('Please log in to access your dashboard', 'warning');
       setTimeout(() => {
         window.location.href = 'login.html?redirect=dashboard.html';
       }, 2000);
+      return;
     }
+
+    // Fetch fresh user data from API
+    const currentUser = await this.fetchCurrentUser();
+    
+    if (!currentUser) {
+      // If API call failed and user was logged out, redirect will happen automatically
+      return;
+    }
+
+    // Update dashboard with current user data
+    this.updateDashboardUserInfo(currentUser);
+  }
+
+  // Update dashboard with user information
+  updateDashboardUserInfo(user) {
+    // Update user name
+    const userNameElements = document.querySelectorAll('[data-user-name]');
+    userNameElements.forEach(el => {
+      el.textContent = user.name;
+    });
+
+    // Update user email
+    const userEmailElements = document.querySelectorAll('[data-user-email]');
+    userEmailElements.forEach(el => {
+      el.textContent = user.email;
+    });
+
+    // Update user phone
+    const userPhoneElements = document.querySelectorAll('[data-user-phone]');
+    userPhoneElements.forEach(el => {
+      el.textContent = user.phone || user.phoneNumber;
+    });
+
+    // Update user role
+    const userRoleElements = document.querySelectorAll('[data-user-role]');
+    userRoleElements.forEach(el => {
+      el.textContent = user.role;
+    });
+
+    // Update user avatar
+    const userAvatarElements = document.querySelectorAll('[data-user-avatar]');
+    userAvatarElements.forEach(el => {
+      el.src = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=7c5cff&color=ffffff&size=200`;
+    });
   }
 
   // Initialize auth pages
@@ -576,7 +677,7 @@ class EventifyApp {
   // API utility: Make authenticated API calls
   async apiCall(endpoint, options = {}) {
     const token = this.getToken();
-    const baseUrl = window.API_BASE_URL || 'https://localhost:7105/';
+    const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
     
     const defaultOptions = {
       headers: {

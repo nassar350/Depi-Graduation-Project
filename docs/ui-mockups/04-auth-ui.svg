@@ -56,7 +56,7 @@
     <text x="525" y="692" font-family="'Segoe UI', Arial, sans-serif" font-size="15" fill="#9CA3AF">••••••••</text>
     <text x="945" y="692" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#7C5CFF" text-anchor="end" font-weight="600">👁️</text>
     
-    <!-- Remember Me & Forgot Password -->
+    <!-- Remember Me &amp; Forgot Password -->
     <rect x="470" y="730" width="18" height="18" rx="4" fill="#7C5CFF"/>
     <text x="478" y="744" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#FFFFFF" font-weight="bold">✓</text>
     <text x="500" y="744" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#4A5568">Remember me</text>

@@ -1,4 +1,6 @@
-﻿namespace Eventify.Service.DTOs.Events
+﻿using Eventify.Core.Enums;
+
+namespace Eventify.Service.DTOs.Events
 {
     public class EventDto
     {
@@ -13,6 +15,8 @@
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
+
+        public EventCategory EventCategory { get; set; }
 
         public int OrganizerID { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using Eventify.Core.Entities;
+using Eventify.Repository.Data.Contexts;
 using Eventify.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,10 +9,14 @@ namespace Eventify.Repository.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly UserManager<User> _userManager;
+        
+        private readonly EventifyContext _context;
 
-        public UserRepository(UserManager<User> userManager)
+
+        public UserRepository(UserManager<User> userManager , EventifyContext context )
         {
             _userManager = userManager;
+            _context = context;
         }
         public async Task<bool> DeleteAsync(int id)
         {
@@ -66,5 +71,17 @@ namespace Eventify.Repository.Repositories
         {
             return await _userManager.CheckPasswordAsync(user, password);
         }
+        
+       
+        public int CountTicketBooked(int userId )
+        {
+          
+            int totalTickets = _context.Bookings
+                .Where(b => b.UserId == userId)
+                .Sum(b => b.TicketsNum);
+
+            return totalTickets;
+        }
+
     }
 }

@@ -53,7 +53,7 @@
       <rect x="120" y="680" width="880" height="100" rx="12" fill="#FFFFFF"/>
       
       <text x="160" y="720" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#6B7280">📅</text>
-      <text x="190" y="720" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#1A1A2E">Date & Time</text>
+      <text x="190" y="720" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#1A1A2E">Date &amp; Time</text>
       <text x="190" y="745" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">July 15, 2024</text>
       <text x="190" y="765" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#6B7280">6:00 PM - 11:59 PM</text>
       

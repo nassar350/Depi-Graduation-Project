@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Eventify.Core.Enums;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Eventify.Service.DTOs.Events
@@ -15,7 +16,9 @@ namespace Eventify.Service.DTOs.Events
         public DateTime? StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
-       // see both
+
+        public EventCategory? EventCategory { get; set; }
+        // see both
         public IFormFile? Photo { get; set; }
 
         public List<int>? CategoryIds { get; set; }
