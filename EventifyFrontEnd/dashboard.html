@@ -471,7 +471,7 @@
         document.getElementById('bookingsList').style.display = 'none';
 
         try {
-          const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+          const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
           const response = await fetch(`${baseUrl}/api/Booking/User`, {
             method: 'GET',
             headers: {
@@ -567,7 +567,7 @@
         document.getElementById('eventsList').style.display = 'none';
 
         try {
-          const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+          const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
           const response = await fetch(`${baseUrl}/api/Events/organizer/${organizerId}`, {
             method: 'GET',
             headers: {
@@ -651,7 +651,7 @@
         }
 
         try {
-          const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+          const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
           const response = await fetch(`${baseUrl}/api/Events/organizer/${organizerId}`, {
             method: 'GET',
             headers: {
@@ -684,7 +684,7 @@
         }
 
         try {
-          const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+          const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
           const response = await fetch(`${baseUrl}/api/User/booked`, {
             method: 'GET',
             headers: {
@@ -718,7 +718,7 @@
         if (!token) return;
 
         try {
-          const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+          const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
           const response = await fetch(`${baseUrl}/api/user/revenue`, {
             method: 'GET',
             headers: {
@@ -1091,7 +1091,7 @@
             return;
           }
 
-          const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+          const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
           const response = await fetch(`${baseUrl}/api/User/${userId}`, {
             method: 'PUT',
             headers: {
