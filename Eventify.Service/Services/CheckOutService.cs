@@ -115,6 +115,9 @@ namespace Eventify.Service.Services
                     ticket.BookingId = createdBooking.Id;
                 }
 
+                var category = await _unitOfWork._categoryRepository.GetByIdAsync(TicketsToBook.ElementAt(0).CategoryId);
+                category.Booked += dto.TicketsNum;
+
                 _unitOfWork._ticketRepository.UpdateRange(TicketsToBook);
                 await _unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();

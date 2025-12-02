@@ -17,12 +17,14 @@ namespace Eventify.Service.Services
     public class PaymentService : IPaymentService
     {
         private readonly IPaymentRepository _paymentRepository;
+        private readonly IBookingService _bookingService;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public PaymentService(IPaymentRepository paymentRepository, IConfiguration configuration, IMapper mapper)
+        public PaymentService(IPaymentRepository paymentRepository, IBookingService bookingService, IConfiguration configuration, IMapper mapper)
         {
             _paymentRepository = paymentRepository;
+            _bookingService = bookingService;
             _configuration = configuration;
             _mapper = mapper;
 
@@ -125,7 +127,8 @@ namespace Eventify.Service.Services
             var refundService = new RefundService();
             var refundOptions = new RefundCreateOptions
             {
-                PaymentIntent = payment.StripePaymentIntentId
+                PaymentIntent = payment.StripePaymentIntentId,
+                Reason = RefundReasons.RequestedByCustomer
             };
 
             try
@@ -133,6 +136,7 @@ namespace Eventify.Service.Services
                 await refundService.CreateAsync(refundOptions);
 
                 payment.Status = PaymentStatus.Refunded;
+                await _bookingService.RefundThisBooking(bookingId);
                 await _paymentRepository.UpdateAsync(payment);
                 await _paymentRepository.SaveChangesAsync();
 

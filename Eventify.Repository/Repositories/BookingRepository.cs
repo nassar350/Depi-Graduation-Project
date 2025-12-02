@@ -28,6 +28,7 @@ public class BookingRepository : IBookingRepository
     public async Task<Booking?> GetByIdAsync(int id)
     {
         return await _context.Bookings
+            .Include(b => b.Tickets)
             .FirstOrDefaultAsync(b => b.Id == id);
     }
 

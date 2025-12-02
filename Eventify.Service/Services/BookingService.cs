@@ -60,4 +60,24 @@ public class BookingService : IBookingService
             return await _repo.DeleteAsync(id);
 
         }
+
+    public async Task<bool> RefundThisBooking(int bookingId)
+    {
+        var booking = await _repo.GetByIdAsync(bookingId);
+
+        if (booking == null)
+            return false;
+
+        foreach(var ticket in booking.Tickets)
+        {
+            ticket.BookingId = null;
+        }
+
+        var category = await _unitOfWork._categoryRepository.GetByIdAsync(booking.Tickets.First().CategoryId);
+        category.Booked -= booking.TicketsNum;
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return true;
+    }
 }
