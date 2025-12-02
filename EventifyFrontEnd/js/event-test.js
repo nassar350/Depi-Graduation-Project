@@ -234,16 +234,37 @@ class EventPage {
   selectCategory(categoryId) {
     console.log('🚀 Category selected:', categoryId);
     
+    // Check if user is trying to book their own event
+    const currentUser = this.getCurrentUser();
+    if (currentUser && this.event.organizerID === currentUser.id) {
+      if (window.app) {
+        app.showNotification('You cannot book your own event. You are the organizer of this event.', 'warning');
+      }
+      return;
+    }
+    
+    // Check if event is in the past
+    if (this.isEventPast()) {
+      if (window.app) {
+        app.showNotification('This event has already ended. You cannot book tickets for past events.', 'warning');
+      }
+      return;
+    }
+    
     if (!this.event || !this.event.categories) {
       console.error('🚀 No event or categories data available');
-      alert('Event data not available. Please refresh the page.');
+      if (window.app) {
+        app.showNotification('Event data not available. Please refresh the page.', 'error');
+      }
       return;
     }
     
     const category = this.event.categories.find(cat => cat.id === categoryId);
     if (!category) {
       console.error('🚀 Category not found:', categoryId);
-      alert('Selected category not found.');
+      if (window.app) {
+        app.showNotification('Selected category not found.', 'error');
+      }
       return;
     }
     
@@ -253,7 +274,9 @@ class EventPage {
     const availableSeats = categorySeats - categoryBooked;
     
     if (availableSeats <= 0) {
-      alert(`${categoryName} category is sold out`);
+      if (window.app) {
+        app.showNotification(`${categoryName} category is sold out`, 'warning');
+      }
       return;
     }
     
@@ -285,13 +308,34 @@ class EventPage {
     
     if (!this.event) {
       console.error('🚀 No event data available for booking');
-      alert('Event data not loaded. Please refresh the page.');
+      if (window.app) {
+        app.showNotification('Event data not loaded. Please refresh the page.', 'error');
+      }
+      return;
+    }
+    
+    // Check if user is trying to book their own event
+    const currentUser = this.getCurrentUser();
+    if (currentUser && this.event.organizerID === currentUser.id) {
+      if (window.app) {
+        app.showNotification('You cannot book your own event. You are the organizer of this event.', 'warning');
+      }
+      return;
+    }
+    
+    // Check if event is in the past
+    if (this.isEventPast()) {
+      if (window.app) {
+        app.showNotification('This event has already ended. You cannot book tickets for past events.', 'warning');
+      }
       return;
     }
     
     // Check if there are available categories
     if (!this.event.categories || this.event.categories.length === 0) {
-      alert('No ticket categories available for this event');
+      if (window.app) {
+        app.showNotification('No ticket categories available for this event', 'warning');
+      }
       return;
     }
     
@@ -307,7 +351,9 @@ class EventPage {
     });
     
     if (!availableCategory) {
-      alert('This event is sold out');
+      if (window.app) {
+        app.showNotification('This event is sold out', 'warning');
+      }
       return;
     }
     
@@ -607,13 +653,38 @@ class EventPage {
     console.log('🚀 Event details displayed');
   }
   
+  // Helper method to get current user
+  getCurrentUser() {
+    try {
+      const userJson = localStorage.getItem('eventifyUser') || localStorage.getItem('eventify_user');
+      if (userJson) {
+        return JSON.parse(userJson);
+      }
+    } catch (error) {
+      console.error('🚀 Error getting current user:', error);
+    }
+    return null;
+  }
+  
+  // Helper method to check if event is in the past
+  isEventPast() {
+    if (!this.event || !this.event.startDate) {
+      return false;
+    }
+    const eventDate = new Date(this.event.startDate);
+    const now = new Date();
+    return eventDate < now;
+  }
+  
   // Share event functionality
   shareEvent(platform) {
     console.log('🚀 Share event called with platform:', platform);
     
     if (!this.event) {
       console.error('🚀 No event data available for sharing');
-      alert('Event data not loaded');
+      if (window.app) {
+        app.showNotification('Event data not loaded', 'error');
+      }
       return;
     }
 
@@ -642,7 +713,9 @@ class EventPage {
     try {
       await navigator.clipboard.writeText(text);
       console.log('🚀 Link copied to clipboard');
-      alert('Event link copied to clipboard!');
+      if (window.app) {
+        app.showNotification('Event link copied to clipboard!', 'success');
+      }
     } catch (err) {
       console.error('🚀 Failed to copy:', err);
       // Fallback method
@@ -655,10 +728,14 @@ class EventPage {
       try {
         document.execCommand('copy');
         console.log('🚀 Link copied using fallback method');
-        alert('Event link copied to clipboard!');
+        if (window.app) {
+          app.showNotification('Event link copied to clipboard!', 'success');
+        }
       } catch (err2) {
         console.error('🚀 Fallback copy failed:', err2);
-        alert('Failed to copy link');
+        if (window.app) {
+          app.showNotification('Failed to copy link', 'error');
+        }
       }
       document.body.removeChild(textArea);
     }

@@ -11,4 +11,5 @@ public interface IBookingRepository
     Task SaveChangesAsync();
     Task<bool> UpdateAsync(int id, Booking booking);
     Task<bool> DeleteAsync(int id);
+    Task<IEnumerable<Booking>> GetDetailedByUserId(int userId);
 }

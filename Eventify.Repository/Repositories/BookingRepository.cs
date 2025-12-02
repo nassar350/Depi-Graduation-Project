@@ -63,4 +63,13 @@ public class BookingRepository : IBookingRepository
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<IEnumerable<Booking>> GetDetailedByUserId(int userId)
+    {
+        return await _context.Bookings
+            .Include(b => b.Payment)
+            .Include(b => b.Tickets)
+            .Where(b => b.UserId == userId)
+            .ToListAsync();
+    }
 }

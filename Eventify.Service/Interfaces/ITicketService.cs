@@ -1,4 +1,5 @@
 ﻿using Eventify.Service.DTOs.Tickets;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,6 @@ namespace Eventify.Service.Interfaces
         Task<bool> UpdateAsync(int id, UpdateTicketDto dto);
         Task<bool> DeleteAsync(int id);
         int GetAvailableTicketsCount(int eventId, string categoryName);
+        int GetBookedTicketsCount(int eventId);
     }
 }

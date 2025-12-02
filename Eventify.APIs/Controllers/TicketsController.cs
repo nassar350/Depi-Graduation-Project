@@ -100,6 +100,44 @@ namespace Eventify.APIs.Controllers
                 });
             }
         }
+        [HttpGet("Event")]
+        public IActionResult GetBookedTicketsCount([FromQuery] int eventId)
+        {
+            if (eventId <= 0)
+            {
+                return BadRequest(new ApiResponseDto<object>
+                {
+                    Success = false,
+                    Message = "Invalid event ID",
+                    Errors = new List<string> { "Event ID must be a positive number" }
+                });
+            }
+
+            try
+            {
+                var bookedCount = _ticketService.GetBookedTicketsCount(eventId);
+
+                return Ok(new ApiResponseDto<object>
+                {
+                    Success = true,
+                    Message = "Available tickets count retrieved successfully",
+                    Data = new
+                    {
+                        eventId = eventId,
+                        bookedTickets = bookedCount
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponseDto<object>
+                {
+                    Success = false,
+                    Message = "An error occurred while retrieving available tickets count",
+                    Errors = new List<string> { ex.Message }
+                });
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTicketDto dto)

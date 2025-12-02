@@ -65,7 +65,29 @@ namespace Eventify.APIs.Controllers
                 Data = booking
             });
         }
+        [HttpGet("User")]
+        [Authorize]
+        public async Task<IActionResult> GetBookingsByUserId()
+        {
+            var currentId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var bookings = await _service.GetByUserId(int.Parse(currentId));
+            if (!bookings.Data.Any())
+            {
+                return Ok(new ApiResponseDto<IEnumerable<BookingDetailsDto>>
+                {
+                    Success = false,
+                    Message = "No bookings found",
+                    Data = Enumerable.Empty<BookingDetailsDto>()
+                });
+            }
 
+            return Ok(new ApiResponseDto<IEnumerable<BookingDetailsDto>>
+            {
+                Success = true,
+                Message = "Bookings retrieved successfully",
+                Data = bookings.Data
+            });
+        }
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateBookingDto dto)

@@ -252,14 +252,18 @@
         </div>
         
         <div class="form-group">
-          <label for="editAvatar" class="form-label">Avatar URL</label>
+          <label for="editPhoneNumber" class="form-label">Phone Number *</label>
           <input 
-            type="url" 
-            id="editAvatar" 
-            name="avatar"
+            type="tel" 
+            id="editPhoneNumber" 
+            name="phoneNumber"
             class="form-input" 
-            placeholder="https://example.com/avatar.jpg"
+            placeholder="01012345678"
+            pattern="^(010|011|012|015)\d{8}$"
+            title="Egyptian mobile number (11 digits starting with 010, 011, 012, or 015)"
+            required
           >
+          <small class="text-muted">Egyptian mobile number (e.g., 01012345678)</small>
         </div>
         
         <div class="flex gap-md" style="margin-top: var(--space-xl);">
@@ -455,101 +459,90 @@
       }
 
       async loadBookings() {
+        const token = localStorage.getItem('eventify_token');
+        if (!token) {
+          this.bookings = [];
+          this.displayBookings();
+          return;
+        }
+
         // Show loading state
         document.getElementById('bookingsLoading').style.display = 'block';
         document.getElementById('bookingsList').style.display = 'none';
 
-        // TODO: Replace with actual API call when endpoint is ready
-        // For now, use mock data for frontend testing
-        setTimeout(() => {
-          // Mock data - will be replaced with API response
-          this.bookings = [
-            {
-              id: 'BK001',
-              eventTitle: 'Jazz Night Live',
-              eventDate: '2025-12-15',
-              eventTime: '20:00',
-              eventLocation: 'Blue Note Jazz Club',
-              eventImage: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=400',
-              tickets: 2,
-              total: 120,
-              status: 'confirmed',
-              bookingDate: '2025-11-28T10:30:00',
-              attendeeInfo: {
-                name: this.user.name,
-                email: this.user.email
-              }
-            },
-            {
-              id: 'BK002',
-              eventTitle: 'Food & Wine Festival',
-              eventDate: '2025-12-20',
-              eventTime: '18:00',
-              eventLocation: 'Downtown Convention Center',
-              eventImage: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400',
-              tickets: 4,
-              total: 280,
-              status: 'confirmed',
-              bookingDate: '2025-11-25T14:15:00',
-              attendeeInfo: {
-                name: this.user.name,
-                email: this.user.email
-              }
-            },
-            {
-              id: 'BK003',
-              eventTitle: 'Comedy Show: Stand-Up Special',
-              eventDate: '2025-11-30',
-              eventTime: '21:00',
-              eventLocation: 'Comedy Club Main Stage',
-              eventImage: 'https://images.unsplash.com/photo-1527224538127-2104bb29aedb?w=400',
-              tickets: 2,
-              total: 80,
-              status: 'completed',
-              bookingDate: '2025-11-10T09:45:00',
-              attendeeInfo: {
-                name: this.user.name,
-                email: this.user.email
-              }
-            },
-            {
-              id: 'BK004',
-              eventTitle: 'Yoga & Meditation Retreat',
-              eventDate: '2026-01-05',
-              eventTime: '08:00',
-              eventLocation: 'Serenity Wellness Center',
-              eventImage: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
-              tickets: 1,
-              total: 0,
-              status: 'confirmed',
-              bookingDate: '2025-11-20T16:20:00',
-              attendeeInfo: {
-                name: this.user.name,
-                email: this.user.email
-              }
+        try {
+          const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+          const response = await fetch(`${baseUrl}/api/Booking/User`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
             }
-          ];
-          
-          this.displayBookings();
-          
-          document.getElementById('bookingsLoading').style.display = 'none';
-          document.getElementById('bookingsList').style.display = 'block';
-        }, 500);
+          });
 
-        /*
-        // UNCOMMENT THIS WHEN API IS READY:
-        const allBookings = JSON.parse(localStorage.getItem('eventify_bookings') || '[]');
-        this.bookings = allBookings.filter(booking => 
-          booking.attendeeInfo.email === this.user.email
-        );
+          if (response.ok) {
+            const result = await response.json();
+            console.log('Bookings API response:', result);
+            
+            if (result.success && result.data) {
+              // Map API response to our booking format
+              this.bookings = result.data.map(booking => {
+                // Determine booking status based on payment status
+                let bookingStatus = 'confirmed';
+                if (booking.payment) {
+                  if (booking.payment.status === 'Pending' || booking.payment.status === 'Paid') {
+                    bookingStatus = 'confirmed';
+                  } else {
+                    bookingStatus = 'cancelled';
+                  }
+                }
+
+                return {
+                  id: booking.id,
+                  eventId: booking.event.id,
+                  eventTitle: booking.event.name,
+                  eventDate: booking.event.startDate.split('T')[0],
+                  eventTime: new Date(booking.event.startDate).toTimeString().substring(0, 5),
+                  eventLocation: booking.event.address,
+                  eventImage: booking.event.photoUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400',
+                  tickets: booking.ticketsNum,
+                  total: booking.payment ? booking.payment.totalPrice : 0,
+                  status: bookingStatus,
+                  bookingDate: booking.createdDate,
+                  paymentStatus: booking.payment ? booking.payment.status : 'Unknown',
+                  paymentMethod: booking.payment ? booking.payment.paymentMethod : '',
+                  attendeeInfo: {
+                    name: this.user.name,
+                    email: this.user.email
+                  },
+                  // Store full booking data for details page
+                  fullData: booking
+                };
+              });
+              
+              console.log('Loaded bookings from API:', this.bookings);
+            } else {
+              console.error('API response not successful:', result.message);
+              this.bookings = [];
+            }
+          } else {
+            console.error('Failed to fetch bookings:', response.status);
+            this.bookings = [];
+          }
+        } catch (error) {
+          console.error('Error fetching bookings:', error);
+          this.bookings = [];
+        }
         
         this.displayBookings();
         
+        // Store bookings in localStorage for booking-details page
+        localStorage.setItem('eventify_user_bookings', JSON.stringify(this.bookings));
+        
         setTimeout(() => {
           document.getElementById('bookingsLoading').style.display = 'none';
           document.getElementById('bookingsList').style.display = 'block';
         }, 500);
-        */
       }
 
       async loadUserEvents() {
@@ -560,58 +553,22 @@
           return;
         }
 
+        // Get organizer ID from user data
+        const organizerId = this.user.id;
+        if (!organizerId) {
+          console.error('No organizer ID found');
+          this.userEvents = [];
+          this.displayUserEvents();
+          return;
+        }
+
         // Show loading state
         document.getElementById('eventsLoading').style.display = 'block';
         document.getElementById('eventsList').style.display = 'none';
 
-        // TODO: Replace with actual API call when endpoint is ready
-        // For now, use mock data for frontend testing
-        setTimeout(() => {
-          // Mock data - will be replaced with API response
-          this.userEvents = [
-            {
-              id: 1,
-              title: "Summer Music Festival 2025",
-              eventDate: "2025-07-15T18:00:00",
-              location: "Central Park, New York",
-              photoUrl: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400",
-              capacity: 5000,
-              availableSeats: 3200,
-              price: 75
-            },
-            {
-              id: 2,
-              title: "Tech Conference 2025",
-              eventDate: "2025-09-20T09:00:00",
-              location: "Convention Center",
-              photoUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400",
-              capacity: 1000,
-              availableSeats: 450,
-              price: 199
-            },
-            {
-              id: 3,
-              title: "Art Gallery Opening",
-              eventDate: "2025-06-10T19:00:00",
-              location: "Modern Art Museum",
-              photoUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400",
-              capacity: 200,
-              availableSeats: 85,
-              price: 0
-            }
-          ];
-
-          this.displayUserEvents();
-          
-          document.getElementById('eventsLoading').style.display = 'none';
-          document.getElementById('eventsList').style.display = 'block';
-        }, 500);
-
-        /* 
-        // UNCOMMENT THIS WHEN API IS READY:
         try {
           const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
-          const response = await fetch(`${baseUrl}/api/events/user`, {
+          const response = await fetch(`${baseUrl}/api/Events/organizer/${organizerId}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -620,9 +577,38 @@
           });
 
           if (response.ok) {
-            const events = await response.json();
-            this.userEvents = events || [];
-            console.log('Loaded user events from API:', this.userEvents);
+            const result = await response.json();
+            console.log('API Response:', result);
+            console.log('API Response Data (first event):', result.data && result.data[0] ? result.data[0] : 'No events');
+            
+            if (result.success && result.data) {
+              // Map API response to our event format
+              this.userEvents = result.data.map(event => {
+                console.log('Mapping event:', JSON.stringify(event, null, 2));
+                return {
+                  id: event.id,
+                  title: event.name,  // API uses 'name' not 'title'
+                  description: event.description,
+                  location: event.address,  // API uses 'address' not 'location'
+                  eventDate: event.startDate,
+                  startDate: event.startDate,
+                  endDate: event.endDate,
+                  photoUrl: event.photoUrl,
+                  image: event.photoUrl,
+                  capacity: event.capacity || 0,
+                  availableSeats: event.availableTickets || 0,
+                  bookedTickets: event.bookedTickets || 0,
+                  price: event.price || 0,
+                  isUpcoming: event.isUpcoming,
+                  status: event.status
+                };
+              });
+              
+              console.log('Loaded user events from API:', this.userEvents);
+            } else {
+              console.error('API response not successful:', result.message);
+              this.userEvents = [];
+            }
           } else {
             console.error('Failed to fetch user events:', response.status);
             this.userEvents = [];
@@ -638,14 +624,14 @@
           document.getElementById('eventsLoading').style.display = 'none';
           document.getElementById('eventsList').style.display = 'block';
         }, 500);
-        */
       }
 
       async updateStatistics() {
         // Fetch events count from API
         await this.fetchEventsCount();
         
-        document.getElementById('ticketsBooked').textContent = this.bookings.reduce((total, booking) => total + booking.tickets, 0);
+        // Fetch booked tickets count from API
+        await this.fetchBookedTicketsCount();
         
         // Fetch total revenue from API
         await this.fetchTotalRevenue();
@@ -658,15 +644,15 @@
           return;
         }
 
-        // TODO: Replace with actual API call when endpoint is ready
-        // For now, use mock count
-        document.getElementById('eventsCreated').textContent = '3';
+        const organizerId = this.user.id;
+        if (!organizerId) {
+          document.getElementById('eventsCreated').textContent = '0';
+          return;
+        }
 
-        /* 
-        // UNCOMMENT THIS WHEN API IS READY:
         try {
           const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
-          const response = await fetch(`${baseUrl}/api/events/user/count`, {
+          const response = await fetch(`${baseUrl}/api/Events/organizer/${organizerId}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -675,8 +661,12 @@
           });
 
           if (response.ok) {
-            const data = await response.json();
-            document.getElementById('eventsCreated').textContent = data.count || data.total || 0;
+            const result = await response.json();
+            if (result.success && result.data) {
+              document.getElementById('eventsCreated').textContent = result.data.length || 0;
+            } else {
+              document.getElementById('eventsCreated').textContent = this.userEvents.length;
+            }
           } else {
             document.getElementById('eventsCreated').textContent = this.userEvents.length;
           }
@@ -684,7 +674,43 @@
           console.error('Error fetching events count:', error);
           document.getElementById('eventsCreated').textContent = this.userEvents.length;
         }
-        */
+      }
+
+      async fetchBookedTicketsCount() {
+        const token = localStorage.getItem('eventify_token');
+        if (!token) {
+          document.getElementById('ticketsBooked').textContent = '0';
+          return;
+        }
+
+        try {
+          const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+          const response = await fetch(`${baseUrl}/api/User/booked`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            console.log('Booked tickets API response:', result);
+            
+            if (result.success && result.data !== undefined) {
+              document.getElementById('ticketsBooked').textContent = result.data;
+            } else {
+              console.error('Invalid API response for booked tickets:', result);
+              document.getElementById('ticketsBooked').textContent = '0';
+            }
+          } else {
+            console.error('Failed to fetch booked tickets:', response.status);
+            document.getElementById('ticketsBooked').textContent = '0';
+          }
+        } catch (error) {
+          console.error('Error fetching booked tickets count:', error);
+          document.getElementById('ticketsBooked').textContent = '0';
+        }
       }
 
       async fetchTotalRevenue() {
@@ -702,20 +728,36 @@
           });
 
           if (response.ok) {
-            const data = await response.json();
+            const result = await response.json();
+            console.log('Revenue API response:', result);
+            
             const revenueElement = document.getElementById('totalRevenue');
             if (revenueElement) {
+              // Handle nested data structure from API
+              let revenue = 0;
+              if (result.success && result.data) {
+                if (result.data.data !== undefined) {
+                  // Nested structure: result.data.data contains the revenue number
+                  revenue = result.data.data || 0;
+                } else if (typeof result.data === 'number') {
+                  // Direct number in data field
+                  revenue = result.data;
+                } else {
+                  // Fallback to other possible fields
+                  revenue = result.data.totalRevenue || result.data.revenue || 0;
+                }
+              }
+              
               // Format revenue as currency
-              const revenue = data.totalRevenue || data.revenue || 0;
-              revenueElement.textContent = `$${revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+              revenueElement.textContent = `EGP ${revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             }
           } else {
             console.error('Failed to fetch revenue:', response.status);
-            document.getElementById('totalRevenue').textContent = '$0.00';
+            document.getElementById('totalRevenue').textContent = 'EGP 0.00';
           }
         } catch (error) {
           console.error('Error fetching total revenue:', error);
-          document.getElementById('totalRevenue').textContent = '$0.00';
+          document.getElementById('totalRevenue').textContent = 'EGP 0.00';
         }
       }
 
@@ -788,27 +830,46 @@
         const container = document.getElementById('eventsList');
         const noEvents = document.getElementById('noEvents');
         
+        console.log('displayUserEvents called with:', this.userEvents);
+        console.log('Container element:', container);
+        console.log('No events element:', noEvents);
+        
         if (this.userEvents.length === 0) {
+          console.log('No events to display');
           container.style.display = 'none';
           noEvents.style.display = 'block';
           return;
         }
 
-        container.innerHTML = this.userEvents.map(event => this.createEventCard(event)).join('');
+        console.log('Generating event cards...');
+        const cardsHTML = this.userEvents.map(event => {
+          const card = this.createEventCard(event);
+          console.log('Generated card for event:', event.title, card.substring(0, 100));
+          return card;
+        }).join('');
+        
+        container.innerHTML = cardsHTML;
         container.style.display = 'block';
         noEvents.style.display = 'none';
+        console.log('Events displayed successfully');
       }
 
       createEventCard(event) {
+        console.log('createEventCard called with:', event);
+        
         // Parse date - handle both formats
         let eventDate;
         if (event.eventDate) {
           eventDate = new Date(event.eventDate);
+        } else if (event.startDate) {
+          eventDate = new Date(event.startDate);
         } else if (event.date) {
           eventDate = new Date(event.date + (event.time ? 'T' + event.time : ''));
         } else {
           eventDate = new Date();
         }
+        
+        console.log('Parsed event date:', eventDate);
         
         const isPastEvent = eventDate < new Date();
         const formattedDate = eventDate.toLocaleDateString('en-US', { 
@@ -841,8 +902,8 @@
                   📍 ${event.location || event.venue || 'TBA'}
                 </p>
                 <div class="flex gap-sm" style="align-items: center;">
-                  <span class="event-tag">${event.capacity || 0} capacity</span>
-                  <span class="event-tag">${event.availableSeats || event.ticketsAvailable || 0} available</span>
+                  ${event.capacity && event.capacity > 0 ? `<span class="event-tag">${event.capacity} capacity</span>` : ''}
+                  ${event.bookedTickets !== undefined && event.bookedTickets >= 0 ? `<span class="event-tag">${event.bookedTickets} booked</span>` : ''}
                   <span class="event-tag" style="background: ${isPastEvent ? 'var(--muted)' : 'var(--success)'}; color: white;">
                     ${isPastEvent ? 'Past' : 'Upcoming'}
                   </span>
@@ -850,9 +911,6 @@
               </div>
               
               <div style="text-align: right;">
-                <div style="font-weight: 600; margin-bottom: var(--space-sm); color: var(--accent);">
-                  ${event.price === 0 || !event.price ? 'Free' : '$' + (event.price || 0).toFixed(2)}
-                </div>
                 <div class="flex gap-sm">
                   ${!isPastEvent ? `
                   <button 
@@ -987,7 +1045,7 @@
         document.getElementById('editFirstName').value = nameParts[0] || '';
         document.getElementById('editLastName').value = nameParts.slice(1).join(' ') || '';
         document.getElementById('editEmail').value = this.user.email;
-        document.getElementById('editAvatar').value = this.user.avatar || '';
+        document.getElementById('editPhoneNumber').value = this.user.phone || this.user.phoneNumber || '';
         
         app.openModal('editProfileModal');
       }
@@ -1001,32 +1059,93 @@
         
         const form = event.target;
         
-        if (!app.validateForm(form)) {
-          app.showNotification('Please fix the errors and try again', 'error');
+        if (!form.checkValidity()) {
+          app.showNotification('Please fill in all required fields correctly', 'error');
+          form.reportValidity();
           return;
         }
 
         const formData = new FormData(form);
-        const updatedUser = {
-          ...this.user,
-          name: `${formData.get('firstName').trim()} ${formData.get('lastName').trim()}`,
-          firstName: formData.get('firstName').trim(),
-          lastName: formData.get('lastName').trim(),
-          email: formData.get('email').trim(),
-          avatar: formData.get('avatar').trim() || this.user.avatar
-        };
+        const fullName = `${formData.get('firstName').trim()} ${formData.get('lastName').trim()}`;
+        const email = formData.get('email').trim();
+        const phoneNumber = formData.get('phoneNumber').trim();
 
-        // Update user data
-        app.setCurrentUser(updatedUser);
-        this.user = updatedUser;
-        
-        // Refresh profile display
-        this.loadUserProfile();
-        
-        // Close modal
-        this.closeEditProfile();
-        
-        app.showNotification('Profile updated successfully!', 'success');
+        // Validate phone number format
+        const phonePattern = /^(010|011|012|015)\d{8}$/;
+        if (!phonePattern.test(phoneNumber)) {
+          app.showNotification('Invalid phone number format. Use Egyptian mobile number (e.g., 01012345678)', 'error');
+          return;
+        }
+
+        try {
+          const token = localStorage.getItem('eventify_token');
+          if (!token) {
+            app.showNotification('Please log in again', 'error');
+            window.location.href = 'login.html';
+            return;
+          }
+
+          const userId = this.user.id;
+          if (!userId) {
+            app.showNotification('User ID not found', 'error');
+            return;
+          }
+
+          const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+          const response = await fetch(`${baseUrl}/api/User/${userId}`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              name: fullName,
+              email: email,
+              phoneNumber: phoneNumber
+            })
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            console.log('Profile update response:', result);
+            
+            if (result.success) {
+              // Update local user data
+              const updatedUser = {
+                ...this.user,
+                name: result.data.name,
+                email: result.data.email,
+                phone: result.data.phoneNumber,
+                phoneNumber: result.data.phoneNumber
+              };
+
+              app.setCurrentUser(updatedUser);
+              this.user = updatedUser;
+              
+              // Refresh profile display
+              this.loadUserProfile();
+              
+              // Close modal
+              this.closeEditProfile();
+              
+              app.showNotification('Profile updated successfully!', 'success');
+            } else {
+              const errorMsg = result.errors && result.errors.length > 0 
+                ? result.errors.join(', ') 
+                : result.message || 'Failed to update profile';
+              app.showNotification(errorMsg, 'error');
+            }
+          } else {
+            const errorData = await response.json().catch(() => ({}));
+            const errorMsg = errorData.errors && errorData.errors.length > 0
+              ? errorData.errors.join(', ')
+              : errorData.message || 'Failed to update profile';
+            app.showNotification(errorMsg, 'error');
+          }
+        } catch (error) {
+          console.error('Error updating profile:', error);
+          app.showNotification('Error updating profile. Please try again.', 'error');
+        }
       }
 
       // Booking details
