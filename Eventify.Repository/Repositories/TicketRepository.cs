@@ -67,5 +67,6 @@ namespace Eventify.Repository.Repositories
         }
 
         public  void UpdateRange(IEnumerable<Ticket> tickets) =>  _context.Tickets.UpdateRange(tickets);
+        
     }
 }
