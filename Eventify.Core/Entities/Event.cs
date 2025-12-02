@@ -1,3 +1,5 @@
+using Eventify.Core.Enums;
+
 namespace Eventify.Core.Entities;
 
 public class Event
@@ -8,6 +10,7 @@ public class Event
     public string Address { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
+    public EventCategory EventCategory { get; set; }
     public int  OrganizerID { get; set; }  // Reference to PK in User
     public string? PhotoUrl { get; set; }
     public ICollection<UserAttendEvent> EventsAttendedByUsers { get; set; }

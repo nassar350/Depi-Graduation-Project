@@ -4,7 +4,7 @@ class CreateEventPage {
     this.currentStep = 1;
     this.maxStep = 4;
     this.categories = [];
-    this.apiBaseUrl = window.API_BASE_URL || 'https://localhost:7105/';
+    this.apiBaseUrl = window.API_BASE_URL || 'https://localhost:7105';
     
     this.init();
   }
@@ -23,7 +23,45 @@ class CreateEventPage {
     this.setupEventHandlers();
     this.setupFormValidation();
     this.setMinDateTime();
+    this.loadEventCategories();
     this.initializeCategories();
+  }
+
+  // Load Event Categories from backend
+  async loadEventCategories() {
+    try {
+      // EventCategory enum values from backend
+      const eventCategories = [
+        { value: 1, label: 'Music' },
+        { value: 2, label: 'Sports' },
+        { value: 3, label: 'Arts' },
+        { value: 4, label: 'Food' },
+        { value: 5, label: 'Technology' },
+        { value: 6, label: 'Business' },
+        { value: 7, label: 'Education' },
+        { value: 8, label: 'Entertainment' },
+        { value: 9, label: 'Health' },
+        { value: 10, label: 'Community' },
+        { value: 11, label: 'Other' }
+      ];
+
+      const categorySelect = document.getElementById('eventCategory');
+      if (categorySelect) {
+        // Clear existing options except the first one
+        categorySelect.innerHTML = '<option value="">Select a category...</option>';
+        
+        // Populate with categories
+        eventCategories.forEach(category => {
+          const option = document.createElement('option');
+          option.value = category.value;
+          option.textContent = category.label;
+          categorySelect.appendChild(option);
+        });
+      }
+    } catch (error) {
+      console.error('Error loading event categories:', error);
+      app.showNotification('Error loading categories. Please refresh the page.', 'error');
+    }
   }
 
   setupEventHandlers() {
@@ -55,10 +93,30 @@ class CreateEventPage {
   }
 
   setupFormValidation() {
+    if (this.validationInitialized) return;
+    this.validationInitialized = true;
+    
     const inputs = document.querySelectorAll('.form-input, .form-select, .form-textarea');
     inputs.forEach(input => {
-      input.addEventListener('blur', () => this.validateField(input));
-      input.addEventListener('input', () => this.clearFieldError(input));
+      // Mark input as having validation attached
+      if (input.dataset.validationAttached === 'true') return;
+      input.dataset.validationAttached = 'true';
+      
+      // Only validate on blur if the field has been interacted with
+      input.addEventListener('focus', () => {
+        input.dataset.touched = 'true';
+      });
+      
+      input.addEventListener('blur', () => {
+        if (input.dataset.touched === 'true') {
+          this.validateField(input);
+        }
+      });
+      
+      input.addEventListener('input', () => {
+        input.dataset.touched = 'true';
+        this.clearFieldError(input);
+      });
     });
   }
 
@@ -319,9 +377,6 @@ class CreateEventPage {
     let isValid = true;
     let errorMessage = '';
 
-    // Clear previous errors
-    this.clearFieldError(field);
-
     // Required field validation
     if (field.hasAttribute('required') && !value) {
       errorMessage = 'This field is required';
@@ -386,27 +441,57 @@ class CreateEventPage {
   }
 
   showFieldError(field, message) {
+    if (!field) return;
+    
+    const fieldId = field.id || field.name;
+    const parentGroup = field.closest('.form-group') || field.parentNode;
+    if (!parentGroup) return;
+    
+    // Remove ALL existing errors in this form group immediately
+    const existingErrors = parentGroup.querySelectorAll('.field-error');
+    existingErrors.forEach(error => error.remove());
+    
+    // Add error class
     field.classList.add('error');
     
-    // Remove existing error message
-    const existingError = field.parentNode.querySelector('.field-error');
-    if (existingError) {
-      existingError.remove();
+    // Check if we already have an error for this specific field
+    const existingErrorForField = parentGroup.querySelector(`[data-error-for="${fieldId}"]`);
+    if (existingErrorForField) {
+      existingErrorForField.remove();
     }
-
-    // Add new error message
+    
+    // Create new error message
     const errorElement = document.createElement('div');
     errorElement.className = 'field-error';
     errorElement.textContent = message;
-    field.parentNode.appendChild(errorElement);
+    errorElement.setAttribute('data-error-for', fieldId);
+    
+    // Find where to insert
+    const formHint = parentGroup.querySelector('.form-hint');
+    
+    if (formHint) {
+      formHint.insertAdjacentElement('afterend', errorElement);
+    } else {
+      field.insertAdjacentElement('afterend', errorElement);
+    }
   }
 
   clearFieldError(field) {
+    if (!field) return;
+    
     field.classList.remove('error');
-    const errorElement = field.parentNode.querySelector('.field-error');
-    if (errorElement) {
-      errorElement.remove();
-    }
+    
+    const parentGroup = field.closest('.form-group') || field.parentNode;
+    if (!parentGroup) return;
+    
+    // Remove ALL error messages in this form group
+    const errorElements = parentGroup.querySelectorAll('.field-error');
+    errorElements.forEach(error => error.remove());
+    
+    // Double-check for errors with specific data attribute
+    const fieldId = field.id || field.name;
+    const specificErrors = document.querySelectorAll(`[data-error-for="${fieldId}"]`);
+    specificErrors.forEach(error => error.remove());
   }
 
   updateEventPreview() {
@@ -415,6 +500,10 @@ class CreateEventPage {
 
     const formData = this.getFormData();
     const categories = this.getCategoriesData();
+    
+    // Get the selected category label
+    const categorySelect = document.getElementById('eventCategory');
+    const categoryLabel = categorySelect?.options[categorySelect.selectedIndex]?.text || 'Not selected';
 
     previewContainer.innerHTML = `
       <div style="display: flex; gap: var(--space-lg); margin-bottom: var(--space-lg); flex-wrap: wrap;">
@@ -425,6 +514,7 @@ class CreateEventPage {
         <div style="flex: 1; min-width: 250px;">
           <h4 style="margin-bottom: var(--space-sm);">${formData.get('name') || 'Event Name'}</h4>
           <p style="margin-bottom: var(--space-md); color: var(--muted);">
+            🏷️ ${categoryLabel}<br>
             📅 ${formData.get('startDate') ? new Date(formData.get('startDate')).toLocaleString() : 'Start Date'}<br>
             📅 ${formData.get('endDate') ? new Date(formData.get('endDate')).toLocaleString() : 'End Date'}<br>
             📍 ${formData.get('address') || 'Address'}<br>
@@ -499,6 +589,12 @@ class CreateEventPage {
       apiFormData.append('description', formData.get('description'));
       apiFormData.append('address', formData.get('address'));
       
+      // Event Category (enum value)
+      const eventCategory = formData.get('eventCategory');
+      if (eventCategory) {
+        apiFormData.append('eventCategory', eventCategory);
+      }
+      
       // Convert datetime-local to ISO 8601 format
       const startDate = new Date(formData.get('startDate')).toISOString();
       const endDate = new Date(formData.get('endDate')).toISOString();
@@ -525,8 +621,14 @@ class CreateEventPage {
 
       if (response.ok) {
         const result = await response.json();
-        app.showNotification('Event created successfully!', 'success');
-        this.showSuccessModal(result);
+        app.showNotification('Event created successfully! Redirecting...', 'success');
+        
+        // Redirect back to create event page to create another event
+        setTimeout(() => {
+          window.location.replace('create-event.html');
+        }, 1000);
+        
+        return; // Exit early to prevent button state restoration
       } else {
         const errorData = await response.json().catch(() => null);
         let errorMessage = 'Failed to create event';

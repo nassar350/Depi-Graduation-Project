@@ -28,7 +28,6 @@ var connectionString = builder.Configuration.GetConnectionString("OnlineDbConnec
 //
 // StripeConfiguration.ApiKey = stripeKey;
 
-// Register ticket services
 builder.Services.AddScoped<ITicketEncryptionService>(sp =>
     new TicketEncryptionService(builder.Configuration["TicketEncryption:Key"]));
 
