@@ -3,7 +3,7 @@
 
 class ExplorePage {
   constructor() {
-    this.apiBaseUrl = window.API_BASE_URL || 'https://localhost:7105';
+    this.apiBaseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
     this.allEvents = [];
     this.filteredEvents = [];
     this.currentPage = 1;

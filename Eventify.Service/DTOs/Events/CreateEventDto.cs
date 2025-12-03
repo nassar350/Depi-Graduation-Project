@@ -31,6 +31,8 @@ namespace Eventify.Service.DTOs.Events
         //remove orgainizer id as it will be taken from the logged in user
 
         public IFormFile? Photo { get; set; }
+        public bool IsOnline { get; set; }
+        public int? DurationMinutes { get; set; }
 
         public string CategoriesJson { get; set; }
     }

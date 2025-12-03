@@ -3,7 +3,7 @@
 
 class HomePage {
   constructor() {
-    this.apiBaseUrl = window.API_BASE_URL || 'https://localhost:7105';
+    this.apiBaseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
     this.eventsPerPage = 10;
     this.currentPage = 1;
     this.allEvents = [];

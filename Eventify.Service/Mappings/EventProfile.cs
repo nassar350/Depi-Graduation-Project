@@ -20,6 +20,7 @@ namespace Eventify.Service.Mappings
                 .ForMember(dest => dest.OrganizerName,
                     opt => opt.MapFrom(src => src.Organizer != null ? src.Organizer.Name : "Unknown"))
                 .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => src.PhotoUrl ?? ""))
+              
                 .ForMember(dest => dest.AvailableTickets,
                     opt => opt.MapFrom(src => src.Tickets != null ? src.Tickets.Count(t => t.BookingId == null) : 0))
                 .ForMember(dest => dest.IsUpcoming,

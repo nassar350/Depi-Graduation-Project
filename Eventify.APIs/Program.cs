@@ -136,6 +136,10 @@ builder.Services.AddSingleton(provider =>
 });
 
 builder.Services.AddScoped<IPhotoService, PhotoService>();
+builder.Services.Configure<ZoomSettings>(builder.Configuration.GetSection("ZoomSettings")); 
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IZoomService, ZoomService>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

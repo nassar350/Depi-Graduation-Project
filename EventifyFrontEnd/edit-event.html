@@ -311,7 +311,7 @@
       // UNCOMMENT THIS WHEN API IS READY:
       try {
         const token = localStorage.getItem('eventify_token');
-        const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+        const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
         
         const response = await fetch(`${baseUrl}/api/events/${eventId}`, {
           method: 'GET',
@@ -385,7 +385,7 @@
       // UNCOMMENT THIS WHEN API IS READY:
       try {
         const token = localStorage.getItem('eventify_token');
-        const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+        const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
         
         const response = await fetch(`${baseUrl}/api/events/${currentEvent.id}`, {
           method: 'PUT',

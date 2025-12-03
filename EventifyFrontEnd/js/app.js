@@ -324,7 +324,7 @@ class EventifyApp {
     }
 
     try {
-      const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+      const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
       console.log('Fetching current user from:', `${baseUrl}/api/user/current`);
       
       const response = await fetch(`${baseUrl}/api/user/current`, {
@@ -679,7 +679,7 @@ class EventifyApp {
   // API utility: Make authenticated API calls
   async apiCall(endpoint, options = {}) {
     const token = this.getToken();
-    const baseUrl = window.API_BASE_URL || 'https://localhost:7105';
+    const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
     
     const defaultOptions = {
       headers: {
