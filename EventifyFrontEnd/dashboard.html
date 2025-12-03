@@ -1187,6 +1187,19 @@
     document.addEventListener('DOMContentLoaded', () => {
       if (window.EventifyData) {
         window.dashboardPage = new DashboardPage();
+        
+        // Check if returning from a cancelled booking and refresh if needed
+        if (sessionStorage.getItem('eventify_booking_cancelled') === 'true') {
+          sessionStorage.removeItem('eventify_booking_cancelled');
+          
+          // Show notification and force reload bookings
+          setTimeout(() => {
+            app.showNotification('Bookings updated - refund processed', 'success');
+            if (window.dashboardPage) {
+              window.dashboardPage.loadBookings();
+            }
+          }, 500);
+        }
       } else {
         console.error('EventifyData not loaded');
       }

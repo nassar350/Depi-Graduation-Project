@@ -43,11 +43,13 @@ builder.Services.AddCors(options =>
                 "http://localhost:5000", 
                 "http://localhost:5173", 
                 "http://localhost:5500", 
+                "http://localhost:5501", 
                 "http://localhost:8000", 
                 "http://localhost:8080", 
                 "http://localhost:8090", 
                 "http://127.0.0.1:3000",
-                "http://127.0.0.1:5500", 
+                "http://127.0.0.1:5500",
+                "http://127.0.0.1:5501",
                 "http://127.0.0.1:8000",
                 "http://127.0.0.1:8080",
                 "https://localhost:3000",
@@ -56,10 +58,13 @@ builder.Services.AddCors(options =>
                 "https://localhost:5000",
                 "https://localhost:5173",
                 "https://localhost:5500",
+                "https://localhost:5501",
+                "https://localhost:7105",
                 "https://localhost:8000",
                 "https://localhost:8080",
                 "https://localhost:8090",
-                "https://eventiifyy.netlify.app"
+                "https://eventiifyy.netlify.app",
+                "https://eventify.runasp.net"
             )
             .AllowAnyMethod()
             .AllowAnyHeader()

@@ -731,10 +731,15 @@ a:hover, a:focus {
   overflow-y: auto;
   transform: scale(0.9);
   transition: transform var(--anim-speed-slow) ease;
+  display: block;
+  position: relative;
+  z-index: 1;
+  opacity: 1;
 }
 
 .modal-overlay.active .modal {
   transform: scale(1);
+  opacity: 1;
 }
 
 .modal-header {
@@ -762,6 +767,53 @@ a:hover, a:focus {
 .modal-close:hover {
   background: var(--border);
   color: var(--text);
+}
+
+.modal-content {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-body {
+  margin-bottom: var(--space-lg);
+}
+
+.modal-body textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: var(--space-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  resize: vertical;
+  transition: all var(--anim-speed) ease;
+}
+
+.modal-body textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.1);
+}
+
+.modal-body textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.modal-footer {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 /* ===== FOOTER ===== */

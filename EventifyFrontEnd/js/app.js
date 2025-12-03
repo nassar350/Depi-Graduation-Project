@@ -141,8 +141,10 @@ class EventifyApp {
 
   // Close modal
   closeModal(modal) {
-    if (modal) {
-      modal.classList.remove('active');
+    // Accept both string ID and DOM element
+    const modalElement = typeof modal === 'string' ? document.getElementById(modal) : modal;
+    if (modalElement) {
+      modalElement.classList.remove('active');
       document.body.style.overflow = '';
     }
   }

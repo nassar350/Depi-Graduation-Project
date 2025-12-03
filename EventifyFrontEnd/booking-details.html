@@ -142,18 +142,35 @@
 
       <!-- Cancellation Confirmation Modal -->
       <div id="cancelModal" class="modal-overlay">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3>Cancel Booking</h3>
-            <button class="modal-close" onclick="app.closeModal('cancelModal')">&times;</button>
+        <div class="modal">
+          <div style="text-align: center; margin-bottom: var(--space-lg);">
+            <div style="font-size: 4rem; margin-bottom: var(--space-md);">⚠️</div>
+            <h2 style="margin-bottom: var(--space-md); color: var(--text);">Cancel Booking</h2>
+            <p style="color: var(--muted); margin-bottom: var(--space-lg);">
+              Are you sure you want to cancel this booking?
+            </p>
           </div>
-          <div class="modal-body">
-            <p>Are you sure you want to cancel this booking?</p>
-            <p class="text-muted" style="margin-top: var(--space-sm);">This action cannot be undone.</p>
+          
+          <div style="margin-bottom: var(--space-xl);">
+            <label for="cancellationReason" style="display: block; margin-bottom: var(--space-sm); font-weight: 600; color: var(--text); font-size: var(--font-size-sm);">Reason for cancellation (optional)</label>
+            <textarea 
+              id="cancellationReason" 
+              rows="3" 
+              placeholder="Help us improve by sharing why you're cancelling..."
+              class="form-input"
+              style="width: 100%; resize: vertical;"
+            ></textarea>
+            <p class="text-muted" style="font-size: var(--font-size-xs); margin-top: var(--space-xs);">Your feedback helps us improve our service</p>
           </div>
-          <div class="modal-footer">
-            <button class="btn btn-outline" onclick="app.closeModal('cancelModal')">No, Keep Booking</button>
-            <button class="btn" style="background: var(--danger); color: white;" onclick="confirmCancellation()">Yes, Cancel Booking</button>
+          
+          <div class="flex gap-md" style="justify-content: center;">
+            <button class="btn btn-outline" onclick="app.closeModal('cancelModal')">
+              No, Keep Booking
+            </button>
+            <button id="confirmCancelBtn" class="btn" style="background: var(--danger);" onclick="confirmCancellation()">
+              <span id="cancelBtnText">Yes, Cancel Booking</span>
+              <span id="cancelBtnSpinner" style="display: none;">⏳ Processing...</span>
+            </button>
           </div>
         </div>
       </div>
@@ -312,43 +329,90 @@
     }
 
     async function confirmCancellation() {
-      app.closeModal('cancelModal');
-
-      // TODO: Replace with actual API call when endpoint is ready
-      // For now, show success message
-      app.showNotification('Booking cancelled successfully', 'success');
+      const confirmBtn = document.getElementById('confirmCancelBtn');
+      const btnText = document.getElementById('cancelBtnText');
+      const btnSpinner = document.getElementById('cancelBtnSpinner');
+      const reasonField = document.getElementById('cancellationReason');
       
-      setTimeout(() => {
-        window.location.href = 'dashboard.html';
-      }, 1500);
+      // Show loading state
+      confirmBtn.disabled = true;
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline';
 
-      /*
-      // UNCOMMENT THIS WHEN API IS READY:
+      const token = localStorage.getItem('eventify_token');
+      if (!token) {
+        app.showNotification('You must be logged in to cancel a booking', 'warning');
+        setTimeout(() => window.location.href = `login.html?redirect=booking-details.html?id=${currentBooking.id}` , 800);
+        return;
+      }
+
+      const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
+      const refundUrl = `${baseUrl}/api/payment/${currentBooking.id}/refund`;
+      const reason = reasonField.value.trim();
+
       try {
-        const token = localStorage.getItem('eventify_token');
-        const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
-        
-        const response = await fetch(`${baseUrl}/api/bookings/${currentBooking.id}/cancel`, {
+        app.showNotification('Processing cancellation...', 'info');
+
+        const resp = await fetch(refundUrl, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          }
+          },
+          body: reason ? JSON.stringify({ reason }) : undefined
         });
 
-        if (response.ok) {
-          app.showNotification('Booking cancelled successfully', 'success');
+        const result = await resp.json().catch(() => ({}));
+
+        if (resp.ok && result && result.success !== false) {
+          // Update UI and localStorage
+          currentBooking.status = 'cancelled';
+          document.getElementById('bookingStatus').textContent = 'Cancelled';
+          document.getElementById('bookingStatus').style.background = 'var(--danger)';
+          document.getElementById('bookingStatus').style.color = 'white';
+          document.getElementById('bookingActions').style.display = 'none';
+
+          // Update bookings stored in localStorage if present
+          const bookingsJson = localStorage.getItem('eventify_user_bookings');
+          if (bookingsJson) {
+            try {
+              const bookings = JSON.parse(bookingsJson);
+              const idx = bookings.findIndex(b => b.id === currentBooking.id || b.id.toString() === currentBooking.id.toString());
+              if (idx !== -1) {
+                bookings[idx].status = 'cancelled';
+                localStorage.setItem('eventify_user_bookings', JSON.stringify(bookings));
+              }
+            } catch (e) {
+              console.warn('Failed to update local bookings cache', e);
+            }
+          }
+
+          // Set flag to trigger dashboard refresh
+          sessionStorage.setItem('eventify_booking_cancelled', 'true');
+
+          app.closeModal('cancelModal');
+          app.showNotification(result.message || 'Booking cancelled and refund processed', 'success');
           setTimeout(() => {
             window.location.href = 'dashboard.html';
-          }, 1500);
+          }, 1400);
         } else {
-          app.showNotification('Failed to cancel booking', 'error');
+          const msg = (result && result.message) ? result.message : 'Failed to process refund. Please contact support.';
+          app.showNotification(msg, 'error');
+          
+          // Reset button state
+          confirmBtn.disabled = false;
+          btnText.style.display = 'inline';
+          btnSpinner.style.display = 'none';
         }
       } catch (error) {
-        console.error('Error cancelling booking:', error);
-        app.showNotification('Error cancelling booking', 'error');
+        console.error('Error sending refund request:', error);
+        app.showNotification('Error cancelling booking. Try again later.', 'error');
+        
+        // Reset button state
+        confirmBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
       }
-      */
     }
   </script>
 </body>
