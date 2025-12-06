@@ -39,42 +39,45 @@ namespace Eventify.Service.Services
 
             // 1. Calculate total
             var total = dto.TotalPrice;
-            var amountInCents = (long)(total * 100m);
+            var isFreeEvent = total == 0;
             var TicketsToBook = await _unitOfWork._ticketRepository.GetNotBookedTickets(dto.EventId, dto.CategoryName, dto.TicketsNum);
             
-            // 2. Create Stripe PaymentIntent
-            var paymentIntentService = new PaymentIntentService();
-            var piOptions = new PaymentIntentCreateOptions
-            {
-                Amount = amountInCents,
-                Currency = dto.Currency ?? "usd",
-                PaymentMethodTypes = new List<string> { "card" },
-                Metadata = new Dictionary<string, string>
-                {
-                    { "EventId", dto.EventId.ToString() },
-                    { "Email", dto.EmailAddress }
-                }
-            };
-
+            // 2. Create Stripe PaymentIntent (skip for free events)
             PaymentIntent? intent = null;
+            PaymentIntentService? paymentIntentService = null;
 
-            try
+            if (!isFreeEvent)
             {
-                intent = await paymentIntentService.CreateAsync(piOptions);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to create Stripe PaymentIntent");
-                throw;
-            }
+                var amountInCents = (long)(total * 100m);
+                paymentIntentService = new PaymentIntentService();
+                var piOptions = new PaymentIntentCreateOptions
+                {
+                    Amount = amountInCents,
+                    Currency = dto.Currency ?? "usd",
+                    PaymentMethodTypes = new List<string> { "card" },
+                    Metadata = new Dictionary<string, string>
+                    {
+                        { "EventId", dto.EventId.ToString() },
+                        { "Email", dto.EmailAddress }
+                    }
+                };
 
+                try
+                {
+                    intent = await paymentIntentService.CreateAsync(piOptions);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to create Stripe PaymentIntent");
+                    throw;
+                }
+            }
 
             CheckoutResponseDto? response = null;
             using var transaction = await _unitOfWork.BeginTransactionAsync();
             try 
             {
                 // 3. Create booking entity
-
                 var user = await _unitOfWork._userRepository.GetUserByEmail(dto.EmailAddress);
                 if (user == null)
                 {
@@ -86,63 +89,72 @@ namespace Eventify.Service.Services
                     UserId = user.Id,
                     TicketsNum = dto.TicketsNum,
                     CategoryName = dto.CategoryName,
-                    Status = TicketStatus.Pending,
-                    CreatedDate = DateTime.UtcNow
+                    Status = isFreeEvent ? BookingStatus.Booked : BookingStatus.Pending,
+                    CreatedDate = DateTime.UtcNow,
+                    EventId = dto.EventId
                 };
-
 
                 var createdBooking = await _unitOfWork._bookingRepository.AddAsync(booking);
                 await _unitOfWork.SaveChangesAsync();
 
-                // 4. Create payment entity referencing booking and stripe intent
-                var payment = new Payment
+                // 4. Create payment entity (only for paid events)
+                Payment? createdPayment = null;
+                
+                if (!isFreeEvent && intent != null)
                 {
-                    BookingId = createdBooking.Id,
-                    TotalPrice = total,
-                    PaymentMethod = "Card",
-                    StripePaymentIntentId = intent.Id,
-                    Status = PaymentStatus.Pending,
-                    DateTime = DateTime.UtcNow
-                };
+                    var payment = new Payment
+                    {
+                        BookingId = createdBooking.Id,
+                        TotalPrice = total,
+                        PaymentMethod = "Card",
+                        StripePaymentIntentId = intent.Id,
+                        Status = PaymentStatus.Pending,
+                        DateTime = DateTime.UtcNow
+                    };
 
-                var createdPayment = await _unitOfWork._paymentRepository.AddAsync(payment);
+                    createdPayment = await _unitOfWork._paymentRepository.AddAsync(payment);
+                    await _unitOfWork.SaveChangesAsync();
+                }
 
-                // 5. Persist both in one transaction (via unit of work)
-                await _unitOfWork.SaveChangesAsync();
-
+                // 5. Update tickets
                 foreach (var ticket in TicketsToBook)
                 {
                     ticket.BookingId = createdBooking.Id;
                 }
 
+                var category = await _unitOfWork._categoryRepository.GetByIdAsync(TicketsToBook.ElementAt(0).CategoryId);
+                category.Booked += dto.TicketsNum;
+
                 _unitOfWork._ticketRepository.UpdateRange(TicketsToBook);
                 await _unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                // 6. Prepare response with client_secret for frontend to confirm payment
-
+                // 6. Prepare response
                 response = new CheckoutResponseDto
                 {
                     BookingId = createdBooking.Id,
-                    PaymentId = createdPayment.BookingId,
-                    ClientSecret = intent.ClientSecret ?? string.Empty
+                    PaymentId = createdPayment?.BookingId ?? createdBooking.Id,
+                    ClientSecret = intent?.ClientSecret ?? string.Empty
                 };
 
                 return ServiceResult<CheckoutResponseDto>.Ok(response);
             }
             catch (Exception dbEx)
             {
-                _logger.LogError(dbEx, "Failed to save booking/payment to DB, attempting to cancel PaymentIntent");
+                _logger.LogError(dbEx, "Failed to save booking/payment to DB");
                 await transaction.RollbackAsync();
 
-                // Attempt to cancel the payment intent to avoid orphaned Stripe intents
-                try
+                // Attempt to cancel the payment intent (only for paid events)
+                if (!isFreeEvent && intent != null && paymentIntentService != null)
                 {
-                    await paymentIntentService.CancelAsync(intent.Id);
-                }
-                catch (Exception cancelEx)
-                {
-                    _logger.LogError(cancelEx, "Failed to cancel PaymentIntent after DB save failure");
+                    try
+                    {
+                        await paymentIntentService.CancelAsync(intent.Id);
+                    }
+                    catch (Exception cancelEx)
+                    {
+                        _logger.LogError(cancelEx, "Failed to cancel PaymentIntent after DB save failure");
+                    }
                 }
 
                 throw;

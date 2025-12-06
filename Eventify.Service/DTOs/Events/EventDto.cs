@@ -1,4 +1,6 @@
-﻿namespace Eventify.Service.DTOs.Events
+﻿using Eventify.Core.Enums;
+
+namespace Eventify.Service.DTOs.Events
 {
     public class EventDto
     {
@@ -14,15 +16,17 @@
 
         public DateTime EndDate { get; set; }
 
+        public EventCategory EventCategory { get; set; }
+
         public int OrganizerID { get; set; }
 
         public string OrganizerName { get; set; } = string.Empty;
 
         public string? PhotoUrl { get; set; }
-
-        public string PhotoBase64 { get; set; } = string.Empty;
-
+       
         public int AvailableTickets { get; set; }
+        public int BookedTickets { get; set; }
+        public decimal Revenue { get; set; }
 
         public bool IsUpcoming { get; set; }
 

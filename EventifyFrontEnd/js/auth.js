@@ -1,5 +1,5 @@
 // Authentication JavaScript - Real API Integration
-// Handles login, register with https://localhost:7105/ API
+// Handles login, register with https://eventify.runasp.net/ API
 
 class AuthPage {
   constructor() {

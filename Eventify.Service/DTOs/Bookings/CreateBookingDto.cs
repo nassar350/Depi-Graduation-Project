@@ -40,7 +40,7 @@ namespace Eventify.Service.DTOs.Bookings
         [Range(1, int.MaxValue, ErrorMessage = "User ID must be a positive number")]
         public int? UserId { get; set; }
 
-        public TicketStatus TicketStatus { get; set; } = TicketStatus.Pending;
+        public BookingStatus TicketStatus { get; set; } = BookingStatus.Pending;
 
     }
 

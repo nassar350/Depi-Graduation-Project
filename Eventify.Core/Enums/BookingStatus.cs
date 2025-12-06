@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Eventify.Core.Enums
 {
-    public enum TicketStatus
+    public enum BookingStatus
     {
         Booked = 0,
         Pending = 1,

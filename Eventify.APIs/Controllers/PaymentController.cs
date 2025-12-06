@@ -222,7 +222,7 @@ namespace Eventify.APIs.Controllers
                 return Ok(new ApiResponseDto<object>
                 {
                     Success = true,
-                    Message = "Payment refunded successfully"
+                    Message = "Refund processed successfully. You will receive a confirmation email shortly."
                 });
             }
             catch (Exception ex)
@@ -230,7 +230,7 @@ namespace Eventify.APIs.Controllers
                 return StatusCode(500, new ApiResponseDto<object>
                 {
                     Success = false,
-                    Message = "An error occurred while processing the refund",
+                    Message = "An error occurred while processing the refund. Please try again later.",
                     Errors = new List<string> { ex.Message }
                 });
             }

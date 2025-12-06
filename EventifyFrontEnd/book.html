@@ -131,8 +131,12 @@
                   name="email"
                   class="form-input" 
                   required
+                  readonly
                   autocomplete="email"
+                  style="background-color: var(--bg); cursor: not-allowed; opacity: 0.8;"
+                  title="Email address from your account"
                 >
+                <p class="text-muted" style="font-size: var(--font-size-xs); margin-top: var(--space-xs);">📧 Using email from your account</p>
               </div>
               
               <div class="form-group">
@@ -153,28 +157,6 @@
                     <option value="">Select quantity</option>
                     <!-- Options will be populated by JavaScript -->
                   </select>
-                </div>
-                
-                <div class="form-group">
-                  <label for="promoCode" class="form-label">Promo Code</label>
-                  <div style="display: flex; gap: var(--space-sm);">
-                    <input 
-                      type="text" 
-                      id="promoCode" 
-                      name="promoCode"
-                      class="form-input" 
-                      placeholder="Enter code"
-                      style="flex: 1;"
-                    >
-                    <button 
-                      type="button" 
-                      id="applyPromoBtn" 
-                      class="btn btn-outline"
-                      onclick="bookingPage.applyPromoCode()"
-                    >
-                      Apply
-                    </button>
-                  </div>
                 </div>
               </div>
               

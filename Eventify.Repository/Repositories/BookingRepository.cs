@@ -28,6 +28,7 @@ public class BookingRepository : IBookingRepository
     public async Task<Booking?> GetByIdAsync(int id)
     {
         return await _context.Bookings
+            .Include(b => b.Tickets)
             .FirstOrDefaultAsync(b => b.Id == id);
     }
 
@@ -61,5 +62,15 @@ public class BookingRepository : IBookingRepository
         _context.Bookings.Remove(booking);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<IEnumerable<Booking>> GetDetailedByUserId(int userId)
+    {
+        return await _context.Bookings
+            .Include(b => b.Payment)
+            .Include(b => b.Tickets)
+            .Include(b => b.Event)
+            .Where(b => b.UserId == userId)
+            .ToListAsync();
     }
 }

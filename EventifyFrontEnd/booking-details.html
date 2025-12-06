@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Details - Eventify</title>
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎫</text></svg>">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a href="index.html">
+          <span style="font-size: var(--font-size-xl); font-weight: 700;">🎉 Eventify</span>
+        </a>
+      </div>
+      <ul class="navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="explore.html">Explore</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="#" onclick="app.logout(); return false;" class="btn btn-outline">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container" style="max-width: 900px; padding-top: var(--space-xl); padding-bottom: var(--space-xl);">
+      
+      <!-- Back Button -->
+      <div style="margin-bottom: var(--space-lg);">
+        <a href="dashboard.html" class="btn btn-outline">
+          ← Back to Dashboard
+        </a>
+      </div>
+
+      <!-- Booking Details Card -->
+      <div class="card">
+        <div style="border-bottom: 2px solid var(--border); padding-bottom: var(--space-lg); margin-bottom: var(--space-lg);">
+          <div class="flex-between" style="align-items: flex-start; flex-wrap: wrap; gap: var(--space-md);">
+            <div>
+              <h1 style="margin-bottom: var(--space-xs);">Booking Details</h1>
+              <p class="text-muted">Booking ID: <span id="bookingId" style="font-weight: 600;">-</span></p>
+            </div>
+            <span id="bookingStatus" class="event-tag" style="font-size: var(--font-size-base); padding: var(--space-sm) var(--space-md);">
+              -
+            </span>
+          </div>
+        </div>
+
+        <!-- Event Information -->
+        <div style="margin-bottom: var(--space-xl);">
+          <h3 style="margin-bottom: var(--space-md);">Event Information</h3>
+          
+          <div class="flex gap-lg" style="flex-wrap: wrap;">
+            <img 
+              id="eventImage"
+              alt="Event"
+              style="width: 200px; height: 200px; object-fit: cover; border-radius: var(--radius-md);"
+              onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=400&fit=crop'"
+            >
+            
+            <div style="flex: 1; min-width: 250px;">
+              <h2 id="eventTitle" style="margin-bottom: var(--space-md);">-</h2>
+              
+              <div class="flex-column gap-md">
+                <div class="flex gap-sm" style="align-items: flex-start;">
+                  <span style="font-size: 1.5rem;">📅</span>
+                  <div>
+                    <div style="font-weight: 600; margin-bottom: 2px;">Date & Time</div>
+                    <div id="eventDateTime" class="text-muted">-</div>
+                  </div>
+                </div>
+                
+                <div class="flex gap-sm" style="align-items: flex-start;">
+                  <span style="font-size: 1.5rem;">📍</span>
+                  <div>
+                    <div style="font-weight: 600; margin-bottom: 2px;">Location</div>
+                    <div id="eventLocation" class="text-muted">-</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Information -->
+        <div style="margin-bottom: var(--space-xl);">
+          <h3 style="margin-bottom: var(--space-md);">Booking Information</h3>
+          
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-lg);">
+            <div>
+              <div class="text-muted" style="margin-bottom: var(--space-xs);">Number of Tickets</div>
+              <div style="font-size: var(--font-size-xl); font-weight: 600;" id="ticketCount">-</div>
+            </div>
+            
+            <div>
+              <div class="text-muted" style="margin-bottom: var(--space-xs);">Total Amount</div>
+              <div style="font-size: var(--font-size-xl); font-weight: 600; color: var(--accent);" id="totalAmount">-</div>
+            </div>
+            
+            <div>
+              <div class="text-muted" style="margin-bottom: var(--space-xs);">Booking Date</div>
+              <div style="font-size: var(--font-size-lg); font-weight: 600;" id="bookingDate">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendee Information -->
+        <div style="margin-bottom: var(--space-xl);">
+          <h3 style="margin-bottom: var(--space-md);">Attendee Information</h3>
+          
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-md);">
+            <div>
+              <div class="text-muted" style="margin-bottom: var(--space-xs);">Name</div>
+              <div style="font-weight: 600;" id="attendeeName">-</div>
+            </div>
+            
+            <div>
+              <div class="text-muted" style="margin-bottom: var(--space-xs);">Email</div>
+              <div style="font-weight: 600;" id="attendeeEmail">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div id="bookingActions" style="border-top: 2px solid var(--border); padding-top: var(--space-lg); display: none;">
+          <div class="flex gap-md" style="flex-wrap: wrap; justify-content: space-between;">
+            <a href="dashboard.html" class="btn btn-outline">
+              Back to Bookings
+            </a>
+            <div class="flex gap-md" style="flex-wrap: wrap;">
+              <button id="downloadTicketsBtn" class="btn btn-primary" onclick="downloadTickets()">
+                📥 Download Tickets
+              </button>
+              <button id="cancelBookingBtn" class="btn" style="background: var(--danger); color: white;" onclick="cancelBooking()">
+                Cancel Booking
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cancellation Confirmation Modal -->
+      <div id="cancelModal" class="modal-overlay">
+        <div class="modal">
+          <div style="text-align: center; margin-bottom: var(--space-lg);">
+            <div style="font-size: 4rem; margin-bottom: var(--space-md);">⚠️</div>
+            <h2 style="margin-bottom: var(--space-md); color: var(--text);">Cancel Booking</h2>
+            <p style="color: var(--muted); margin-bottom: var(--space-lg);">
+              Are you sure you want to cancel this booking?
+            </p>
+          </div>
+          
+          <div style="margin-bottom: var(--space-xl);">
+            <label for="cancellationReason" style="display: block; margin-bottom: var(--space-sm); font-weight: 600; color: var(--text); font-size: var(--font-size-sm);">Reason for cancellation (optional)</label>
+            <textarea 
+              id="cancellationReason" 
+              rows="3" 
+              placeholder="Help us improve by sharing why you're cancelling..."
+              class="form-input"
+              style="width: 100%; resize: vertical;"
+            ></textarea>
+            <p class="text-muted" style="font-size: var(--font-size-xs); margin-top: var(--space-xs);">Your feedback helps us improve our service</p>
+          </div>
+          
+          <div class="flex gap-md" style="justify-content: center;">
+            <button class="btn btn-outline" onclick="app.closeModal('cancelModal')">
+              No, Keep Booking
+            </button>
+            <button id="confirmCancelBtn" class="btn" style="background: var(--danger);" onclick="confirmCancellation()">
+              <span id="cancelBtnText">Yes, Cancel Booking</span>
+              <span id="cancelBtnSpinner" style="display: none;">⏳ Processing...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Eventify</h4>
+          <p class="text-muted">Discover and book amazing events in your area.</p>
+        </div>
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="explore.html">Explore Events</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 Eventify. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script>
+    let currentBooking = null;
+
+    // Get booking ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookingId = urlParams.get('id');
+
+    // Load booking details on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check authentication
+      const user = app.getCurrentUser();
+      if (!user) {
+        app.showNotification('Please log in to view booking details', 'warning');
+        setTimeout(() => {
+          window.location.href = 'login.html?redirect=dashboard.html';
+        }, 1000);
+        return;
+      }
+
+      if (!bookingId) {
+        app.showNotification('Invalid booking ID', 'error');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 1000);
+        return;
+      }
+
+      await loadBookingDetails(bookingId);
+    });
+
+    async function loadBookingDetails(bookingId) {
+      // Check if opened from admin panel
+      const fromParam = urlParams.get('from');
+      const isFromAdmin = fromParam === 'payment' || fromParam === 'booking' || fromParam === 'admin';
+
+      if (isFromAdmin) {
+        // Fetch booking from admin API
+        try {
+          const token = localStorage.getItem('eventify_token');
+          const apiBaseUrl = 'https://eventify.runasp.net/api';
+          const response = await fetch(`${apiBaseUrl}/admin/bookings`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch booking');
+          }
+
+          const result = await response.json();
+          const bookings = result.success ? result.data : result;
+          const adminBooking = bookings.find(b => b.id.toString() === bookingId.toString());
+
+          if (!adminBooking) {
+            app.showNotification('Booking not found', 'error');
+            setTimeout(() => {
+              window.location.href = 'admin-panel.html';
+            }, 1000);
+            return;
+          }
+
+          // Transform admin booking format to match expected format
+          const eventStartDate = adminBooking.eventStartDate || adminBooking.createdDate;
+          currentBooking = {
+            id: adminBooking.id,
+            status: adminBooking.status,
+            eventTitle: adminBooking.eventName || 'N/A',
+            eventName: adminBooking.eventName || 'N/A',
+            eventImage: adminBooking.eventPhotoUrl || 'assets/event-placeholder.jpg',
+            eventDate: eventStartDate ? eventStartDate.split('T')[0] : new Date().toISOString().split('T')[0],
+            eventTime: eventStartDate ? eventStartDate.split('T')[1]?.substring(0, 8) || '00:00:00' : '00:00:00',
+            eventLocation: adminBooking.eventAddress || 'N/A',
+            tickets: adminBooking.ticketsNum || 0,
+            total: adminBooking.totalPrice || 0,
+            bookingDate: adminBooking.createdDate || new Date().toISOString(),
+            attendeeInfo: {
+              name: adminBooking.userName || 'N/A',
+              email: adminBooking.userEmail || 'N/A'
+            },
+            categoryName: adminBooking.categoryName || 'N/A',
+            userId: adminBooking.userId,
+            eventId: adminBooking.eventId,
+            isEventDeleted: false
+          };
+
+          displayBookingDetails(currentBooking);
+        } catch (error) {
+          console.error('Error loading booking:', error);
+          app.showNotification('Error loading booking details', 'error');
+        }
+      } else {
+        // Get bookings from localStorage (populated by dashboard)
+        const bookingsJson = localStorage.getItem('eventify_user_bookings');
+        
+        if (!bookingsJson) {
+          app.showNotification('Please load your bookings from the dashboard first', 'warning');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 1500);
+          return;
+        }
+
+        const bookings = JSON.parse(bookingsJson);
+        currentBooking = bookings.find(b => b.id.toString() === bookingId.toString());
+
+        if (!currentBooking) {
+          app.showNotification('Booking not found', 'error');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 1000);
+          return;
+        }
+
+        displayBookingDetails(currentBooking);
+      }
+    }
+
+    function displayBookingDetails(booking) {
+      // Booking ID and Status
+      document.getElementById('bookingId').textContent = booking.id;
+      
+      const statusElement = document.getElementById('bookingStatus');
+      
+      // Handle both string and enum (number) status formats
+      const statusMap = {
+        0: 'Booked',
+        1: 'Pending',
+        2: 'Cancelled',
+        'Booked': 'Booked',
+        'Pending': 'Pending',
+        'Cancelled': 'Cancelled'
+      };
+      
+      const statusText = statusMap[booking.status] || 'Unknown';
+      statusElement.textContent = statusText;
+      
+      // Set status color based on booking status (matching dashboard colors)
+      if (statusText === 'Booked' || booking.status === 0) {
+        statusElement.style.background = '#10b981'; // Green
+        statusElement.style.color = 'white';
+      } else if (statusText === 'Pending' || booking.status === 1) {
+        statusElement.style.background = '#f59e0b'; // Yellow/Orange
+        statusElement.style.color = 'white';
+      } else if (statusText === 'Cancelled' || booking.status === 2) {
+        statusElement.style.background = '#ef4444'; // Red
+        statusElement.style.color = 'white';
+      } else {
+        // Fallback for any other status
+        statusElement.style.background = 'var(--muted)';
+        statusElement.style.color = 'white';
+      }
+
+      // Event Information
+      document.getElementById('eventImage').src = booking.eventImage;
+      document.getElementById('eventTitle').textContent = booking.eventTitle;
+      
+      const eventDate = new Date(booking.eventDate + 'T' + booking.eventTime);
+      const formattedDate = eventDate.toLocaleDateString('en-US', { 
+        weekday: 'long',
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+      const formattedTime = eventDate.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit' 
+      });
+      
+      document.getElementById('eventDateTime').textContent = `${formattedDate} at ${formattedTime}`;
+      document.getElementById('eventLocation').textContent = booking.eventLocation;
+
+      // Booking Information
+      document.getElementById('ticketCount').textContent = booking.tickets;
+      document.getElementById('totalAmount').textContent = booking.total === 0 ? 'Free' : `EGP ${booking.total.toFixed(2)}`;
+      
+      const bookingDate = new Date(booking.bookingDate);
+      document.getElementById('bookingDate').textContent = bookingDate.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+
+      // Attendee Information
+      document.getElementById('attendeeName').textContent = booking.attendeeInfo.name;
+      document.getElementById('attendeeEmail').textContent = booking.attendeeInfo.email;
+
+      // Show cancel button only for upcoming bookings that are not already cancelled
+      // Status depends on event start date (upcoming/past) and booking status
+      const isPastEvent = booking.eventDate ? (new Date(booking.eventDate + 'T' + booking.eventTime) < new Date()) : false;
+      const canCancel = (booking.status === 'Booked' || booking.status === 'Pending') && !isPastEvent && !booking.isEventDeleted;
+      
+      if (canCancel) {
+        document.getElementById('bookingActions').style.display = 'block';
+      }
+    }
+
+    function cancelBooking() {
+      app.openModal('cancelModal');
+    }
+
+    function downloadTickets() {
+      if (!currentBooking) {
+        app.showNotification('Booking information not available', 'error');
+        return;
+      }
+
+      const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
+      const downloadUrl = `${baseUrl}/api/checkout/tickets/${currentBooking.id}/pdf`;
+      
+      // Create a temporary link and trigger download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `Eventify_Tickets_${currentBooking.id}.pdf`;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      app.showNotification('Downloading tickets...', 'success');
+    }
+
+    async function confirmCancellation() {
+      const confirmBtn = document.getElementById('confirmCancelBtn');
+      const btnText = document.getElementById('cancelBtnText');
+      const btnSpinner = document.getElementById('cancelBtnSpinner');
+      const reasonField = document.getElementById('cancellationReason');
+      
+      // Show loading state
+      confirmBtn.disabled = true;
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline';
+
+      const token = localStorage.getItem('eventify_token');
+      if (!token) {
+        app.showNotification('You must be logged in to cancel a booking', 'warning');
+        setTimeout(() => window.location.href = `login.html?redirect=booking-details.html?id=${currentBooking.id}` , 800);
+        return;
+      }
+
+      const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
+      const refundUrl = `${baseUrl}/api/payment/${currentBooking.id}/refund`;
+      const reason = reasonField.value.trim();
+
+      try {
+        app.showNotification('Processing cancellation...', 'info');
+
+        const resp = await fetch(refundUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: reason ? JSON.stringify({ reason }) : undefined
+        });
+
+        const result = await resp.json().catch(() => ({}));
+
+        if (resp.ok && result && result.success !== false) {
+          // Update UI and localStorage
+          currentBooking.status = 'cancelled';
+          document.getElementById('bookingStatus').textContent = 'Cancelled';
+          document.getElementById('bookingStatus').style.background = 'var(--danger)';
+          document.getElementById('bookingStatus').style.color = 'white';
+          document.getElementById('bookingActions').style.display = 'none';
+
+          // Update bookings stored in localStorage if present
+          const bookingsJson = localStorage.getItem('eventify_user_bookings');
+          if (bookingsJson) {
+            try {
+              const bookings = JSON.parse(bookingsJson);
+              const idx = bookings.findIndex(b => b.id === currentBooking.id || b.id.toString() === currentBooking.id.toString());
+              if (idx !== -1) {
+                bookings[idx].status = 'cancelled';
+                localStorage.setItem('eventify_user_bookings', JSON.stringify(bookings));
+              }
+            } catch (e) {
+              console.warn('Failed to update local bookings cache', e);
+            }
+          }
+
+          // Set flag to trigger dashboard refresh
+          sessionStorage.setItem('eventify_booking_cancelled', 'true');
+
+          app.closeModal('cancelModal');
+          app.showNotification(result.message || 'Booking cancelled and refund processed', 'success');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 1400);
+        } else {
+          const msg = (result && result.message) ? result.message : 'Failed to process refund. Please contact support.';
+          app.showNotification(msg, 'error');
+          
+          // Reset button state
+          confirmBtn.disabled = false;
+          btnText.style.display = 'inline';
+          btnSpinner.style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error sending refund request:', error);
+        app.showNotification('Error cancelling booking. Try again later.', 'error');
+        
+        // Reset button state
+        confirmBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

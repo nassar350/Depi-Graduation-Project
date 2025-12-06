@@ -47,6 +47,6 @@ namespace Eventify.Service.DTOs.Bookings
 
         public string? Currency { get; set; }
 
-        public TicketStatus TicketStatus { get; set; } = TicketStatus.Pending;
+        public BookingStatus TicketStatus { get; set; } = BookingStatus.Pending;
     }
 }

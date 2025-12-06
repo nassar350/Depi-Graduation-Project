@@ -16,5 +16,8 @@ namespace Eventify.Repository.Interfaces
         Task<User?> FindByPhoneNumberAsync(string phoneNumber);
         Task<IdentityResult> CreateUserAsync(User user, string password);
         Task<bool> CheckPasswordAsync(User user, string password);
+        
+        int CountTicketBooked(int userId );
+        decimal GetTotalRevenueById(int id);
     }
 }

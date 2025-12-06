@@ -23,7 +23,45 @@ class CreateEventPage {
     this.setupEventHandlers();
     this.setupFormValidation();
     this.setMinDateTime();
+    this.loadEventCategories();
     this.initializeCategories();
+  }
+
+  // Load Event Categories from backend
+  async loadEventCategories() {
+    try {
+      // EventCategory enum values from backend
+      const eventCategories = [
+        { value: 1, label: 'Music' },
+        { value: 2, label: 'Sports' },
+        { value: 3, label: 'Arts' },
+        { value: 4, label: 'Food' },
+        { value: 5, label: 'Technology' },
+        { value: 6, label: 'Business' },
+        { value: 7, label: 'Education' },
+        { value: 8, label: 'Entertainment' },
+        { value: 9, label: 'Health' },
+        { value: 10, label: 'Community' },
+        { value: 11, label: 'Other' }
+      ];
+
+      const categorySelect = document.getElementById('eventCategory');
+      if (categorySelect) {
+        // Clear existing options except the first one
+        categorySelect.innerHTML = '<option value="">Select a category...</option>';
+        
+        // Populate with categories
+        eventCategories.forEach(category => {
+          const option = document.createElement('option');
+          option.value = category.value;
+          option.textContent = category.label;
+          categorySelect.appendChild(option);
+        });
+      }
+    } catch (error) {
+      console.error('Error loading event categories:', error);
+      app.showNotification('Error loading categories. Please refresh the page.', 'error');
+    }
   }
 
   setupEventHandlers() {
@@ -55,10 +93,34 @@ class CreateEventPage {
   }
 
   setupFormValidation() {
+    // DISABLED: app.js already handles form validation
+    // This was causing duplicate error messages
+    return;
+    
+    if (this.validationInitialized) return;
+    this.validationInitialized = true;
+    
     const inputs = document.querySelectorAll('.form-input, .form-select, .form-textarea');
     inputs.forEach(input => {
-      input.addEventListener('blur', () => this.validateField(input));
-      input.addEventListener('input', () => this.clearFieldError(input));
+      // Mark input as having validation attached
+      if (input.dataset.validationAttached === 'true') return;
+      input.dataset.validationAttached = 'true';
+      
+      // Only validate on blur if the field has been interacted with
+      input.addEventListener('focus', () => {
+        input.dataset.touched = 'true';
+      });
+      
+      input.addEventListener('blur', () => {
+        if (input.dataset.touched === 'true') {
+          this.validateField(input);
+        }
+      });
+      
+      input.addEventListener('input', () => {
+        input.dataset.touched = 'true';
+        this.clearFieldError(input);
+      });
     });
   }
 
@@ -225,7 +287,6 @@ class CreateEventPage {
   // Step navigation
   nextStep() {
     if (!this.validateCurrentStep()) {
-      app.showNotification('Please fix the errors before continuing', 'error');
       return;
     }
 
@@ -267,6 +328,7 @@ class CreateEventPage {
     if (!currentStepContent) return true;
 
     let isValid = true;
+    const missingFields = [];
 
     // Step 1: Basic details
     if (this.currentStep === 1) {
@@ -274,12 +336,23 @@ class CreateEventPage {
       requiredFields.forEach(field => {
         if (!this.validateField(field)) {
           isValid = false;
+          // Collect missing field names
+          const fieldLabel = this.getFieldLabel(field);
+          if (fieldLabel && !field.value.trim()) {
+            missingFields.push(fieldLabel);
+          }
         }
       });
 
       // Validate date range
       if (!this.validateDateRange()) {
         isValid = false;
+      }
+      
+      // Show specific error message
+      if (!isValid && missingFields.length > 0) {
+        const fieldsList = missingFields.join(', ');
+        app.showNotification(`Please fill in required fields: ${fieldsList}`, 'error');
       }
     }
 
@@ -297,6 +370,21 @@ class CreateEventPage {
       if (categories.length === 0) {
         app.showNotification('Please add at least one category', 'error');
         isValid = false;
+      } else {
+        // Validate each category has all required fields
+        const categoryItems = document.querySelectorAll('.category-item');
+        let hasEmptyCategory = false;
+        categoryItems.forEach((item, index) => {
+          const title = item.querySelector('.category-title')?.value.trim();
+          const seats = item.querySelector('.category-seats')?.value;
+          const price = item.querySelector('.category-price')?.value;
+          
+          if (!title || !seats || !price) {
+            hasEmptyCategory = true;
+            app.showNotification(`Category ${index + 1}: Please fill in all fields (title, seats, and price)`, 'error');
+            isValid = false;
+          }
+        });
       }
     }
 
@@ -304,12 +392,35 @@ class CreateEventPage {
     if (this.currentStep === 4) {
       const termsCheckbox = document.querySelector('input[name="agreeToTerms"]');
       if (termsCheckbox && !termsCheckbox.checked) {
-        app.showNotification('Please agree to the Terms of Service', 'error');
+        app.showNotification('Please agree to the Terms of Service to continue', 'error');
         isValid = false;
       }
     }
 
     return isValid;
+  }
+  
+  getFieldLabel(field) {
+    const fieldId = field.id || field.name;
+    const labelElement = document.querySelector(`label[for="${fieldId}"]`);
+    
+    if (labelElement) {
+      return labelElement.textContent.replace('*', '').trim();
+    }
+    
+    // Fallback to field name/id mapping
+    const fieldLabels = {
+      'name': 'Event Name',
+      'eventTitle': 'Event Name',
+      'startDate': 'Start Date & Time',
+      'endDate': 'End Date & Time',
+      'address': 'Event Address',
+      'eventLocation': 'Event Address',
+      'eventCategory': 'Event Category',
+      'eventImage': 'Event Photo'
+    };
+    
+    return fieldLabels[fieldId] || 'This field';
   }
 
   validateField(field) {
@@ -319,12 +430,8 @@ class CreateEventPage {
     let isValid = true;
     let errorMessage = '';
 
-    // Clear previous errors
-    this.clearFieldError(field);
-
-    // Required field validation
+    // Required field validation - only show visual indicator, no error message
     if (field.hasAttribute('required') && !value) {
-      errorMessage = 'This field is required';
       isValid = false;
     }
 
@@ -380,32 +487,89 @@ class CreateEventPage {
 
     if (!isValid) {
       this.showFieldError(field, errorMessage);
+    } else {
+      this.showFieldSuccess(field);
     }
 
     return isValid;
   }
 
   showFieldError(field, message) {
-    field.classList.add('error');
+    if (!field) return;
     
-    // Remove existing error message
-    const existingError = field.parentNode.querySelector('.field-error');
-    if (existingError) {
-      existingError.remove();
+    const fieldId = field.id || field.name;
+    const parentGroup = field.closest('.form-group') || field.parentNode;
+    if (!parentGroup) return;
+    
+    // Remove ALL existing errors in this form group immediately
+    const existingErrors = parentGroup.querySelectorAll('.field-error');
+    existingErrors.forEach(error => error.remove());
+    
+    // Add error class and remove success class
+    field.classList.add('error');
+    field.classList.remove('success');
+    
+    // Check if we already have an error for this specific field
+    const existingErrorForField = parentGroup.querySelector(`[data-error-for="${fieldId}"]`);
+    if (existingErrorForField) {
+      existingErrorForField.remove();
     }
-
-    // Add new error message
+    
+    // Create new error message
     const errorElement = document.createElement('div');
     errorElement.className = 'field-error';
     errorElement.textContent = message;
-    field.parentNode.appendChild(errorElement);
+    errorElement.setAttribute('data-error-for', fieldId);
+    
+    // Find where to insert
+    const formHint = parentGroup.querySelector('.form-hint');
+    
+    if (formHint) {
+      formHint.insertAdjacentElement('afterend', errorElement);
+    } else {
+      field.insertAdjacentElement('afterend', errorElement);
+    }
+  }
+
+  showFieldSuccess(field) {
+    if (!field) return;
+    
+    // Remove error class and add success class
+    field.classList.remove('error');
+    field.classList.add('success');
+    
+    const parentGroup = field.closest('.form-group') || field.parentNode;
+    if (!parentGroup) return;
+    
+    // Remove ALL error messages in this form group
+    const errorElements = parentGroup.querySelectorAll('.field-error');
+    errorElements.forEach(error => error.remove());
   }
 
   clearFieldError(field) {
+    if (!field) return;
+    
+    // Only remove error state, keep success state if field is valid
     field.classList.remove('error');
-    const errorElement = field.parentNode.querySelector('.field-error');
-    if (errorElement) {
-      errorElement.remove();
+    
+    const parentGroup = field.closest('.form-group') || field.parentNode;
+    if (!parentGroup) return;
+    
+    // Remove ALL error messages in this form group
+    const errorElements = parentGroup.querySelectorAll('.field-error');
+    errorElements.forEach(error => error.remove());
+    
+    // Double-check for errors with specific data attribute
+    const fieldId = field.id || field.name;
+    const specificErrors = document.querySelectorAll(`[data-error-for="${fieldId}"]`);
+    specificErrors.forEach(error => error.remove());
+    
+    // Validate the field to see if it should be marked as success
+    if (field.value.trim()) {
+      this.validateField(field);
+    } else {
+      // If empty, remove success class too
+      field.classList.remove('success');
     }
   }
 
@@ -415,16 +579,37 @@ class CreateEventPage {
 
     const formData = this.getFormData();
     const categories = this.getCategoriesData();
-
-    previewContainer.innerHTML = `
-      <div style="display: flex; gap: var(--space-lg); margin-bottom: var(--space-lg); flex-wrap: wrap;">
+    
+    // Get the selected category label
+    const categorySelect = document.getElementById('eventCategory');
+    const categoryLabel = categorySelect?.options[categorySelect.selectedIndex]?.text || 'Not selected';
+    
+    // Get uploaded image preview
+    const imageInput = document.getElementById('eventImage');
+    let imagePreviewHtml = '';
+    
+    if (imageInput && imageInput.files && imageInput.files[0]) {
+      const imageUrl = URL.createObjectURL(imageInput.files[0]);
+      imagePreviewHtml = `
+        <img src="${imageUrl}" alt="Event preview" 
+             style="width: 200px; height: 120px; object-fit: cover; border-radius: var(--radius-md);">
+      `;
+    } else {
+      imagePreviewHtml = `
         <div style="width: 200px; height: 120px; background: var(--accent); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
           🎉
         </div>
+      `;
+    }
+
+    previewContainer.innerHTML = `
+      <div style="display: flex; gap: var(--space-lg); margin-bottom: var(--space-lg); flex-wrap: wrap;">
+        ${imagePreviewHtml}
         
         <div style="flex: 1; min-width: 250px;">
           <h4 style="margin-bottom: var(--space-sm);">${formData.get('name') || 'Event Name'}</h4>
           <p style="margin-bottom: var(--space-md); color: var(--muted);">
+            🏷️ ${categoryLabel}<br>
             📅 ${formData.get('startDate') ? new Date(formData.get('startDate')).toLocaleString() : 'Start Date'}<br>
             📅 ${formData.get('endDate') ? new Date(formData.get('endDate')).toLocaleString() : 'End Date'}<br>
             📍 ${formData.get('address') || 'Address'}<br>
@@ -432,7 +617,7 @@ class CreateEventPage {
           </p>
           
           <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
-            ${categories.map(cat => `<span class="event-tag">${cat.title}: ${cat.seats} seats - $${cat.TicketPrice}</span>`).join('')}
+            ${categories.map(cat => `<span class="event-tag">${cat.title}: ${cat.seats} seats - ${cat.TicketPrice} EGP</span>`).join('')}
           </div>
         </div>
       </div>
@@ -454,7 +639,6 @@ class CreateEventPage {
     event.preventDefault();
     
     if (!this.validateCurrentStep()) {
-      app.showNotification('Please fix the errors before submitting', 'error');
       return;
     }
 
@@ -499,6 +683,12 @@ class CreateEventPage {
       apiFormData.append('description', formData.get('description'));
       apiFormData.append('address', formData.get('address'));
       
+      // Event Category (enum value)
+      const eventCategory = formData.get('eventCategory');
+      if (eventCategory) {
+        apiFormData.append('eventCategory', eventCategory);
+      }
+      
       // Convert datetime-local to ISO 8601 format
       const startDate = new Date(formData.get('startDate')).toISOString();
       const endDate = new Date(formData.get('endDate')).toISOString();
@@ -525,8 +715,14 @@ class CreateEventPage {
 
       if (response.ok) {
         const result = await response.json();
-        app.showNotification('Event created successfully!', 'success');
-        this.showSuccessModal(result);
+        app.showNotification('Event created successfully! Redirecting...', 'success');
+        
+        // Redirect back to create event page to create another event
+        setTimeout(() => {
+          window.location.replace('create-event.html');
+        }, 1000);
+        
+        return; // Exit early to prevent button state restoration
       } else {
         const errorData = await response.json().catch(() => null);
         let errorMessage = 'Failed to create event';
@@ -711,8 +907,15 @@ style.textContent = `
   .form-input.error,
   .form-select.error,
   .form-textarea.error {
-    border-color: var(--danger);
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+  }
+  
+  .form-input.success,
+  .form-select.success,
+  .form-textarea.success {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1) !important;
   }
   
   /* Category management styles */

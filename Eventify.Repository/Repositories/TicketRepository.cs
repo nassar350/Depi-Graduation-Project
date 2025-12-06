@@ -67,5 +67,10 @@ namespace Eventify.Repository.Repositories
         }
 
         public  void UpdateRange(IEnumerable<Ticket> tickets) =>  _context.Tickets.UpdateRange(tickets);
+
+        public int CountBookedTickets(int eventId)
+        {
+            return _context.Tickets.Count(t => t.BookingId != null && t.EventId == eventId);
+        }
     }
 }

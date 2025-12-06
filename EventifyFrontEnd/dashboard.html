@@ -87,8 +87,8 @@
             <p id="userEmail" class="text-muted" style="margin-bottom: var(--space-sm);">user@example.com</p>
             <div class="flex gap-lg" style="flex-wrap: wrap;">
               <div>
-                <span class="text-muted">Member since:</span>
-                <span id="memberSince">-</span>
+                <span class="text-muted">Phone:</span>
+                <span id="userPhone">-</span>
               </div>
               <div>
                 <span class="text-muted">Role:</span>
@@ -104,6 +104,10 @@
             <div class="text-center">
               <div style="font-size: var(--font-size-2xl); font-weight: 600; color: var(--accent-2);" id="ticketsBooked">0</div>
               <div style="font-size: var(--font-size-sm); color: var(--muted);">Tickets Booked</div>
+            </div>
+            <div class="text-center">
+              <div style="font-size: var(--font-size-2xl); font-weight: 600; color: #28a745;" id="totalRevenue">$0</div>
+              <div style="font-size: var(--font-size-sm); color: var(--muted);">Total Revenue</div>
             </div>
           </div>
         </div>
@@ -124,16 +128,8 @@
             data-tab="events"
             onclick="dashboardPage.switchTab('events')"
             id="myEventsTab"
-            style="display: none;"
           >
             📅 My Events
-          </button>
-          <button 
-            class="tab-btn" 
-            data-tab="bookmarks"
-            onclick="dashboardPage.switchTab('bookmarks')"
-          >
-            🔖 Bookmarks
           </button>
         </div>
       </div>
@@ -146,9 +142,9 @@
           <h3>My Bookings</h3>
           <select id="bookingsFilter" class="form-select" style="width: auto;">
             <option value="all">All Bookings</option>
-            <option value="upcoming">Upcoming</option>
-            <option value="past">Past Events</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="Booked">Booked</option>
+            <option value="Pending">Pending</option>
+            <option value="Cancelled">Cancelled</option>
           </select>
         </div>
         
@@ -181,7 +177,6 @@
               <option value="all">All Events</option>
               <option value="upcoming">Upcoming</option>
               <option value="past">Past</option>
-              <option value="draft">Draft</option>
             </select>
             <a href="create-event.html" class="btn btn-primary">Create New Event</a>
           </div>
@@ -207,46 +202,15 @@
         </div>
       </div>
 
-      <!-- Bookmarks Tab -->
-      <div class="tab-content" data-tab="bookmarks" style="display: none;">
-        <div class="flex-between" style="margin-bottom: var(--space-lg); align-items: center;">
-          <h3>Bookmarked Events</h3>
-          <button 
-            class="btn btn-outline" 
-            onclick="dashboardPage.clearAllBookmarks()"
-            id="clearBookmarksBtn"
-          >
-            🗑️ Clear All
-          </button>
-        </div>
-        
-        <div id="bookmarksContainer">
-          <div id="bookmarksLoading" class="text-center">
-            <p class="text-muted">Loading your bookmarks...</p>
-          </div>
-          
-          <div id="bookmarksList" style="display: none;">
-            <!-- Bookmarks will be populated here -->
-          </div>
-          
-          <div id="noBookmarks" style="display: none;" class="text-center">
-            <div class="card" style="max-width: 400px; margin: 0 auto;">
-              <div style="font-size: 3rem; margin-bottom: var(--space-md);">🔖</div>
-              <h4>No Bookmarks</h4>
-              <p class="text-muted">You haven't bookmarked any events yet.</p>
-              <a href="explore.html" class="btn btn-primary">Explore Events</a>
-            </div>
-          </div>
-        </div>
-      </div>
+
     </div>
   </main>
 
   <!-- Edit Profile Modal -->
   <div id="editProfileModal" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 class="modal-title">Edit Profile</h2>
+    <div class="modal" style="background: var(--bg);">
+      <div class="modal-header" style="background: var(--card); padding: var(--space-lg); margin: calc(var(--space-xl) * -1) calc(var(--space-xl) * -1) var(--space-lg); border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+        <h2 class="modal-title" style="color: var(--text);">Edit Profile</h2>
         <button class="modal-close" onclick="dashboardPage.closeEditProfile()">&times;</button>
       </div>
       
@@ -287,14 +251,18 @@
         </div>
         
         <div class="form-group">
-          <label for="editAvatar" class="form-label">Avatar URL</label>
+          <label for="editPhoneNumber" class="form-label">Phone Number *</label>
           <input 
-            type="url" 
-            id="editAvatar" 
-            name="avatar"
+            type="tel" 
+            id="editPhoneNumber" 
+            name="phoneNumber"
             class="form-input" 
-            placeholder="https://example.com/avatar.jpg"
+            placeholder="01012345678"
+            pattern="^(010|011|012|015)\d{8}$"
+            title="Egyptian mobile number (11 digits starting with 010, 011, 012, or 015)"
+            required
           >
+          <small class="text-muted">Egyptian mobile number (e.g., 01012345678)</small>
         </div>
         
         <div class="flex gap-md" style="margin-top: var(--space-xl);">
@@ -378,14 +346,18 @@
         this.currentTab = 'bookings';
         this.bookings = [];
         this.userEvents = [];
-        this.bookmarks = [];
         
         this.init();
       }
 
-      init() {
-        // Check authentication
-        this.user = app.getCurrentUser();
+      async init() {
+        // Check authentication - first get fresh data from API
+        try {
+          this.user = await app.fetchCurrentUser();
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+        
         if (!this.user) {
           app.showNotification('Please log in to access your dashboard', 'warning');
           setTimeout(() => {
@@ -394,36 +366,78 @@
           return;
         }
 
+        // Wait a tick to ensure DOM is ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         this.loadUserProfile();
-        this.loadUserData();
+        await this.loadUserData();
         this.setupEventHandlers();
         this.setupFilters();
       }
 
       loadUserProfile() {
-        if (!this.user) return;
+        if (!this.user) {
+          console.error('No user data available');
+          return;
+        }
 
-        // Update profile display
-        document.getElementById('userName').textContent = this.user.name;
-        document.getElementById('userEmail').textContent = this.user.email;
-        document.getElementById('userAvatar').src = this.user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(this.user.name)}&background=7c5cff&color=ffffff&size=200`;
-        
-        // Format join date
-        const joinDate = new Date(this.user.joinDate || Date.now());
-        document.getElementById('memberSince').textContent = joinDate.toLocaleDateString('en-US', { 
-          month: 'long', 
-          year: 'numeric' 
-        });
+        console.log('Loading user profile with data:', this.user);
 
-        // Set role
-        const roleElement = document.getElementById('userRole');
-        // Display role as "Admin" or "User" only
-        roleElement.textContent = this.user.role === 1 || this.user.role === 'Admin' ? 'Admin' : 'User';
-        
-        // Show organizer-specific elements
-        if (this.user.role === 'organizer' || this.user.userType === 'both' || this.user.userType === 'organizer') {
-          document.getElementById('myEventsTab').style.display = 'block';
-          document.getElementById('createEventBtn').style.display = 'inline-flex';
+        try {
+          // Update profile display
+          const userNameElement = document.getElementById('userName');
+          const userEmailElement = document.getElementById('userEmail');
+          const userAvatarElement = document.getElementById('userAvatar');
+          const userPhoneElement = document.getElementById('userPhone');
+          const roleElement = document.getElementById('userRole');
+
+          console.log('Found elements:', {
+            userName: !!userNameElement,
+            userEmail: !!userEmailElement,
+            userAvatar: !!userAvatarElement,
+            userPhone: !!userPhoneElement,
+            userRole: !!roleElement
+          });
+
+          if (userNameElement) {
+            userNameElement.textContent = this.user.name || 'User Name';
+            userNameElement.innerHTML = this.user.name || 'User Name';
+            console.log('Set userName to:', this.user.name);
+            console.log('userName element now contains:', userNameElement.textContent);
+          }
+          
+          if (userEmailElement) {
+            userEmailElement.textContent = this.user.email || 'user@example.com';
+            userEmailElement.innerHTML = this.user.email || 'user@example.com';
+            console.log('Set userEmail to:', this.user.email);
+            console.log('userEmail element now contains:', userEmailElement.textContent);
+          }
+          
+          if (userAvatarElement) {
+            userAvatarElement.src = this.user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(this.user.name || 'User')}&background=7c5cff&color=ffffff&size=200`;
+          }
+          
+          // Set phone number from API
+          if (userPhoneElement) {
+            userPhoneElement.textContent = this.user.phone || this.user.phoneNumber || '-';
+            console.log('Set userPhone to:', this.user.phone || this.user.phoneNumber);
+          }
+
+          // Set role - display the actual role from API
+          if (roleElement) {
+            roleElement.textContent = this.user.role || 'User';
+            console.log('Set userRole to:', roleElement.textContent);
+          }
+          
+          // Show organizer-specific elements
+          if (this.user.role === 'organizer' || this.user.userType === 'both' || this.user.userType === 'organizer') {
+            const myEventsTab = document.getElementById('myEventsTab');
+            const createEventBtn = document.getElementById('createEventBtn');
+            if (myEventsTab) myEventsTab.style.display = 'block';
+            if (createEventBtn) createEventBtn.style.display = 'inline-flex';
+          }
+        } catch (error) {
+          console.error('Error loading user profile:', error);
         }
       }
 
@@ -432,16 +446,11 @@
           // Load bookings
           await this.loadBookings();
           
-          // Load user events (if organizer)
-          if (this.user.role === 'organizer' || this.user.userType === 'both' || this.user.userType === 'organizer') {
-            await this.loadUserEvents();
-          }
+          // Load user events to calculate revenue
+          await this.loadUserEvents();
           
-          // Load bookmarks
-          await this.loadBookmarks();
-          
-          // Update statistics
-          this.updateStatistics();
+          // Update statistics (needs events count, so fetch count from API)
+          await this.updateStatistics();
           
         } catch (error) {
           console.error('Error loading user data:', error);
@@ -450,13 +459,103 @@
       }
 
       async loadBookings() {
-        const allBookings = JSON.parse(localStorage.getItem('eventify_bookings') || '[]');
-        // Filter bookings for current user (in a real app, this would be server-side)
-        this.bookings = allBookings.filter(booking => 
-          booking.attendeeInfo.email === this.user.email
-        );
+        const token = localStorage.getItem('eventify_token');
+        if (!token) {
+          this.bookings = [];
+          this.displayBookings();
+          return;
+        }
+
+        // Show loading state
+        document.getElementById('bookingsLoading').style.display = 'block';
+        document.getElementById('bookingsList').style.display = 'none';
+
+        try {
+          const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
+          const response = await fetch(`${baseUrl}/api/Booking/User`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            console.log('Bookings API response:', result);
+            
+            if (result.success && result.data && Array.isArray(result.data)) {
+              // Map API response to our booking format, include all bookings even if event is deleted
+              this.bookings = result.data
+                .filter(booking => booking != null)
+                .map(booking => {
+                  // Convert enum number to text
+                  let statusText = 'Unknown';
+                  if (booking.status === 0 || booking.status === 'Booked') {
+                    statusText = 'Booked';
+                  } else if (booking.status === 1 || booking.status === 'Pending') {
+                    statusText = 'Pending';
+                  } else if (booking.status === 2 || booking.status === 'Cancelled') {
+                    statusText = 'Cancelled';
+                  }
+                  
+                  // Handle cases where event might be null (deleted/refunded)
+                  const hasEvent = booking.event && booking.event.id && booking.event.name;
+                  
+                  let eventDate = null;
+                  let eventTime = null;
+                  
+                  if (hasEvent && booking.event.startDate) {
+                    try {
+                      eventDate = booking.event.startDate.split('T')[0];
+                      eventTime = new Date(booking.event.startDate).toTimeString().substring(0, 5);
+                    } catch (e) {
+                      console.warn('Error parsing event date:', e);
+                    }
+                  }
+                  
+                  return {
+                    id: booking.id,
+                    eventId: hasEvent ? booking.event.id : null,
+                    eventTitle: hasEvent ? booking.event.name : 'Event Deleted',
+                    eventDate: eventDate,
+                    eventTime: eventTime,
+                    eventLocation: hasEvent ? (booking.event.address || 'N/A') : 'N/A',
+                    eventImage: hasEvent ? (booking.event.photoUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400') : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400',
+                    tickets: booking.ticketsNum || 0,
+                    total: booking.payment ? booking.payment.totalPrice : 0,
+                    status: statusText,
+                    bookingDate: booking.createdDate,
+                    paymentStatus: booking.payment ? booking.payment.status : 'Unknown',
+                    paymentMethod: booking.payment ? booking.payment.paymentMethod : '',
+                    attendeeInfo: {
+                      name: this.user?.name || 'N/A',
+                      email: this.user?.email || 'N/A'
+                    },
+                    // Store full booking data for details page
+                    fullData: booking,
+                    isEventDeleted: !hasEvent
+                  };
+                });
+              
+              console.log('Loaded bookings from API:', this.bookings);
+            } else {
+              console.error('API response not successful:', result.message);
+              this.bookings = [];
+            }
+          } else {
+            console.error('Failed to fetch bookings:', response.status);
+            this.bookings = [];
+          }
+        } catch (error) {
+          console.error('Error fetching bookings:', error);
+          this.bookings = [];
+        }
         
         this.displayBookings();
+        
+        // Store bookings in localStorage for booking-details page
+        localStorage.setItem('eventify_user_bookings', JSON.stringify(this.bookings));
         
         setTimeout(() => {
           document.getElementById('bookingsLoading').style.display = 'none';
@@ -465,12 +564,83 @@
       }
 
       async loadUserEvents() {
-        // In a real app, this would filter by organizer ID
-        // For demo, we'll show events created by user (stored in localStorage)
-        const customEvents = JSON.parse(localStorage.getItem('customEvents') || '[]');
-        this.userEvents = customEvents; // In real app: filter by organizerId
+        const token = localStorage.getItem('eventify_token');
+        if (!token) {
+          this.userEvents = [];
+          this.displayUserEvents();
+          return;
+        }
+
+        // Get organizer ID from user data
+        const organizerId = this.user.id;
+        if (!organizerId) {
+          console.error('No organizer ID found');
+          this.userEvents = [];
+          this.displayUserEvents();
+          return;
+        }
+
+        // Show loading state
+        document.getElementById('eventsLoading').style.display = 'block';
+        document.getElementById('eventsList').style.display = 'none';
+
+        try {
+          const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
+          const response = await fetch(`${baseUrl}/api/Events/organizer/${organizerId}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            console.log('API Response:', result);
+            console.log('API Response Data (first event):', result.data && result.data[0] ? result.data[0] : 'No events');
+            
+            if (result.success && result.data) {
+              // Map API response to our event format
+              this.userEvents = result.data.map(event => {
+                console.log('Mapping event:', JSON.stringify(event, null, 2));
+                return {
+                  id: event.id,
+                  title: event.name,  // API uses 'name' not 'title'
+                  description: event.description,
+                  location: event.address,  // API uses 'address' not 'location'
+                  eventDate: event.startDate,
+                  startDate: event.startDate,
+                  endDate: event.endDate,
+                  photoUrl: event.photoUrl,
+                  image: event.photoUrl,
+                  capacity: event.capacity || 0,
+                  availableSeats: event.availableTickets || 0,
+                  bookedTickets: event.bookedTickets || 0,
+                  price: event.price || 0,
+                  revenue: event.revenue || 0,
+                  isUpcoming: event.isUpcoming,
+                  status: event.status
+                };
+              });
+              
+              console.log('Loaded user events from API:', this.userEvents);
+            } else {
+              console.error('API response not successful:', result.message);
+              this.userEvents = [];
+            }
+          } else {
+            console.error('Failed to fetch user events:', response.status);
+            this.userEvents = [];
+          }
+        } catch (error) {
+          console.error('Error fetching user events:', error);
+          this.userEvents = [];
+        }
         
         this.displayUserEvents();
+        
+        // Update total revenue after events are loaded
+        this.fetchTotalRevenue();
         
         setTimeout(() => {
           document.getElementById('eventsLoading').style.display = 'none';
@@ -478,19 +648,104 @@
         }, 500);
       }
 
-      async loadBookmarks() {
-        this.bookmarks = JSON.parse(localStorage.getItem('eventify_bookmarks') || '[]');
-        this.displayBookmarks();
+      async updateStatistics() {
+        // Fetch events count from API
+        await this.fetchEventsCount();
         
-        setTimeout(() => {
-          document.getElementById('bookmarksLoading').style.display = 'none';
-          document.getElementById('bookmarksList').style.display = 'block';
-        }, 500);
+        // Fetch booked tickets count from API
+        await this.fetchBookedTicketsCount();
+        
+        // Total revenue will be calculated when events are loaded
       }
 
-      updateStatistics() {
-        document.getElementById('eventsCreated').textContent = this.userEvents.length;
-        document.getElementById('ticketsBooked').textContent = this.bookings.reduce((total, booking) => total + booking.tickets, 0);
+      async fetchEventsCount() {
+        const token = localStorage.getItem('eventify_token');
+        if (!token) {
+          document.getElementById('eventsCreated').textContent = '0';
+          return;
+        }
+
+        const organizerId = this.user.id;
+        if (!organizerId) {
+          document.getElementById('eventsCreated').textContent = '0';
+          return;
+        }
+
+        try {
+          const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
+          const response = await fetch(`${baseUrl}/api/Events/organizer/${organizerId}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.data) {
+              document.getElementById('eventsCreated').textContent = result.data.length || 0;
+            } else {
+              document.getElementById('eventsCreated').textContent = this.userEvents.length;
+            }
+          } else {
+            document.getElementById('eventsCreated').textContent = this.userEvents.length;
+          }
+        } catch (error) {
+          console.error('Error fetching events count:', error);
+          document.getElementById('eventsCreated').textContent = this.userEvents.length;
+        }
+      }
+
+      async fetchBookedTicketsCount() {
+        const token = localStorage.getItem('eventify_token');
+        if (!token) {
+          document.getElementById('ticketsBooked').textContent = '0';
+          return;
+        }
+
+        try {
+          const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
+          const response = await fetch(`${baseUrl}/api/User/booked`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            console.log('Booked tickets API response:', result);
+            
+            if (result.success && result.data !== undefined) {
+              document.getElementById('ticketsBooked').textContent = result.data;
+            } else {
+              console.error('Invalid API response for booked tickets:', result);
+              document.getElementById('ticketsBooked').textContent = '0';
+            }
+          } else {
+            console.error('Failed to fetch booked tickets:', response.status);
+            document.getElementById('ticketsBooked').textContent = '0';
+          }
+        } catch (error) {
+          console.error('Error fetching booked tickets count:', error);
+          document.getElementById('ticketsBooked').textContent = '0';
+        }
+      }
+
+      async fetchTotalRevenue() {
+        // Calculate total revenue from loaded user events
+        const revenueElement = document.getElementById('totalRevenue');
+        if (!revenueElement) return;
+        
+        // Sum revenue from all user events (only include paid bookings)
+        const totalRevenue = this.userEvents.reduce((sum, event) => {
+          return sum + (event.revenue || 0);
+        }, 0);
+        
+        // Format revenue as currency
+        revenueElement.textContent = `EGP ${totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       }
 
       displayBookings() {
@@ -509,24 +764,38 @@
       }
 
       createBookingCard(booking) {
-        const eventDate = new Date(booking.eventDate + 'T' + booking.eventTime);
-        const isPastEvent = eventDate < new Date();
-        const formattedDate = EventifyData.formatDate(booking.eventDate);
-        const formattedTime = EventifyData.formatTime(booking.eventTime);
+        const isPastEvent = booking.eventDate ? new Date(booking.eventDate + 'T' + booking.eventTime) < new Date() : false;
+        const formattedDate = booking.eventDate ? EventifyData.formatDate(booking.eventDate) : 'N/A';
+        const formattedTime = booking.eventTime ? EventifyData.formatTime(booking.eventTime) : 'N/A';
+        
+        // Get event photo URL with cache-busting
+        const timestamp = new Date().getTime();
+        const imageUrl = (booking.eventPhoto || booking.photoUrl || booking.eventImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=160&h=160&fit=crop') + (booking.eventPhoto || booking.photoUrl || booking.eventImage ? `?t=${timestamp}` : '');
 
         return `
-          <div class="card" style="margin-bottom: var(--space-md);">
+          <div class="card" style="margin-bottom: var(--space-md);" data-booking-status="${booking.status}" data-is-past="${isPastEvent}">
             <div class="flex gap-lg" style="align-items: center; flex-wrap: wrap;">
+              <img 
+                src="${imageUrl}" 
+                alt="${booking.eventTitle}"
+                style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md);"
+                onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=160&h=160&fit=crop'"
+              >
+              
               <div style="flex: 1; min-width: 200px;">
                 <h4 style="margin-bottom: var(--space-xs);">${booking.eventTitle}</h4>
                 <p style="margin-bottom: var(--space-sm); color: var(--muted);">
-                  📅 ${formattedDate} at ${formattedTime}<br>
+                  📅 ${formattedDate}${booking.eventTime ? ' at ' + formattedTime : ''}<br>
                   📍 ${booking.eventLocation}
                 </p>
-                <div class="flex gap-sm" style="align-items: center;">
+                <div class="flex gap-sm" style="align-items: center; flex-wrap: wrap;">
                   <span class="event-tag">${booking.tickets} ticket${booking.tickets > 1 ? 's' : ''}</span>
-                  <span class="event-tag" style="background: ${isPastEvent ? 'var(--muted)' : 'var(--success)'}; color: white;">
-                    ${isPastEvent ? 'Past Event' : 'Upcoming'}
+                  <span class="event-tag" style="background: ${
+                    booking.status === 'Booked' ? '#10b981' : 
+                    booking.status === 'Pending' ? '#f59e0b' : 
+                    booking.status === 'Cancelled' ? '#ef4444' : 'var(--muted)'
+                  }; color: white;">
+                    ${booking.status}
                   </span>
                 </div>
               </div>
@@ -562,133 +831,120 @@
         const container = document.getElementById('eventsList');
         const noEvents = document.getElementById('noEvents');
         
+        console.log('displayUserEvents called with:', this.userEvents);
+        console.log('Container element:', container);
+        console.log('No events element:', noEvents);
+        
         if (this.userEvents.length === 0) {
+          console.log('No events to display');
           container.style.display = 'none';
           noEvents.style.display = 'block';
           return;
         }
 
-        container.innerHTML = this.userEvents.map(event => this.createEventCard(event)).join('');
+        console.log('Generating event cards...');
+        const cardsHTML = this.userEvents.map(event => {
+          const card = this.createEventCard(event);
+          console.log('Generated card for event:', event.title, card.substring(0, 100));
+          return card;
+        }).join('');
+        
+        container.innerHTML = cardsHTML;
         container.style.display = 'block';
         noEvents.style.display = 'none';
+        console.log('Events displayed successfully');
       }
 
       createEventCard(event) {
-        const eventDate = new Date(event.date + 'T' + event.time);
-        const isPastEvent = eventDate < new Date();
-        const formattedDate = EventifyData.formatDate(event.date);
-        const formattedTime = EventifyData.formatTime(event.time);
+        console.log('createEventCard called with:', event);
+        console.log('All event properties:', Object.keys(event));
+        console.log('Raw date fields - eventDate:', event.eventDate, 'startDate:', event.startDate, 'date:', event.date, 'time:', event.time);
+        
+        // Parse date - handle both formats
+        // Skip 0001-01-01 (default .NET DateTime value)
+        let eventDate;
+        const isValidDate = (dateStr) => {
+          return dateStr && !dateStr.startsWith('0001-01-01');
+        };
+        
+        if (isValidDate(event.startDate)) {
+          eventDate = new Date(event.startDate);
+        } else if (isValidDate(event.eventDate)) {
+          eventDate = new Date(event.eventDate);
+        } else if (event.date && event.time) {
+          eventDate = new Date(event.date + 'T' + event.time);
+        } else if (event.date) {
+          eventDate = new Date(event.date);
+        } else {
+          // If no valid date found, treat as future event to allow editing
+          console.warn('No valid date found for event:', event.title || event.eventName);
+          eventDate = new Date('2099-12-31'); // Far future date as fallback
+        }
+        
+        const now = new Date();
+        console.log('Event:', event.title || event.eventName);
+        console.log('Event date:', eventDate.toISOString(), 'Local:', eventDate.toLocaleString());
+        console.log('Current time:', now.toISOString(), 'Local:', now.toLocaleString());
+        console.log('Is past?', eventDate < now);
+        
+        const isPastEvent = eventDate < now;
+        const formattedDate = eventDate.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+        const formattedTime = eventDate.toLocaleTimeString('en-US', { 
+          hour: 'numeric', 
+          minute: '2-digit' 
+        });
+
+        // Use photoUrl from API or fallback to image property
+        // Add timestamp to cache-bust image
+        const timestamp = new Date().getTime();
+        const imageUrl = (event.photoUrl || event.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=160&h=160&fit=crop') + (event.photoUrl || event.image ? `?t=${timestamp}` : '');
 
         return `
           <div class="card" style="margin-bottom: var(--space-md);">
             <div class="flex gap-lg" style="align-items: center; flex-wrap: wrap;">
               <img 
-                src="${event.image}" 
-                alt="${event.title}"
+                src="${imageUrl}" 
+                alt="${event.title || event.eventName || 'Event'}"
                 style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md);"
                 onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=160&h=160&fit=crop'"
               >
               
               <div style="flex: 1; min-width: 200px;">
-                <h4 style="margin-bottom: var(--space-xs);">${event.title}</h4>
+                <h4 style="margin-bottom: var(--space-xs);">${event.title || event.eventName || 'Untitled Event'}</h4>
                 <p style="margin-bottom: var(--space-sm); color: var(--muted);">
                   📅 ${formattedDate} at ${formattedTime}<br>
-                  📍 ${event.location}
+                  📍 ${event.location || event.venue || 'TBA'}
                 </p>
-                <div class="flex gap-sm" style="align-items: center;">
-                  <span class="event-tag">${event.capacity} capacity</span>
-                  <span class="event-tag">${event.ticketsAvailable || 0} available</span>
+                <div class="flex gap-sm" style="align-items: center; flex-wrap: wrap;">
+                  ${event.capacity && event.capacity > 0 ? `<span class="event-tag">${event.capacity} capacity</span>` : ''}
+                  ${event.bookedTickets !== undefined && event.bookedTickets >= 0 ? `<span class="event-tag">${event.bookedTickets} booked</span>` : ''}
                   <span class="event-tag" style="background: ${isPastEvent ? 'var(--muted)' : 'var(--success)'}; color: white;">
-                    ${isPastEvent ? 'Past' : 'Upcoming'}
+                    ${isPastEvent ? 'Past Event' : 'Upcoming'}
                   </span>
                 </div>
               </div>
               
               <div style="text-align: right;">
-                <div style="font-weight: 600; margin-bottom: var(--space-sm); color: var(--accent);">
-                  ${event.price === 0 ? 'Free' : app.formatCurrency(event.price)}
+                ${event.revenue !== undefined && event.revenue >= 0 ? `
+                <div style="font-size: var(--font-size-lg); font-weight: 600; color: #28a745; margin-bottom: var(--space-2xl);">
+                  💰 ${app.formatCurrency(event.revenue)}
                 </div>
+                ` : ''}
                 <div class="flex gap-sm">
+                  ${!isPastEvent ? `
                   <button 
                     class="btn btn-sm btn-outline" 
-                    onclick="dashboardPage.editEvent(${event.id})"
+                    onclick="dashboardPage.editEvent(${event.id || event.eventId})"
                   >
                     ✏️ Edit
                   </button>
+                  ` : ''}
                   <a 
-                    href="event.html?id=${event.id}" 
-                    class="btn btn-sm btn-primary"
-                  >
-                    View Event
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      displayBookmarks() {
-        const container = document.getElementById('bookmarksList');
-        const noBookmarks = document.getElementById('noBookmarks');
-        
-        if (this.bookmarks.length === 0) {
-          container.style.display = 'none';
-          noBookmarks.style.display = 'block';
-          return;
-        }
-
-        // Get full event data for bookmarks
-        const bookmarkEvents = this.bookmarks.map(bookmark => {
-          const event = EventifyData.getEventById(bookmark.id);
-          return event ? { ...event, bookmarkedAt: bookmark.bookmarkedAt } : null;
-        }).filter(Boolean);
-
-        container.innerHTML = bookmarkEvents.map(event => this.createBookmarkCard(event)).join('');
-        container.style.display = 'block';
-        noBookmarks.style.display = 'none';
-      }
-
-      createBookmarkCard(event) {
-        const formattedDate = EventifyData.formatDate(event.date);
-        const formattedTime = EventifyData.formatTime(event.time);
-
-        return `
-          <div class="card" style="margin-bottom: var(--space-md);">
-            <div class="flex gap-lg" style="align-items: center; flex-wrap: wrap;">
-              <img 
-                src="${event.image}" 
-                alt="${event.title}"
-                style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md);"
-                onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=160&h=160&fit=crop'"
-              >
-              
-              <div style="flex: 1; min-width: 200px;">
-                <h4 style="margin-bottom: var(--space-xs);">${event.title}</h4>
-                <p style="margin-bottom: var(--space-sm); color: var(--muted);">
-                  📅 ${formattedDate} at ${formattedTime}<br>
-                  📍 ${event.location}
-                </p>
-                <div class="flex gap-sm" style="align-items: center;">
-                  <span class="event-tag">${event.category}</span>
-                  <span class="event-tag">${event.price === 0 ? 'Free' : app.formatCurrency(event.price)}</span>
-                </div>
-              </div>
-              
-              <div style="text-align: right;">
-                <div style="font-size: var(--font-size-sm); color: var(--muted); margin-bottom: var(--space-md);">
-                  Bookmarked: ${new Date(event.bookmarkedAt).toLocaleDateString()}
-                </div>
-                <div class="flex gap-sm">
-                  <button 
-                    class="btn btn-sm btn-outline" 
-                    onclick="dashboardPage.removeBookmark(${event.id})"
-                    style="color: var(--danger);"
-                  >
-                    🗑️ Remove
-                  </button>
-                  <a 
-                    href="event.html?id=${event.id}" 
+                    href="event.html?id=${event.id || event.eventId}" 
                     class="btn btn-sm btn-primary"
                   >
                     View Event
@@ -714,9 +970,9 @@
           content.style.display = content.dataset.tab === tabName ? 'block' : 'none';
         });
         
-        // Load data if needed
-        if (tabName === 'bookmarks' && this.bookmarks.length === 0) {
-          this.loadBookmarks();
+        // Load data when switching to events tab
+        if (tabName === 'events' && this.userEvents.length === 0) {
+          this.loadUserEvents();
         }
       }
 
@@ -752,23 +1008,15 @@
         const allCards = document.querySelectorAll('#bookingsList .card');
         
         allCards.forEach(card => {
-          const eventDate = card.querySelector('.event-tag').textContent;
-          const isPast = eventDate.includes('Past Event');
+          const bookingStatus = card.dataset.bookingStatus;
           
           let show = true;
           
-          switch (filter) {
-            case 'upcoming':
-              show = !isPast;
-              break;
-            case 'past':
-              show = isPast;
-              break;
-            case 'cancelled':
-              show = false; // No cancelled bookings in demo
-              break;
-            default:
-              show = true;
+          if (filter === 'all') {
+            show = true;
+          } else {
+            // Match exact status from BookingStatus enum
+            show = bookingStatus === filter;
           }
           
           card.style.display = show ? 'block' : 'none';
@@ -792,9 +1040,6 @@
             case 'past':
               show = isPast;
               break;
-            case 'draft':
-              show = false; // No draft events in demo
-              break;
             default:
               show = true;
           }
@@ -812,7 +1057,7 @@
         document.getElementById('editFirstName').value = nameParts[0] || '';
         document.getElementById('editLastName').value = nameParts.slice(1).join(' ') || '';
         document.getElementById('editEmail').value = this.user.email;
-        document.getElementById('editAvatar').value = this.user.avatar || '';
+        document.getElementById('editPhoneNumber').value = this.user.phone || this.user.phoneNumber || '';
         
         app.openModal('editProfileModal');
       }
@@ -826,84 +1071,105 @@
         
         const form = event.target;
         
-        if (!app.validateForm(form)) {
-          app.showNotification('Please fix the errors and try again', 'error');
+        if (!form.checkValidity()) {
+          app.showNotification('Please fill in all required fields correctly', 'error');
+          form.reportValidity();
           return;
         }
 
         const formData = new FormData(form);
-        const updatedUser = {
-          ...this.user,
-          name: `${formData.get('firstName').trim()} ${formData.get('lastName').trim()}`,
-          firstName: formData.get('firstName').trim(),
-          lastName: formData.get('lastName').trim(),
-          email: formData.get('email').trim(),
-          avatar: formData.get('avatar').trim() || this.user.avatar
-        };
+        const fullName = `${formData.get('firstName').trim()} ${formData.get('lastName').trim()}`;
+        const email = formData.get('email').trim();
+        const phoneNumber = formData.get('phoneNumber').trim();
 
-        // Update user data
-        app.setCurrentUser(updatedUser);
-        this.user = updatedUser;
-        
-        // Refresh profile display
-        this.loadUserProfile();
-        
-        // Close modal
-        this.closeEditProfile();
-        
-        app.showNotification('Profile updated successfully!', 'success');
-      }
+        // Validate phone number format
+        const phonePattern = /^(010|011|012|015)\d{8}$/;
+        if (!phonePattern.test(phoneNumber)) {
+          app.showNotification('Invalid phone number format. Use Egyptian mobile number (e.g., 01012345678)', 'error');
+          return;
+        }
 
-      // Bookmark management
-      removeBookmark(eventId) {
-        const bookmarks = JSON.parse(localStorage.getItem('eventify_bookmarks') || '[]');
-        const updatedBookmarks = bookmarks.filter(bookmark => bookmark.id !== eventId);
-        localStorage.setItem('eventify_bookmarks', JSON.stringify(updatedBookmarks));
-        
-        this.bookmarks = updatedBookmarks;
-        this.displayBookmarks();
-        
-        app.showNotification('Bookmark removed', 'info');
-      }
+        try {
+          const token = localStorage.getItem('eventify_token');
+          if (!token) {
+            app.showNotification('Please log in again', 'error');
+            window.location.href = 'login.html';
+            return;
+          }
 
-      clearAllBookmarks() {
-        if (confirm('Are you sure you want to clear all bookmarks?')) {
-          localStorage.removeItem('eventify_bookmarks');
-          this.bookmarks = [];
-          this.displayBookmarks();
-          
-          app.showNotification('All bookmarks cleared', 'info');
+          const userId = this.user.id;
+          if (!userId) {
+            app.showNotification('User ID not found', 'error');
+            return;
+          }
+
+          const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
+          const response = await fetch(`${baseUrl}/api/User/${userId}`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              name: fullName,
+              email: email,
+              phoneNumber: phoneNumber
+            })
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            console.log('Profile update response:', result);
+            
+            if (result.success) {
+              // Update local user data
+              const updatedUser = {
+                ...this.user,
+                name: result.data.name,
+                email: result.data.email,
+                phone: result.data.phoneNumber,
+                phoneNumber: result.data.phoneNumber
+              };
+
+              app.setCurrentUser(updatedUser);
+              this.user = updatedUser;
+              
+              // Refresh profile display
+              this.loadUserProfile();
+              
+              // Close modal
+              this.closeEditProfile();
+              
+              app.showNotification('Profile updated successfully!', 'success');
+            } else {
+              const errorMsg = result.errors && result.errors.length > 0 
+                ? result.errors.join(', ') 
+                : result.message || 'Failed to update profile';
+              app.showNotification(errorMsg, 'error');
+            }
+          } else {
+            const errorData = await response.json().catch(() => ({}));
+            const errorMsg = errorData.errors && errorData.errors.length > 0
+              ? errorData.errors.join(', ')
+              : errorData.message || 'Failed to update profile';
+            app.showNotification(errorMsg, 'error');
+          }
+        } catch (error) {
+          console.error('Error updating profile:', error);
+          app.showNotification('Error updating profile. Please try again.', 'error');
         }
       }
 
       // Booking details
       viewBookingDetails(bookingId) {
-        const booking = this.bookings.find(b => b.id === bookingId);
-        if (!booking) return;
-
-        const details = `
-Booking Details:
-================
-
-Booking ID: ${booking.id}
-Event: ${booking.eventTitle}
-Date: ${EventifyData.formatDate(booking.eventDate)}
-Time: ${EventifyData.formatTime(booking.eventTime)}
-Location: ${booking.eventLocation}
-Tickets: ${booking.tickets}
-Total: ${booking.total === 0 ? 'Free' : app.formatCurrency(booking.total)}
-Status: ${booking.status}
-
-Booked on: ${new Date(booking.bookingDate).toLocaleDateString()}
-        `;
-
-        alert(details); // In a real app, this would be a proper modal
+        // Redirect to booking details page
+        window.location.href = `booking-details.html?id=${bookingId}`;
       }
 
-      // Event editing (placeholder)
+      // Event editing
       editEvent(eventId) {
-        app.showNotification('Event editing coming soon!', 'info');
-        // In a real app, this would redirect to an edit form
+        // Redirect to edit event page
+        window.location.href = `edit-event.html?id=${eventId}`;
       }
     }
 
@@ -933,6 +1199,19 @@ Booked on: ${new Date(booking.bookingDate).toLocaleDateString()}
     document.addEventListener('DOMContentLoaded', () => {
       if (window.EventifyData) {
         window.dashboardPage = new DashboardPage();
+        
+        // Check if returning from a cancelled booking and refresh if needed
+        if (sessionStorage.getItem('eventify_booking_cancelled') === 'true') {
+          sessionStorage.removeItem('eventify_booking_cancelled');
+          
+          // Show notification and force reload bookings
+          setTimeout(() => {
+            app.showNotification('Bookings updated - refund processed', 'success');
+            if (window.dashboardPage) {
+              window.dashboardPage.loadBookings();
+            }
+          }, 500);
+        }
       } else {
         console.error('EventifyData not loaded');
       }

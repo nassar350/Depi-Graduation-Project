@@ -11,7 +11,8 @@ namespace Eventify.Service.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        public UserService(IUserRepository userRepository , IMapper mapper)
+
+        public UserService(ITicketRepository repo , IUserRepository userRepository , IMapper mapper)
         {
             _userRepository = userRepository;
             _mapper = mapper;
@@ -64,6 +65,17 @@ namespace Eventify.Service.Services
                 return ServiceResult<UserUpdateDto>.Fail("", $"Failed to update user with ID '{id}'.");
 
             return ServiceResult<UserUpdateDto>.Ok(user);
+        }
+
+        public int GetTicketsBookedCount(int userId)
+        {
+            return _userRepository.CountTicketBooked(userId);
+        }
+
+        public ServiceResult<decimal> GetTotalRevenueById(int id)
+        {
+            var revenue = _userRepository.GetTotalRevenueById(id);
+            return ServiceResult<decimal>.Ok(revenue);
         }
     }
 }

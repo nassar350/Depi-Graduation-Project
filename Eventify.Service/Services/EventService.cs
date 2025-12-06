@@ -9,6 +9,7 @@ using Eventify.Service.Helpers;
 using Eventify.Service.Interfaces;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
+using SendGrid.Helpers.Errors.Model;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Eventify.Service.Services
@@ -18,12 +19,14 @@ namespace Eventify.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
+        private readonly IZoomService _zoomService;
 
-        public EventService(IMapper mapper, IUnitOfWork unitOfWork, IPhotoService photoService)
+        public EventService(IMapper mapper, IUnitOfWork unitOfWork, IPhotoService photoService, IZoomService zoomService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _photoService = photoService;
+            _zoomService = zoomService;
         }
 
         public async Task<IEnumerable<EventDto>> GetAllAsync()
@@ -76,6 +79,19 @@ namespace Eventify.Service.Services
                 {
                     string photoUrl = await _photoService.UploadPhotoAsync(dto.Photo);
                     ev.PhotoUrl = photoUrl;
+                }
+                if (dto.IsOnline)
+                { 
+                    var zoom = await _zoomService.CreateMeeting(
+                    dto.Name,
+                    dto.StartDate,
+                    dto.DurationMinutes ?? 60
+                    );
+                    if (zoom == null)
+                        throw new BadRequestException("Failed to create Zoom meeting. Please try again later.");
+                    ev.ZoomJoinUrl = zoom.JoinUrl;
+                    ev.ZoomPassword = zoom.Password;
+                    ev.ZoomMeetingId = zoom.MeetingId;
                 }
                 var curEvent = await _unitOfWork._eventRepository.AddAsync(ev);
                 await _unitOfWork.SaveChangesAsync();
@@ -174,8 +190,32 @@ namespace Eventify.Service.Services
                 {
                     return ServiceResult<IEnumerable<EventDto>>.Fail("NoEvents", $"No events found for organizer with ID {organizerId}.");
                 }
-
-                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(organizerEvents);
+                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(organizerEvents).ToList();
+                
+                // Get all payments with their bookings and tickets
+                var allPayments = await _unitOfWork._paymentRepository.GetAllAsync();
+                
+                foreach (var e in eventDtos) 
+                {
+                    e.BookedTickets = _unitOfWork._ticketRepository.CountBookedTickets(e.Id);
+                    
+                    // Calculate revenue from paid bookings for this event
+                    // Get all tickets for this event
+                    var eventTickets = organizerEvents
+                        .FirstOrDefault(evt => evt.Id == e.Id)?.Tickets ?? new List<Ticket>();
+                    
+                    // Get booking IDs from those tickets
+                    var bookingIds = eventTickets
+                        .Where(t => t.BookingId.HasValue)
+                        .Select(t => t.BookingId.Value)
+                        .Distinct()
+                        .ToList();
+                    
+                    // Sum revenue from paid payments for these bookings
+                    e.Revenue = allPayments
+                        .Where(p => bookingIds.Contains(p.BookingId) && p.Status == Core.Enums.PaymentStatus.Paid)
+                        .Sum(p => p.TotalPrice);
+                }
                 return ServiceResult<IEnumerable<EventDto>>.Ok(eventDtos);
             }
             catch (Exception ex)

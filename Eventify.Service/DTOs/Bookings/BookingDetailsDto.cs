@@ -12,7 +12,7 @@ namespace Eventify.Service.DTOs.Bookings
 
         public DateTime CreatedDate { get; set; }
 
-        public TicketStatus Status { get; set; }
+        public BookingStatus Status { get; set; }
 
         public int TicketsNum { get; set; }
 

@@ -2,6 +2,8 @@ using AutoMapper;
 using Eventify.Core.Entities;
 using Eventify.Repository.Interfaces;
 using Eventify.Service.DTOs.Bookings;
+using Eventify.Service.DTOs.Events;
+using Eventify.Service.Helpers;
 using Eventify.Service.Interfaces;
 
 namespace Eventify.Service.Services;
@@ -60,4 +62,47 @@ public class BookingService : IBookingService
             return await _repo.DeleteAsync(id);
 
         }
+
+    public async Task<bool> RefundThisBooking(int bookingId)
+    {
+        var booking = await _repo.GetByIdAsync(bookingId);
+
+        if (booking == null)
+            return false;
+
+        foreach(var ticket in booking.Tickets)
+        {
+            ticket.BookingId = null;
+        }
+
+        var category = await _unitOfWork._categoryRepository.GetByIdAsync(booking.Tickets.First().CategoryId);
+        category.Booked -= booking.TicketsNum;
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<ServiceResult<IEnumerable<BookingDetailsDto>>> GetByUserId(int userId)
+    {
+        try
+        {
+            var bookings = await _repo.GetDetailedByUserId(userId);
+            if (bookings == null || !bookings.Any())
+            {
+                return ServiceResult<IEnumerable<BookingDetailsDto>>.Ok(Enumerable.Empty<BookingDetailsDto>());
+            }
+            
+            var BookingsDetailDto = _mapper.Map<IEnumerable<BookingDetailsDto>>(bookings);
+            
+            // Event data is now automatically mapped via the Event navigation property
+            // No need to manually look it up
+            
+            return ServiceResult<IEnumerable<BookingDetailsDto>>.Ok(BookingsDetailDto);
+        }
+        catch (Exception ex)
+        {
+            return ServiceResult<IEnumerable<BookingDetailsDto>>.Fail("Error", $"Error retrieving bookings: {ex.Message}");
+        }
+    }
 }
