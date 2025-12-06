@@ -69,6 +69,7 @@ public class BookingRepository : IBookingRepository
         return await _context.Bookings
             .Include(b => b.Payment)
             .Include(b => b.Tickets)
+            .Include(b => b.Event)
             .Where(b => b.UserId == userId)
             .ToListAsync();
     }

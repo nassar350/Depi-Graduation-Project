@@ -23,7 +23,7 @@ namespace Eventify.APIs.Controllers
         }
 
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] CheckOutRequestDto dto)
         {
             if (!ModelState.IsValid)

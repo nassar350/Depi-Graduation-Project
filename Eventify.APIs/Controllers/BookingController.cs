@@ -69,24 +69,47 @@ namespace Eventify.APIs.Controllers
         [Authorize]
         public async Task<IActionResult> GetBookingsByUserId()
         {
-            var currentId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var bookings = await _service.GetByUserId(int.Parse(currentId));
-            if (!bookings.Data.Any())
+            try
             {
+                var currentId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                
+                if (string.IsNullOrEmpty(currentId))
+                {
+                    return Unauthorized(new ApiResponseDto<object>
+                    {
+                        Success = false,
+                        Message = "User not authenticated"
+                    });
+                }
+
+                var bookings = await _service.GetByUserId(int.Parse(currentId));
+                
+                if (bookings == null || !bookings.Data.Any())
+                {
+                    return Ok(new ApiResponseDto<IEnumerable<BookingDetailsDto>>
+                    {
+                        Success = true,
+                        Message = "No bookings found",
+                        Data = Enumerable.Empty<BookingDetailsDto>()
+                    });
+                }
+
                 return Ok(new ApiResponseDto<IEnumerable<BookingDetailsDto>>
                 {
-                    Success = false,
-                    Message = "No bookings found",
-                    Data = Enumerable.Empty<BookingDetailsDto>()
+                    Success = true,
+                    Message = "Bookings retrieved successfully",
+                    Data = bookings.Data
                 });
             }
-
-            return Ok(new ApiResponseDto<IEnumerable<BookingDetailsDto>>
+            catch (Exception ex)
             {
-                Success = true,
-                Message = "Bookings retrieved successfully",
-                Data = bookings.Data
-            });
+                return StatusCode(500, new ApiResponseDto<object>
+                {
+                    Success = false,
+                    Message = "An error occurred while retrieving bookings",
+                    Errors = new List<string> { ex.Message, ex.InnerException?.Message }
+                });
+            }
         }
         [HttpPost]
         [Authorize]

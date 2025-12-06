@@ -85,17 +85,24 @@ public class BookingService : IBookingService
 
     public async Task<ServiceResult<IEnumerable<BookingDetailsDto>>> GetByUserId(int userId)
     {
-        var bookings = await _repo.GetDetailedByUserId(userId);
-        if (!bookings.Any())
+        try
         {
-            return ServiceResult<IEnumerable<BookingDetailsDto>>.Fail("No Bookings", $"No Bookings found for User with ID {userId}.");
+            var bookings = await _repo.GetDetailedByUserId(userId);
+            if (bookings == null || !bookings.Any())
+            {
+                return ServiceResult<IEnumerable<BookingDetailsDto>>.Ok(Enumerable.Empty<BookingDetailsDto>());
+            }
+            
+            var BookingsDetailDto = _mapper.Map<IEnumerable<BookingDetailsDto>>(bookings);
+            
+            // Event data is now automatically mapped via the Event navigation property
+            // No need to manually look it up
+            
+            return ServiceResult<IEnumerable<BookingDetailsDto>>.Ok(BookingsDetailDto);
         }
-        var BookingsDetailDto = _mapper.Map<IEnumerable<BookingDetailsDto>>(bookings);
-        foreach (var booking in BookingsDetailDto)
+        catch (Exception ex)
         {
-            var e = await _unitOfWork._eventRepository.GetByIdAsync(booking.Tickets[0].EventId);
-            booking.Event = _mapper.Map<EventDto>(e);
+            return ServiceResult<IEnumerable<BookingDetailsDto>>.Fail("Error", $"Error retrieving bookings: {ex.Message}");
         }
-        return ServiceResult<IEnumerable<BookingDetailsDto>>.Ok(BookingsDetailDto);
     }
 }

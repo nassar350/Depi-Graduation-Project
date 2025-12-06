@@ -1,4 +1,5 @@
 ﻿using Eventify.Core.Entities;
+using Eventify.Core.Enums;
 using Eventify.Repository.Data.Contexts;
 using Eventify.Repository.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -75,10 +76,12 @@ namespace Eventify.Repository.Repositories
        
         public int CountTicketBooked(int userId )
         {
-          
             int totalTickets = _context.Bookings
-                .Where(b => b.UserId == userId)
-                .Sum(b => b.TicketsNum);
+                .Include(b => b.Payment)
+                .Where(b => b.UserId == userId 
+                    && b.Status == BookingStatus.Booked 
+                    && (b.Payment == null || b.Payment.Status == PaymentStatus.Paid))
+                .Sum(b => (int?)b.TicketsNum) ?? 0;
 
             return totalTickets;
         }

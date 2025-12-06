@@ -11,6 +11,7 @@ public class EventRepository : IEventRepository
     public async Task<IEnumerable<Event>> GetAllAsync()
         => await _context.Events
             .Include(e => e.Organizer)
+            .Include(e => e.Tickets)
             .AsNoTracking()
             .ToListAsync();
 
@@ -62,6 +63,7 @@ public class EventRepository : IEventRepository
             .OrderBy(e => e.StartDate)
             .Take(take)
             .Include(e => e.Organizer)
+            .Include(e => e.Categories)
             .AsNoTracking()
             .ToListAsync();
     }

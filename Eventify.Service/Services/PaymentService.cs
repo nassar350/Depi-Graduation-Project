@@ -186,7 +186,7 @@ namespace Eventify.Service.Services
                     await _paymentRepository.UpdateAsync(payment);
 
                     // 4. Update booking status to Cancelled
-                    booking.Status = TicketStatus.Cancelled;
+                    booking.Status = BookingStatus.Cancelled;
                     await _unitOfWork._bookingRepository.UpdateAsync(bookingId, booking);
 
                     // 5. Release tickets - Remove BookingId from tickets
@@ -204,6 +204,11 @@ namespace Eventify.Service.Services
                         _unitOfWork._ticketRepository.UpdateRange(tickets);
                         _logger.LogInformation($"Released {tickets.Count} tickets for BookingId: {bookingId}");
                     }
+
+                    var category = await _unitOfWork._categoryRepository.GetByIdAsync(tickets.ElementAt(0).CategoryId);
+
+                    if (category is not null)
+                        category.Booked -= tickets.Count;
 
                     // 6. Save all changes
                     await _unitOfWork.SaveChangesAsync();
@@ -233,12 +238,35 @@ namespace Eventify.Service.Services
             // Match by StripePaymentIntentId
             var allPayments = await _paymentRepository.GetAllAsync();
             var payment = allPayments.FirstOrDefault(p => p.StripePaymentIntentId == paymentIntentId);
+            var booking = await _unitOfWork._bookingRepository.GetByIdAsync(payment.BookingId);
 
             if (payment != null)
             {
                 payment.Status = status;
-                await _paymentRepository.UpdateAsync(payment);
-                await _paymentRepository.SaveChangesAsync();
+
+                switch (status)
+                {
+                    case PaymentStatus.Pending:
+                        booking.Status = BookingStatus.Pending;
+                        break;
+                    case PaymentStatus.Paid:
+                        booking.Status = BookingStatus.Booked;
+                        break;
+                    case PaymentStatus.Rejected:
+                        booking.Status = BookingStatus.Cancelled;
+                        break;
+                    case PaymentStatus.Cancelled:
+                        booking.Status = BookingStatus.Cancelled;
+                        break;
+                    case PaymentStatus.Refunded:
+                        booking.Status = BookingStatus.Cancelled;
+                        break;
+                    default:
+                        break;
+                }
+
+                await _unitOfWork._paymentRepository.UpdateAsync(payment);
+                await _unitOfWork.SaveChangesAsync();
 
                 Console.WriteLine($"✅ Payment with Intent {paymentIntentId} updated to {status}");
             }
@@ -254,12 +282,35 @@ namespace Eventify.Service.Services
 
             var payments = await _paymentRepository.GetAllAsync();
             var payment = payments.FirstOrDefault(p => p.StripePaymentIntentId == paymentIntentId);
+            var booking = await _unitOfWork._bookingRepository.GetByIdAsync(payment.BookingId);
 
             if (payment != null)
             {
                 payment.Status = status;
-                await _paymentRepository.UpdateAsync(payment);
-                await _paymentRepository.SaveChangesAsync();
+
+                switch (status)
+                {
+                    case PaymentStatus.Pending:
+                        booking.Status = BookingStatus.Pending;
+                        break;
+                    case PaymentStatus.Paid:
+                        booking.Status = BookingStatus.Booked;
+                        break;
+                    case PaymentStatus.Rejected:
+                        booking.Status = BookingStatus.Cancelled;
+                        break;
+                    case PaymentStatus.Cancelled:
+                        booking.Status = BookingStatus.Cancelled;
+                        break;
+                    case PaymentStatus.Refunded:
+                        booking.Status = BookingStatus.Cancelled;
+                        break;
+                    default:
+                        break;
+                }
+
+                await _unitOfWork._paymentRepository.UpdateAsync(payment);
+                await _unitOfWork.SaveChangesAsync();
 
                 Console.WriteLine($"💸 Payment refunded: {paymentIntentId}");
             }

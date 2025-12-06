@@ -17,16 +17,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("OnlineDbConnectionString");
 
-// Env.Load();
-//
-// var stripeKey = builder.Configuration["STRIPE_SECRET_KEY"] ?? Environment.GetEnvironmentVariable("SecretKey");
-//
-// if (string.IsNullOrEmpty(stripeKey))
-// {
-//     throw new Exception("Stripe secret key is not configured in STRIPE_SECRET_KEY");
-// }
-//
-// StripeConfiguration.ApiKey = stripeKey;
+Env.Load();
+
+var stripeKey = builder.Configuration["STRIPE_SECRET_KEY"] ?? Environment.GetEnvironmentVariable("SecretKey");
+
+if (string.IsNullOrEmpty(stripeKey))
+{
+    throw new Exception("Stripe secret key is not configured in STRIPE_SECRET_KEY");
+}
+
+StripeConfiguration.ApiKey = stripeKey;
 
 builder.Services.AddScoped<ITicketEncryptionService>(sp =>
     new TicketEncryptionService(builder.Configuration["TicketEncryption:Key"]));

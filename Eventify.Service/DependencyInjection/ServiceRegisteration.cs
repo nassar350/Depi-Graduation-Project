@@ -52,6 +52,9 @@ namespace Eventify.Service.DependencyInjection
             services.AddScoped<ITicketVerificationService, TicketVerificationService>();
             services.AddScoped<ITicketDownloadService, TicketDownloadService>();
 
+            // Admin
+            services.AddScoped<IAdminService, AdminService>();
+
             return services;
         }
     }

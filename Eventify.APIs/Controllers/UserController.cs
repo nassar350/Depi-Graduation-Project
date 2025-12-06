@@ -19,7 +19,9 @@ namespace Eventify.APIs.Controllers
         {
             _userService = userService;
         }
+
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
             var result = await _userService.GetAllAsync();

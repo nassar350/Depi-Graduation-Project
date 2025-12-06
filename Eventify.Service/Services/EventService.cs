@@ -190,10 +190,31 @@ namespace Eventify.Service.Services
                 {
                     return ServiceResult<IEnumerable<EventDto>>.Fail("NoEvents", $"No events found for organizer with ID {organizerId}.");
                 }
-                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(organizerEvents);
+                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(organizerEvents).ToList();
+                
+                // Get all payments with their bookings and tickets
+                var allPayments = await _unitOfWork._paymentRepository.GetAllAsync();
+                
                 foreach (var e in eventDtos) 
                 {
                     e.BookedTickets = _unitOfWork._ticketRepository.CountBookedTickets(e.Id);
+                    
+                    // Calculate revenue from paid bookings for this event
+                    // Get all tickets for this event
+                    var eventTickets = organizerEvents
+                        .FirstOrDefault(evt => evt.Id == e.Id)?.Tickets ?? new List<Ticket>();
+                    
+                    // Get booking IDs from those tickets
+                    var bookingIds = eventTickets
+                        .Where(t => t.BookingId.HasValue)
+                        .Select(t => t.BookingId.Value)
+                        .Distinct()
+                        .ToList();
+                    
+                    // Sum revenue from paid payments for these bookings
+                    e.Revenue = allPayments
+                        .Where(p => bookingIds.Contains(p.BookingId) && p.Status == Core.Enums.PaymentStatus.Paid)
+                        .Sum(p => p.TotalPrice);
                 }
                 return ServiceResult<IEnumerable<EventDto>>.Ok(eventDtos);
             }
