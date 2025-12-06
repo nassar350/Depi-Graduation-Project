@@ -60,8 +60,37 @@
                 name="title"
                 class="form-input" 
                 required
+                minlength="3"
+                maxlength="100"
                 placeholder="Event name"
               >
+              <div class="form-hint">Make it clear and engaging (3-100 characters)</div>
+              <div class="error-message" id="titleError"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="eventCategory" class="form-label">Event Category *</label>
+              <select 
+                id="eventCategory" 
+                name="eventCategory"
+                class="form-input" 
+                required
+              >
+                <option value="">Select a category...</option>
+                <option value="1">Music</option>
+                <option value="2">Sports</option>
+                <option value="3">Arts</option>
+                <option value="4">Food</option>
+                <option value="5">Technology</option>
+                <option value="6">Business</option>
+                <option value="7">Education</option>
+                <option value="8">Entertainment</option>
+                <option value="9">Health</option>
+                <option value="10">Community</option>
+                <option value="11">Other</option>
+              </select>
+              <div class="form-hint">Choose the category that best describes your event</div>
+              <div class="error-message" id="categoryError"></div>
             </div>
 
             <div class="form-row">
@@ -74,6 +103,7 @@
                   class="form-input" 
                   required
                 >
+                <div class="error-message" id="startDateError"></div>
               </div>
 
               <div class="form-group">
@@ -85,19 +115,24 @@
                   class="form-input" 
                   required
                 >
+                <div class="error-message" id="endDateError"></div>
               </div>
             </div>
 
             <div class="form-group">
-              <label for="eventLocation" class="form-label">Location *</label>
+              <label for="eventLocation" class="form-label">Event Address *</label>
               <input 
                 type="text" 
                 id="eventLocation" 
                 name="location"
                 class="form-input" 
                 required
-                placeholder="Event location"
+                minlength="5"
+                maxlength="200"
+                placeholder="Enter venue address"
               >
+              <div class="form-hint">Full address or venue location (5-200 characters)</div>
+              <div class="error-message" id="locationError"></div>
             </div>
 
             <div class="form-group">
@@ -119,9 +154,13 @@
                 id="eventImage" 
                 name="photo"
                 class="form-input" 
-                accept="image/*"
+                accept="image/jpeg,image/png,image/gif"
               >
-              <div class="form-hint">Upload a new image to update your event photo (JPG, PNG, GIF) - Leave empty to keep current image</div>
+              <div class="form-hint">Upload a new image to update your event photo (JPG, PNG, GIF, max 5MB) - Leave empty to keep current image</div>
+              <div class="error-message" id="imageError"></div>
+              <div id="imagePreview" style="margin-top: var(--space-sm); display: none;">
+                <img id="previewImage" style="max-width: 200px; height: auto; border-radius: var(--radius-md); border: 2px solid var(--border);">
+              </div>
             </div>
           </div>
 
@@ -136,9 +175,15 @@
                 name="description"
                 class="form-textarea" 
                 required
+                minlength="10"
+                maxlength="1000"
                 rows="6"
                 placeholder="Describe your event..."
               ></textarea>
+              <div class="form-hint">
+                <span id="descCharCount">0</span>/1000 characters (10 minimum required)
+              </div>
+              <div class="error-message" id="descriptionError"></div>
             </div>
           </div>
 
@@ -237,6 +282,12 @@
 
       // Setup form submission
       document.getElementById('editEventForm').addEventListener('submit', handleFormSubmit);
+      
+      // Setup validation listeners
+      setupValidationListeners();
+      
+      // Setup image preview
+      document.getElementById('eventImage').addEventListener('change', handleImagePreview);
     });
 
     async function loadEventDetails(eventId) {
@@ -285,6 +336,11 @@
       
       // Event title
       document.getElementById('eventTitle').value = event.name || event.title || '';
+      
+      // Event category
+      if (event.eventCategory !== undefined && event.eventCategory !== null) {
+        document.getElementById('eventCategory').value = event.eventCategory.toString();
+      }
       
       // Start Date and Time - Try to get from tickets if main dates are invalid
       let startDateSource = event.startDate || event.eventDate || event.date;
@@ -430,8 +486,11 @@
                 class="form-input category-title" 
                 placeholder="e.g., VIP, Premium, Regular"
                 value="${categoryName}"
+                minlength="2"
+                maxlength="50"
                 required
               >
+              <div class="error-message category-title-error"></div>
             </div>
             <div class="form-group" style="flex: 1;">
               <label class="form-label">Seats *</label>
@@ -444,6 +503,7 @@
                 value="${categoryCapacity}"
                 required
               >
+              <div class="error-message category-seats-error"></div>
             </div>
             <div class="form-group" style="flex: 1;">
               <label class="form-label">Ticket Price *</label>
@@ -456,6 +516,7 @@
                 value="${categoryPrice}"
                 required
               >
+              <div class="error-message category-price-error"></div>
             </div>
             <div class="form-group" style="flex: 0 0 auto;">
               <label class="form-label" style="visibility: hidden;">Remove</label>
@@ -463,7 +524,7 @@
                 type="button" 
                 class="btn btn-outline" 
                 style="background: var(--danger); color: white; border-color: var(--danger);"
-                onclick="removeCategory('${categoryId}')"
+                onclick="removeCategory('${categoryCardId}')"
               >
                 ✕
               </button>
@@ -474,10 +535,19 @@
 
       container.insertAdjacentHTML('beforeend', categoryHtml);
       updateAddButtonState();
+      attachCategoryValidation(categoryCardId);
     }
 
-    function removeCategory(categoryId) {
-      const categoryElement = document.getElementById(categoryId);
+    function removeCategory(categoryCardId) {
+      const container = document.getElementById('categoriesContainer');
+      const categoryCount = container.querySelectorAll('.category-item').length;
+      
+      if (categoryCount <= 1) {
+        app.showNotification('You must have at least one ticket category', 'error');
+        return;
+      }
+      
+      const categoryElement = document.getElementById(categoryCardId);
       if (categoryElement) {
         categoryElement.remove();
         updateAddButtonState();
@@ -496,6 +566,228 @@
           addBtn.textContent = '+ Add Category';
         }
       }
+    }
+
+    function setupValidationListeners() {
+      // Title validation
+      const titleInput = document.getElementById('eventTitle');
+      titleInput.addEventListener('input', function() {
+        validateField(this, 'titleError', 
+          this.value.length >= 3 && this.value.length <= 100,
+          'Event name must be between 3 and 100 characters');
+      });
+
+      // Description validation with character counter
+      const descInput = document.getElementById('eventDescription');
+      descInput.addEventListener('input', function() {
+        const charCount = this.value.length;
+        document.getElementById('descCharCount').textContent = charCount;
+        validateField(this, 'descriptionError', 
+          charCount >= 10 && charCount <= 1000,
+          'Description must be between 10 and 1000 characters');
+      });
+
+      // Location validation
+      const locationInput = document.getElementById('eventLocation');
+      locationInput.addEventListener('input', function() {
+        validateField(this, 'locationError', 
+          this.value.length >= 5 && this.value.length <= 200,
+          'Address must be between 5 and 200 characters');
+      });
+
+      // Date validation
+      const startDateInput = document.getElementById('startDate');
+      const endDateInput = document.getElementById('endDate');
+      
+      startDateInput.addEventListener('change', function() {
+        validateDates();
+      });
+      
+      endDateInput.addEventListener('change', function() {
+        validateDates();
+      });
+
+      // Category validation
+      const categorySelect = document.getElementById('eventCategory');
+      categorySelect.addEventListener('change', function() {
+        validateField(this, 'categoryError', 
+          this.value !== '',
+          'Please select an event category');
+      });
+    }
+
+    function validateField(input, errorId, isValid, errorMessage) {
+      const errorElement = document.getElementById(errorId);
+      if (!isValid) {
+        input.style.borderColor = 'var(--danger)';
+        if (errorElement) {
+          errorElement.textContent = errorMessage;
+          errorElement.style.color = 'var(--danger)';
+          errorElement.style.fontSize = 'var(--font-size-sm)';
+          errorElement.style.marginTop = 'var(--space-xs)';
+        }
+        return false;
+      } else {
+        input.style.borderColor = '';
+        if (errorElement) {
+          errorElement.textContent = '';
+        }
+        return true;
+      }
+    }
+
+    function validateDates() {
+      const startDate = new Date(document.getElementById('startDate').value);
+      const endDate = new Date(document.getElementById('endDate').value);
+      const now = new Date();
+      
+      let isValid = true;
+      
+      // Validate start date is not in the past (allow some flexibility)
+      if (startDate < now) {
+        validateField(document.getElementById('startDate'), 'startDateError', 
+          false, 'Start date cannot be in the past');
+        isValid = false;
+      } else {
+        validateField(document.getElementById('startDate'), 'startDateError', true, '');
+      }
+      
+      // Validate end date is after start date
+      if (endDate <= startDate) {
+        validateField(document.getElementById('endDate'), 'endDateError', 
+          false, 'End date must be after start date');
+        isValid = false;
+      } else {
+        validateField(document.getElementById('endDate'), 'endDateError', true, '');
+      }
+      
+      return isValid;
+    }
+
+    function handleImagePreview(e) {
+      const file = e.target.files[0];
+      const errorElement = document.getElementById('imageError');
+      
+      if (!file) {
+        document.getElementById('imagePreview').style.display = 'none';
+        return;
+      }
+      
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        errorElement.textContent = 'Please upload a valid image file (JPG, PNG, or GIF)';
+        errorElement.style.color = 'var(--danger)';
+        e.target.value = '';
+        return;
+      }
+      
+      // Validate file size (5MB)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        errorElement.textContent = 'Image size must be less than 5MB';
+        errorElement.style.color = 'var(--danger)';
+        e.target.value = '';
+        return;
+      }
+      
+      errorElement.textContent = '';
+      
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        document.getElementById('previewImage').src = event.target.result;
+        document.getElementById('imagePreview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function attachCategoryValidation(categoryCardId) {
+      const categoryCard = document.getElementById(categoryCardId);
+      if (!categoryCard) return;
+      
+      const titleInput = categoryCard.querySelector('.category-title');
+      const seatsInput = categoryCard.querySelector('.category-seats');
+      const priceInput = categoryCard.querySelector('.category-price');
+      
+      titleInput.addEventListener('input', function() {
+        const errorElement = this.parentElement.querySelector('.category-title-error');
+        const isValid = this.value.length >= 2 && this.value.length <= 50;
+        if (!isValid) {
+          this.style.borderColor = 'var(--danger)';
+          errorElement.textContent = 'Title must be 2-50 characters';
+          errorElement.style.color = 'var(--danger)';
+          errorElement.style.fontSize = 'var(--font-size-sm)';
+        } else {
+          this.style.borderColor = '';
+          errorElement.textContent = '';
+        }
+      });
+      
+      seatsInput.addEventListener('input', function() {
+        const errorElement = this.parentElement.querySelector('.category-seats-error');
+        const value = parseInt(this.value);
+        const isValid = value >= 1 && value <= 10000;
+        if (!isValid) {
+          this.style.borderColor = 'var(--danger)';
+          errorElement.textContent = 'Seats must be between 1 and 10,000';
+          errorElement.style.color = 'var(--danger)';
+          errorElement.style.fontSize = 'var(--font-size-sm)';
+        } else {
+          this.style.borderColor = '';
+          errorElement.textContent = '';
+        }
+      });
+      
+      priceInput.addEventListener('input', function() {
+        const errorElement = this.parentElement.querySelector('.category-price-error');
+        const value = parseFloat(this.value);
+        const isValid = value >= 0 && this.value.match(/^\d+(\.\d{0,2})?$/);
+        if (!isValid) {
+          this.style.borderColor = 'var(--danger)';
+          errorElement.textContent = 'Price must be 0 or more with max 2 decimals';
+          errorElement.style.color = 'var(--danger)';
+          errorElement.style.fontSize = 'var(--font-size-sm)';
+        } else {
+          this.style.borderColor = '';
+          errorElement.textContent = '';
+        }
+      });
+    }
+
+    function validateCategories() {
+      const categories = getCategories();
+      
+      if (categories.length === 0) {
+        app.showNotification('Please add at least one ticket category', 'error');
+        return false;
+      }
+      
+      // Check for duplicate names
+      const names = categories.map(c => c.name.toLowerCase().trim());
+      const duplicates = names.filter((name, index) => names.indexOf(name) !== index);
+      if (duplicates.length > 0) {
+        app.showNotification('Category names must be unique', 'error');
+        return false;
+      }
+      
+      // Validate each category
+      for (let cat of categories) {
+        if (!cat.name || cat.name.length < 2 || cat.name.length > 50) {
+          app.showNotification('All category titles must be 2-50 characters', 'error');
+          return false;
+        }
+        if (cat.capacity < 1 || cat.capacity > 10000) {
+          app.showNotification('All category seats must be between 1 and 10,000', 'error');
+          return false;
+        }
+        if (cat.ticketPrice < 0) {
+          app.showNotification('All category prices must be 0 or greater', 'error');
+          return false;
+        }
+      }
+      
+      return true;
     }
 
     function getCategories() {
@@ -524,51 +816,104 @@
     async function handleFormSubmit(e) {
       e.preventDefault();
 
-      // Validate form
-      if (!e.target.checkValidity()) {
-        app.showNotification('Please fill in all required fields', 'error');
-        e.target.reportValidity();
-        return;
-      }
-
-      // Get categories
-      const categories = getCategories();
-      if (categories.length === 0) {
-        app.showNotification('Please add at least one ticket category', 'error');
-        return;
-      }
-
-      // Get datetime-local values and convert to ISO format
-      const startDateValue = document.getElementById('startDate').value;
-      const endDateValue = document.getElementById('endDate').value;
-      
-      const startDate = new Date(startDateValue).toISOString();
-      const endDate = new Date(endDateValue).toISOString();
-
-      // Get form data
-      const formData = {
-        name: document.getElementById('eventTitle').value,
-        startDate: startDate,
-        endDate: endDate,
-        address: document.getElementById('eventLocation').value,
-        photoUrl: document.getElementById('eventImage').value,
-        description: document.getElementById('eventDescription').value,
-        categories: categories
-      };
-
-      console.log('Updating event with data:', formData);
+      // Disable submit button to prevent double submission
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Updating...';
 
       try {
+        // Validate all fields
+        const titleValid = validateField(
+          document.getElementById('eventTitle'), 
+          'titleError',
+          document.getElementById('eventTitle').value.length >= 3 && 
+          document.getElementById('eventTitle').value.length <= 100,
+          'Event name must be between 3 and 100 characters'
+        );
+
+        const categoryValid = validateField(
+          document.getElementById('eventCategory'), 
+          'categoryError',
+          document.getElementById('eventCategory').value !== '',
+          'Please select an event category'
+        );
+
+        const locationValid = validateField(
+          document.getElementById('eventLocation'), 
+          'locationError',
+          document.getElementById('eventLocation').value.length >= 5 && 
+          document.getElementById('eventLocation').value.length <= 200,
+          'Address must be between 5 and 200 characters'
+        );
+
+        const descriptionValid = validateField(
+          document.getElementById('eventDescription'), 
+          'descriptionError',
+          document.getElementById('eventDescription').value.length >= 10 && 
+          document.getElementById('eventDescription').value.length <= 1000,
+          'Description must be between 10 and 1000 characters'
+        );
+
+        const datesValid = validateDates();
+        const categoriesValid = validateCategories();
+
+        if (!titleValid || !categoryValid || !locationValid || !descriptionValid || !datesValid || !categoriesValid) {
+          app.showNotification('Please fix all validation errors', 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+          return;
+        }
+
+        // Create FormData
+        const formData = new FormData();
+
+        // Add basic fields
+        formData.append('Name', document.getElementById('eventTitle').value);
+        formData.append('Description', document.getElementById('eventDescription').value);
+        formData.append('Address', document.getElementById('eventLocation').value);
+        
+        // Add dates in ISO format
+        const startDate = new Date(document.getElementById('startDate').value).toISOString();
+        const endDate = new Date(document.getElementById('endDate').value).toISOString();
+        formData.append('StartDate', startDate);
+        formData.append('EndDate', endDate);
+
+        // Add event category
+        formData.append('EventCategory', document.getElementById('eventCategory').value);
+
+        // Add photo if selected
+        const photoFile = document.getElementById('eventImage').files[0];
+        if (photoFile) {
+          formData.append('Photo', photoFile);
+        }
+
+        // Add categories - backend expects CategoryIds array
+        const categories = getCategories();
+        const categoryIds = categories
+          .filter(cat => cat.id)
+          .map(cat => parseInt(cat.id));
+        
+        categoryIds.forEach(id => {
+          formData.append('CategoryIds', id);
+        });
+
+        console.log('Updating event with FormData');
+        // Log FormData contents
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ': ' + pair[1]);
+        }
+
         const token = localStorage.getItem('eventify_token');
         const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
         
         const response = await fetch(`${baseUrl}/api/Events/${currentEvent.id}`, {
           method: 'PUT',
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Authorization': `Bearer ${token}`
+            // Don't set Content-Type for FormData - browser will set it with boundary
           },
-          body: JSON.stringify(formData)
+          body: formData
         });
 
         if (response.ok) {
@@ -578,13 +923,36 @@
           }, 1500);
         } else {
           const errorData = await response.json().catch(() => ({}));
+          console.error('Update error:', errorData);
           app.showNotification(errorData.message || 'Failed to update event', 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
         }
       } catch (error) {
         console.error('Error updating event:', error);
         app.showNotification('Error updating event', 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
       }
     }
+
+    // Warn before leaving with unsaved changes
+    let formChanged = false;
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('editEventForm');
+      if (form) {
+        form.addEventListener('input', () => {
+          formChanged = true;
+        });
+      }
+    });
+
+    window.addEventListener('beforeunload', (e) => {
+      if (formChanged) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
   </script>
 </body>
 </html>
