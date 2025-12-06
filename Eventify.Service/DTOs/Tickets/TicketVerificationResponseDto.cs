@@ -18,5 +18,9 @@ namespace Eventify.Service.DTOs.Tickets
         public DateTime EventEndDate { get; set; }
         public string CategoryName { get; set; }
         public string EventStatus { get; set; } // "Upcoming", "Ongoing", "Ended"
+        public string TicketStatus { get; set; } // "Valid", "Expired", "Cancelled", "Refunded", "PaymentRejected", "PaymentPending"
+        public string BookingStatus { get; set; }
+        public string PaymentStatus { get; set; }
+        public string InvalidReason { get; set; } // Detailed reason why ticket is invalid
     }
 }
