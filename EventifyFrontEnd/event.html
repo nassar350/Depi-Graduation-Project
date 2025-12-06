@@ -83,26 +83,23 @@
                 <!-- Categories will be populated here -->
               </div>
               <h1 id="eventTitle" style="margin-bottom: var(--space-sm); color: white;">Event Title</h1>
-              <div class="flex gap-lg" style="flex-wrap: wrap; color: rgba(255,255,255,0.9);">
-                <div class="flex gap-sm">
-                  <span>📅</span>
+              <div class="flex gap-lg" style="flex-wrap: wrap; color: rgba(255,255,255,0.9); align-items: flex-start;">
+                <div class="flex gap-sm" style="align-items: flex-start;">
+                  <span style="flex-shrink: 0;">📅</span>
                   <span id="eventDate">Date</span>
                 </div>
-                <div class="flex gap-sm">
-                  <span>📍</span>
+                <div class="flex gap-sm" style="align-items: flex-start;">
+                  <span style="flex-shrink: 0;">📍</span>
                   <span id="eventLocation">Location</span>
                 </div>
-                <div class="flex gap-sm">
-                  <span>👥</span>
+                <div class="flex gap-sm" style="align-items: flex-start;">
+                  <span style="flex-shrink: 0;">👥</span>
                   <span id="eventCapacity">Capacity</span>
                 </div>
               </div>
             </div>
             <div style="text-align: right;">
-              <div id="eventPrice" style="font-size: var(--font-size-2xl); font-weight: 600; margin-bottom: var(--space-md); color: white;"></div>
-              <button id="bookNowBtn" class="btn btn-primary btn-lg" style="min-width: 200px;">
-                Book Now
-              </button>
+              <div id="eventPrice" style="font-size: var(--font-size-2xl); font-weight: 600; color: white;"></div>
             </div>
           </div>
         </div>

@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Event - Eventify</title>
   <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✏️</text></svg>">
 </head>
 <body>
   <!-- Navigation -->
@@ -63,22 +66,22 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label for="eventDate" class="form-label">Event Date *</label>
+                <label for="startDate" class="form-label">Start Date & Time *</label>
                 <input 
-                  type="date" 
-                  id="eventDate" 
-                  name="eventDate"
+                  type="datetime-local" 
+                  id="startDate" 
+                  name="startDate"
                   class="form-input" 
                   required
                 >
               </div>
 
               <div class="form-group">
-                <label for="eventTime" class="form-label">Event Time *</label>
+                <label for="endDate" class="form-label">End Date & Time *</label>
                 <input 
-                  type="time" 
-                  id="eventTime" 
-                  name="eventTime"
+                  type="datetime-local" 
+                  id="endDate" 
+                  name="endDate"
                   class="form-input" 
                   required
                 >
@@ -98,18 +101,6 @@
             </div>
 
             <div class="form-group">
-              <label for="eventImage" class="form-label">Event Photo URL</label>
-              <input 
-                type="url" 
-                id="eventImage" 
-                name="photoUrl"
-                class="form-input" 
-                placeholder="https://example.com/image.jpg"
-              >
-              <div class="form-hint">Enter the URL of your event image</div>
-            </div>
-
-            <div class="form-group">
               <label class="form-label">Current Event Image</label>
               <div style="margin-top: var(--space-sm);">
                 <img 
@@ -119,6 +110,18 @@
                   onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=400&fit=crop'"
                 >
               </div>
+            </div>
+
+            <div class="form-group">
+              <label for="eventImage" class="form-label">Update Event Photo</label>
+              <input 
+                type="file" 
+                id="eventImage" 
+                name="photo"
+                class="form-input" 
+                accept="image/*"
+              >
+              <div class="form-hint">Upload a new image to update your event photo (JPG, PNG, GIF) - Leave empty to keep current image</div>
             </div>
           </div>
 
@@ -139,38 +142,23 @@
             </div>
           </div>
 
-          <!-- Capacity & Pricing -->
+          <!-- Categories & Pricing -->
           <div style="margin-bottom: var(--space-xl);">
-            <h3 style="margin-bottom: var(--space-md);">Capacity & Pricing</h3>
+            <h3 style="margin-bottom: var(--space-md);">Ticket Categories & Pricing</h3>
             
-            <div class="form-row">
-              <div class="form-group">
-                <label for="eventCapacity" class="form-label">Total Capacity *</label>
-                <input 
-                  type="number" 
-                  id="eventCapacity" 
-                  name="capacity"
-                  class="form-input" 
-                  required
-                  min="1"
-                  placeholder="100"
-                >
-              </div>
+            <div class="form-group">
+              <label class="form-label">Ticket Categories *</label>
+              <div class="form-hint">Manage ticket categories with seating capacity and pricing</div>
+            </div>
 
-              <div class="form-group">
-                <label for="eventPrice" class="form-label">Ticket Price *</label>
-                <input 
-                  type="number" 
-                  id="eventPrice" 
-                  name="price"
-                  class="form-input" 
-                  required
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                >
-                <div class="form-hint">Set to 0 for free events</div>
-              </div>
+            <div id="categoriesContainer">
+              <!-- Categories will be dynamically populated here -->
+            </div>
+
+            <div class="form-group">
+              <button type="button" class="btn btn-outline" onclick="addCategory()" id="addCategoryBtn">
+                + Add Category
+              </button>
             </div>
           </div>
 
@@ -252,68 +240,11 @@
     });
 
     async function loadEventDetails(eventId) {
-      // TODO: Replace with actual API call when endpoint is ready
-      // For now, use mock data
-      
-      // Mock events data
-      const mockEvents = [
-        {
-          id: 1,
-          title: "Summer Music Festival 2025",
-          eventDate: "2025-07-15",
-          eventTime: "18:00",
-          location: "Central Park, New York",
-          photoUrl: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400",
-          description: "Join us for an unforgettable evening of live music featuring top artists from around the world. Experience multiple stages, food vendors, and a vibrant atmosphere.",
-          capacity: 5000,
-          availableSeats: 3200,
-          price: 75
-        },
-        {
-          id: 2,
-          title: "Tech Conference 2025",
-          eventDate: "2025-09-20",
-          eventTime: "09:00",
-          location: "Convention Center",
-          photoUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400",
-          description: "The premier technology conference bringing together industry leaders, innovators, and tech enthusiasts. Featuring keynote speakers, workshops, and networking opportunities.",
-          capacity: 1000,
-          availableSeats: 450,
-          price: 199
-        },
-        {
-          id: 3,
-          title: "Art Gallery Opening",
-          eventDate: "2025-06-10",
-          eventTime: "19:00",
-          location: "Modern Art Museum",
-          photoUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400",
-          description: "Celebrate the opening of our new contemporary art exhibition featuring emerging artists. Enjoy complimentary wine, live music, and guided tours.",
-          capacity: 200,
-          availableSeats: 85,
-          price: 0
-        }
-      ];
-
-      currentEvent = mockEvents.find(e => e.id == eventId);
-
-      if (!currentEvent) {
-        app.showNotification('Event not found', 'error');
-        setTimeout(() => {
-          window.location.href = 'dashboard.html';
-        }, 1000);
-        return;
-      }
-
-      populateForm(currentEvent);
-
-      /*
-      // UNCOMMENT THIS WHEN API IS READY:
       try {
         const token = localStorage.getItem('eventify_token');
         const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
         
-        const response = await fetch(`${baseUrl}/api/events/${eventId}`, {
+        const response = await fetch(`${baseUrl}/api/Events/${eventId}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -322,7 +253,8 @@
         });
 
         if (response.ok) {
-          currentEvent = await response.json();
+          const result = await response.json();
+          currentEvent = result.data || result;
           populateForm(currentEvent);
         } else {
           app.showNotification('Failed to load event details', 'error');
@@ -334,19 +266,259 @@
         console.error('Error loading event details:', error);
         app.showNotification('Error loading event details', 'error');
       }
-      */
     }
 
     function populateForm(event) {
-      document.getElementById('eventTitle').value = event.title || event.eventName || '';
-      document.getElementById('eventDate').value = event.eventDate || event.date || '';
-      document.getElementById('eventTime').value = event.eventTime || event.time || '';
-      document.getElementById('eventLocation').value = event.location || event.venue || '';
-      document.getElementById('eventImage').value = event.photoUrl || event.image || '';
-      document.getElementById('currentEventImage').src = event.photoUrl || event.image || '';
+      console.log('Populating form with event:', event);
+      console.log('Event date fields:', {
+        startDate: event.startDate,
+        endDate: event.endDate,
+        eventDate: event.eventDate,
+        date: event.date,
+        time: event.time
+      });
+      
+      // Check if tickets have date information
+      if (event.tickets && event.tickets.length > 0) {
+        console.log('First ticket:', event.tickets[0]);
+      }
+      
+      // Event title
+      document.getElementById('eventTitle').value = event.name || event.title || '';
+      
+      // Start Date and Time - Try to get from tickets if main dates are invalid
+      let startDateSource = event.startDate || event.eventDate || event.date;
+      
+      // If no valid date in main fields, try to get from first ticket
+      if ((!startDateSource || startDateSource.startsWith('0001-01-01')) && event.tickets && event.tickets.length > 0) {
+        const firstTicket = event.tickets[0];
+        startDateSource = firstTicket.eventDate || firstTicket.startDate || firstTicket.date;
+        console.log('Trying to get date from ticket:', startDateSource);
+      }
+      
+      if (startDateSource && !startDateSource.startsWith('0001-01-01')) {
+        const startDate = new Date(startDateSource);
+        // Format as YYYY-MM-DDTHH:MM for datetime-local input
+        const year = startDate.getFullYear();
+        const month = String(startDate.getMonth() + 1).padStart(2, '0');
+        const day = String(startDate.getDate()).padStart(2, '0');
+        const hours = String(startDate.getHours()).padStart(2, '0');
+        const minutes = String(startDate.getMinutes()).padStart(2, '0');
+        const dateTimeStr = `${year}-${month}-${day}T${hours}:${minutes}`;
+        
+        // Show readable format with AM/PM in console
+        const readableTime = startDate.toLocaleString('en-US', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: 'numeric', 
+          minute: '2-digit',
+          hour12: true 
+        });
+        console.log('Setting startDate to:', dateTimeStr, '(', readableTime, ')');
+        document.getElementById('startDate').value = dateTimeStr;
+      } else {
+        console.warn('No valid start date found - using default');
+        // Set a default date (today) so the field isn't empty
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const dateTimeStr = `${year}-${month}-${day}T12:00`;
+        document.getElementById('startDate').value = dateTimeStr;
+      }
+      
+      // End Date and Time
+      let endDateSource = event.endDate || event.endDateTime;
+      
+      if ((!endDateSource || endDateSource.startsWith('0001-01-01')) && event.tickets && event.tickets.length > 0) {
+        const firstTicket = event.tickets[0];
+        endDateSource = firstTicket.endDate || firstTicket.eventEndDate;
+      }
+      
+      if (endDateSource && !endDateSource.startsWith('0001-01-01')) {
+        const endDate = new Date(endDateSource);
+        // Format as YYYY-MM-DDTHH:MM for datetime-local input
+        const year = endDate.getFullYear();
+        const month = String(endDate.getMonth() + 1).padStart(2, '0');
+        const day = String(endDate.getDate()).padStart(2, '0');
+        const hours = String(endDate.getHours()).padStart(2, '0');
+        const minutes = String(endDate.getMinutes()).padStart(2, '0');
+        const dateTimeStr = `${year}-${month}-${day}T${hours}:${minutes}`;
+        
+        // Show readable format with AM/PM in console
+        const readableTime = endDate.toLocaleString('en-US', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: 'numeric', 
+          minute: '2-digit',
+          hour12: true 
+        });
+        console.log('Setting endDate to:', dateTimeStr, '(', readableTime, ')');
+        document.getElementById('endDate').value = dateTimeStr;
+      } else {
+        console.warn('No valid end date found - using default');
+        // Set default end date (1 hour after start)
+        const startInput = document.getElementById('startDate').value;
+        if (startInput) {
+          const startDateTime = new Date(startInput);
+          startDateTime.setHours(startDateTime.getHours() + 2);
+          const year = startDateTime.getFullYear();
+          const month = String(startDateTime.getMonth() + 1).padStart(2, '0');
+          const day = String(startDateTime.getDate()).padStart(2, '0');
+          const hours = String(startDateTime.getHours()).padStart(2, '0');
+          const minutes = String(startDateTime.getMinutes()).padStart(2, '0');
+          const dateTimeStr = `${year}-${month}-${day}T${hours}:${minutes}`;
+          document.getElementById('endDate').value = dateTimeStr;
+        }
+      }
+      
+      // Location/Address
+      document.getElementById('eventLocation').value = event.address || event.location || '';
+      
+      // Display current image
+      const imageUrl = event.photoUrl || event.image || '';
+      if (imageUrl) {
+        document.getElementById('currentEventImage').src = imageUrl;
+      }
+      
+      // Description
       document.getElementById('eventDescription').value = event.description || '';
-      document.getElementById('eventCapacity').value = event.capacity || '';
-      document.getElementById('eventPrice').value = event.price || 0;
+      
+      // Populate categories
+      console.log('Event categories:', event.categories);
+      if (event.categories && event.categories.length > 0) {
+        event.categories.forEach((cat, index) => {
+          console.log(`Category ${index}:`, cat);
+          addCategory(cat);
+        });
+      } else {
+        // Add one empty category if none exist
+        console.log('No categories found, adding empty category');
+        addCategory();
+      }
+    }
+
+    function addCategory(categoryData = null) {
+      const container = document.getElementById('categoriesContainer');
+      if (!container) return;
+
+      console.log('Adding category with data:', categoryData);
+
+      // Extract values with all possible field name variations
+      const categoryId = categoryData?.id || '';
+      const categoryName = categoryData?.name || categoryData?.title || '';
+      const categoryCapacity = categoryData?.capacity || categoryData?.seats || categoryData?.numberOfSeats || '';
+      const categoryPrice = categoryData?.price || categoryData?.ticketPrice || categoryData?.pricePerTicket || 0;
+
+      const categoryCardId = `category-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const categoryHtml = `
+        <div class="category-item" id="${categoryCardId}" style="
+          border: 2px solid var(--border); 
+          border-radius: var(--radius-md); 
+          padding: var(--space-lg); 
+          margin-bottom: var(--space-md);
+          position: relative;
+        ">
+          <input type="hidden" class="category-id" value="${categoryId}">
+          <div class="form-row">
+            <div class="form-group" style="flex: 2;">
+              <label class="form-label">Category Title *</label>
+              <input 
+                type="text" 
+                class="form-input category-title" 
+                placeholder="e.g., VIP, Premium, Regular"
+                value="${categoryName}"
+                required
+              >
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label class="form-label">Seats *</label>
+              <input 
+                type="number" 
+                class="form-input category-seats" 
+                placeholder="50"
+                min="1"
+                max="10000"
+                value="${categoryCapacity}"
+                required
+              >
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label class="form-label">Ticket Price *</label>
+              <input 
+                type="number" 
+                class="form-input category-price" 
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+                value="${categoryPrice}"
+                required
+              >
+            </div>
+            <div class="form-group" style="flex: 0 0 auto;">
+              <label class="form-label" style="visibility: hidden;">Remove</label>
+              <button 
+                type="button" 
+                class="btn btn-outline" 
+                style="background: var(--danger); color: white; border-color: var(--danger);"
+                onclick="removeCategory('${categoryId}')"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      container.insertAdjacentHTML('beforeend', categoryHtml);
+      updateAddButtonState();
+    }
+
+    function removeCategory(categoryId) {
+      const categoryElement = document.getElementById(categoryId);
+      if (categoryElement) {
+        categoryElement.remove();
+        updateAddButtonState();
+      }
+    }
+
+    function updateAddButtonState() {
+      const container = document.getElementById('categoriesContainer');
+      const addBtn = document.getElementById('addCategoryBtn');
+      if (container && addBtn) {
+        const categoryCount = container.querySelectorAll('.category-item').length;
+        addBtn.disabled = categoryCount >= 10;
+        if (categoryCount >= 10) {
+          addBtn.textContent = 'Maximum 10 categories reached';
+        } else {
+          addBtn.textContent = '+ Add Category';
+        }
+      }
+    }
+
+    function getCategories() {
+      const categories = [];
+      const categoryItems = document.querySelectorAll('.category-item');
+      
+      categoryItems.forEach(item => {
+        const id = item.querySelector('.category-id')?.value || null;
+        const title = item.querySelector('.category-title')?.value;
+        const seats = item.querySelector('.category-seats')?.value;
+        const price = item.querySelector('.category-price')?.value;
+        
+        if (title && seats && price !== undefined) {
+          categories.push({
+            id: id || undefined,
+            name: title,
+            capacity: parseInt(seats),
+            ticketPrice: parseFloat(price)
+          });
+        }
+      });
+      
+      return categories;
     }
 
     async function handleFormSubmit(e) {
@@ -359,35 +531,38 @@
         return;
       }
 
+      // Get categories
+      const categories = getCategories();
+      if (categories.length === 0) {
+        app.showNotification('Please add at least one ticket category', 'error');
+        return;
+      }
+
+      // Get datetime-local values and convert to ISO format
+      const startDateValue = document.getElementById('startDate').value;
+      const endDateValue = document.getElementById('endDate').value;
+      
+      const startDate = new Date(startDateValue).toISOString();
+      const endDate = new Date(endDateValue).toISOString();
+
       // Get form data
       const formData = {
-        title: document.getElementById('eventTitle').value,
-        eventDate: document.getElementById('eventDate').value,
-        eventTime: document.getElementById('eventTime').value,
-        location: document.getElementById('eventLocation').value,
+        name: document.getElementById('eventTitle').value,
+        startDate: startDate,
+        endDate: endDate,
+        address: document.getElementById('eventLocation').value,
         photoUrl: document.getElementById('eventImage').value,
         description: document.getElementById('eventDescription').value,
-        capacity: parseInt(document.getElementById('eventCapacity').value),
-        price: parseFloat(document.getElementById('eventPrice').value)
+        categories: categories
       };
 
       console.log('Updating event with data:', formData);
 
-      // TODO: Replace with actual API call when endpoint is ready
-      // For now, show success message
-      app.showNotification('Event updated successfully!', 'success');
-      
-      setTimeout(() => {
-        window.location.href = 'dashboard.html';
-      }, 1500);
-
-      /*
-      // UNCOMMENT THIS WHEN API IS READY:
       try {
         const token = localStorage.getItem('eventify_token');
         const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
         
-        const response = await fetch(`${baseUrl}/api/events/${currentEvent.id}`, {
+        const response = await fetch(`${baseUrl}/api/Events/${currentEvent.id}`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -402,14 +577,13 @@
             window.location.href = 'dashboard.html';
           }, 1500);
         } else {
-          const errorData = await response.json();
+          const errorData = await response.json().catch(() => ({}));
           app.showNotification(errorData.message || 'Failed to update event', 'error');
         }
       } catch (error) {
         console.error('Error updating event:', error);
         app.showNotification('Error updating event', 'error');
       }
-      */
     }
   </script>
 </body>

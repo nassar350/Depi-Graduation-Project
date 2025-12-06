@@ -101,6 +101,10 @@ class HomePage {
               <span>📍</span>
               <span>${event.address}</span>
             </div>
+            <div class="event-card-tickets">
+              <span>🎫</span>
+              <span>${event.availableTickets} available</span>
+            </div>
           </div>
           
           <div class="event-card-footer">

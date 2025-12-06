@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Payment Successful - Eventify</title>
   <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✅</text></svg>">
 </head>
 <body>
   <!-- Navigation -->
@@ -33,7 +36,7 @@
           <!-- Booking details will be populated here -->
         </div>
         
-        <div class="flex gap-md" style="justify-content: center;">
+        <div class="flex gap-md" style="flex-wrap: wrap; justify-content: space-between; padding: 0 var(--space-lg);">
           <a href="dashboard.html" class="btn btn-primary">View My Bookings</a>
           <a href="explore.html" class="btn btn-outline">Browse Events</a>
         </div>
@@ -41,6 +44,7 @@
     </div>
   </section>
 
+  <script src="js/app.js"></script>
   <script>
     // Set API Base URL
     const API_BASE_URL = window.API_BASE_URL || 'https://eventify.runasp.net';
@@ -55,13 +59,16 @@
         <h3 style="margin-bottom: var(--space-md);">Booking Details</h3>
         <p><strong>Booking ID:</strong> #${bookingId}</p>
         <p style="margin-top: var(--space-sm);">Your tickets have been sent to your email.</p>
-        <div style="margin-top: var(--space-lg);">
+        <div style="margin-top: var(--space-lg); display: flex; gap: var(--space-md); flex-wrap: wrap; justify-content: space-between;">
           <a href="${API_BASE_URL}/api/checkout/tickets/${bookingId}/pdf" 
              class="btn btn-primary" 
              download
              style="display: inline-block;">
             📥 Download Tickets (PDF)
           </a>
+          <button id="addToCalendarBtn" class="btn btn-outline" onclick="addToGoogleCalendar()" style="display: inline-block;">
+            📅 Add to Calendar
+          </button>
         </div>
       `;
       document.getElementById('bookingDetails').innerHTML = detailsHtml;
@@ -69,6 +76,72 @@
       document.getElementById('bookingDetails').innerHTML = `
         <p class="text-muted">Booking details not available.</p>
       `;
+    }
+
+    async function addToGoogleCalendar() {
+      if (!eventId) {
+        app.showNotification('Event information not available', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('addToCalendarBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Loading...';
+      }
+
+      try {
+        app.showNotification('Preparing calendar event...', 'info');
+
+        // Fetch event details from API
+        const response = await fetch(`${API_BASE_URL}/api/Events/${eventId}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch event details');
+        }
+
+        const result = await response.json();
+        const event = result.data || result;
+
+        // Format dates for Google Calendar (YYYYMMDDTHHMMSSZ format)
+        const startDate = new Date(event.startDate);
+        const endDate = new Date(event.endDate || event.startDate);
+        
+        // If no end date or same as start, add 2 hours to start date
+        if (!event.endDate || event.endDate === event.startDate) {
+          endDate.setHours(startDate.getHours() + 2);
+        }
+
+        const formatDateForGoogle = (date) => {
+          return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        };
+
+        // Build event description - only event information
+        const description = event.description || '';
+
+        // Create Google Calendar URL
+        const calendarUrl = new URL('https://calendar.google.com/calendar/render');
+        calendarUrl.searchParams.append('action', 'TEMPLATE');
+        calendarUrl.searchParams.append('text', event.name || event.title);
+        calendarUrl.searchParams.append('dates', `${formatDateForGoogle(startDate)}/${formatDateForGoogle(endDate)}`);
+        calendarUrl.searchParams.append('details', description);
+        calendarUrl.searchParams.append('location', event.address || event.location || '');
+        calendarUrl.searchParams.append('sf', 'true');
+        calendarUrl.searchParams.append('output', 'xml');
+
+        // Open Google Calendar in new tab
+        window.open(calendarUrl.toString(), '_blank');
+        
+        app.showNotification('Opening Google Calendar...', 'success');
+      } catch (error) {
+        console.error('Error adding to calendar:', error);
+        app.showNotification('Failed to add event to calendar', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '📅 Add to Calendar';
+        }
+      }
     }
   </script>
 </body>

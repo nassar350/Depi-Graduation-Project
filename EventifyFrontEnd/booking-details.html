@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Booking Details - Eventify</title>
   <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎫</text></svg>">
 </head>
 <body>
   <!-- Navigation -->
@@ -129,13 +132,18 @@
 
         <!-- Actions -->
         <div id="bookingActions" style="border-top: 2px solid var(--border); padding-top: var(--space-lg); display: none;">
-          <div class="flex gap-md" style="flex-wrap: wrap; justify-content: flex-end;">
+          <div class="flex gap-md" style="flex-wrap: wrap; justify-content: space-between;">
             <a href="dashboard.html" class="btn btn-outline">
               Back to Bookings
             </a>
-            <button id="cancelBookingBtn" class="btn" style="background: var(--danger); color: white;" onclick="cancelBooking()">
-              Cancel Booking
-            </button>
+            <div class="flex gap-md" style="flex-wrap: wrap;">
+              <button id="downloadTicketsBtn" class="btn btn-primary" onclick="downloadTickets()">
+                📥 Download Tickets
+              </button>
+              <button id="cancelBookingBtn" class="btn" style="background: var(--danger); color: white;" onclick="cancelBooking()">
+                Cancel Booking
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -236,29 +244,91 @@
     });
 
     async function loadBookingDetails(bookingId) {
-      // Get bookings from localStorage (populated by dashboard)
-      const bookingsJson = localStorage.getItem('eventify_user_bookings');
-      
-      if (!bookingsJson) {
-        app.showNotification('Please load your bookings from the dashboard first', 'warning');
-        setTimeout(() => {
-          window.location.href = 'dashboard.html';
-        }, 1500);
-        return;
+      // Check if opened from admin panel
+      const fromParam = urlParams.get('from');
+      const isFromAdmin = fromParam === 'payment' || fromParam === 'booking' || fromParam === 'admin';
+
+      if (isFromAdmin) {
+        // Fetch booking from admin API
+        try {
+          const token = localStorage.getItem('eventify_token');
+          const apiBaseUrl = 'https://eventify.runasp.net/api';
+          const response = await fetch(`${apiBaseUrl}/admin/bookings`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch booking');
+          }
+
+          const result = await response.json();
+          const bookings = result.success ? result.data : result;
+          const adminBooking = bookings.find(b => b.id.toString() === bookingId.toString());
+
+          if (!adminBooking) {
+            app.showNotification('Booking not found', 'error');
+            setTimeout(() => {
+              window.location.href = 'admin-panel.html';
+            }, 1000);
+            return;
+          }
+
+          // Transform admin booking format to match expected format
+          const eventStartDate = adminBooking.eventStartDate || adminBooking.createdDate;
+          currentBooking = {
+            id: adminBooking.id,
+            status: adminBooking.status,
+            eventTitle: adminBooking.eventName || 'N/A',
+            eventName: adminBooking.eventName || 'N/A',
+            eventImage: adminBooking.eventPhotoUrl || 'assets/event-placeholder.jpg',
+            eventDate: eventStartDate ? eventStartDate.split('T')[0] : new Date().toISOString().split('T')[0],
+            eventTime: eventStartDate ? eventStartDate.split('T')[1]?.substring(0, 8) || '00:00:00' : '00:00:00',
+            eventLocation: adminBooking.eventAddress || 'N/A',
+            tickets: adminBooking.ticketsNum || 0,
+            total: adminBooking.totalPrice || 0,
+            bookingDate: adminBooking.createdDate || new Date().toISOString(),
+            attendeeInfo: {
+              name: adminBooking.userName || 'N/A',
+              email: adminBooking.userEmail || 'N/A'
+            },
+            categoryName: adminBooking.categoryName || 'N/A',
+            userId: adminBooking.userId,
+            eventId: adminBooking.eventId,
+            isEventDeleted: false
+          };
+
+          displayBookingDetails(currentBooking);
+        } catch (error) {
+          console.error('Error loading booking:', error);
+          app.showNotification('Error loading booking details', 'error');
+        }
+      } else {
+        // Get bookings from localStorage (populated by dashboard)
+        const bookingsJson = localStorage.getItem('eventify_user_bookings');
+        
+        if (!bookingsJson) {
+          app.showNotification('Please load your bookings from the dashboard first', 'warning');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 1500);
+          return;
+        }
+
+        const bookings = JSON.parse(bookingsJson);
+        currentBooking = bookings.find(b => b.id.toString() === bookingId.toString());
+
+        if (!currentBooking) {
+          app.showNotification('Booking not found', 'error');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 1000);
+          return;
+        }
+
+        displayBookingDetails(currentBooking);
       }
-
-      const bookings = JSON.parse(bookingsJson);
-      currentBooking = bookings.find(b => b.id.toString() === bookingId.toString());
-
-      if (!currentBooking) {
-        app.showNotification('Booking not found', 'error');
-        setTimeout(() => {
-          window.location.href = 'dashboard.html';
-        }, 1000);
-        return;
-      }
-
-      displayBookingDetails(currentBooking);
     }
 
     function displayBookingDetails(booking) {
@@ -266,16 +336,32 @@
       document.getElementById('bookingId').textContent = booking.id;
       
       const statusElement = document.getElementById('bookingStatus');
-      statusElement.textContent = booking.status.charAt(0).toUpperCase() + booking.status.slice(1);
       
-      // Set status color based on booking status
-      if (booking.status === 'confirmed') {
-        statusElement.style.background = 'var(--success)';
+      // Handle both string and enum (number) status formats
+      const statusMap = {
+        0: 'Booked',
+        1: 'Pending',
+        2: 'Cancelled',
+        'Booked': 'Booked',
+        'Pending': 'Pending',
+        'Cancelled': 'Cancelled'
+      };
+      
+      const statusText = statusMap[booking.status] || 'Unknown';
+      statusElement.textContent = statusText;
+      
+      // Set status color based on booking status (matching dashboard colors)
+      if (statusText === 'Booked' || booking.status === 0) {
+        statusElement.style.background = '#10b981'; // Green
         statusElement.style.color = 'white';
-      } else if (booking.status === 'cancelled') {
-        statusElement.style.background = 'var(--danger)';
+      } else if (statusText === 'Pending' || booking.status === 1) {
+        statusElement.style.background = '#f59e0b'; // Yellow/Orange
         statusElement.style.color = 'white';
-      } else if (booking.status === 'completed') {
+      } else if (statusText === 'Cancelled' || booking.status === 2) {
+        statusElement.style.background = '#ef4444'; // Red
+        statusElement.style.color = 'white';
+      } else {
+        // Fallback for any other status
         statusElement.style.background = 'var(--muted)';
         statusElement.style.color = 'white';
       }
@@ -314,10 +400,10 @@
       document.getElementById('attendeeName').textContent = booking.attendeeInfo.name;
       document.getElementById('attendeeEmail').textContent = booking.attendeeInfo.email;
 
-      // Show cancel button only for upcoming confirmed bookings
-      // Status depends on event start date (upcoming/past) and payment status
-      const isPastEvent = eventDate < new Date();
-      const canCancel = booking.status === 'confirmed' && !isPastEvent;
+      // Show cancel button only for upcoming bookings that are not already cancelled
+      // Status depends on event start date (upcoming/past) and booking status
+      const isPastEvent = booking.eventDate ? (new Date(booking.eventDate + 'T' + booking.eventTime) < new Date()) : false;
+      const canCancel = (booking.status === 'Booked' || booking.status === 'Pending') && !isPastEvent && !booking.isEventDeleted;
       
       if (canCancel) {
         document.getElementById('bookingActions').style.display = 'block';
@@ -326,6 +412,27 @@
 
     function cancelBooking() {
       app.openModal('cancelModal');
+    }
+
+    function downloadTickets() {
+      if (!currentBooking) {
+        app.showNotification('Booking information not available', 'error');
+        return;
+      }
+
+      const baseUrl = window.API_BASE_URL || 'https://eventify.runasp.net';
+      const downloadUrl = `${baseUrl}/api/checkout/tickets/${currentBooking.id}/pdf`;
+      
+      // Create a temporary link and trigger download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `Eventify_Tickets_${currentBooking.id}.pdf`;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      app.showNotification('Downloading tickets...', 'success');
     }
 
     async function confirmCancellation() {

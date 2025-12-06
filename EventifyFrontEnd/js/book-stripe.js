@@ -524,6 +524,11 @@ class BookingPage {
     
     if (emailInput && userEmail) {
       emailInput.value = userEmail;
+      // Ensure email field is readonly
+      emailInput.setAttribute('readonly', 'readonly');
+      emailInput.style.backgroundColor = 'var(--bg)';
+      emailInput.style.cursor = 'not-allowed';
+      emailInput.style.opacity = '0.8';
     }
   }
 

@@ -287,7 +287,6 @@ class CreateEventPage {
   // Step navigation
   nextStep() {
     if (!this.validateCurrentStep()) {
-      app.showNotification('Please fix the errors before continuing', 'error');
       return;
     }
 
@@ -329,6 +328,7 @@ class CreateEventPage {
     if (!currentStepContent) return true;
 
     let isValid = true;
+    const missingFields = [];
 
     // Step 1: Basic details
     if (this.currentStep === 1) {
@@ -336,12 +336,23 @@ class CreateEventPage {
       requiredFields.forEach(field => {
         if (!this.validateField(field)) {
           isValid = false;
+          // Collect missing field names
+          const fieldLabel = this.getFieldLabel(field);
+          if (fieldLabel && !field.value.trim()) {
+            missingFields.push(fieldLabel);
+          }
         }
       });
 
       // Validate date range
       if (!this.validateDateRange()) {
         isValid = false;
+      }
+      
+      // Show specific error message
+      if (!isValid && missingFields.length > 0) {
+        const fieldsList = missingFields.join(', ');
+        app.showNotification(`Please fill in required fields: ${fieldsList}`, 'error');
       }
     }
 
@@ -359,6 +370,21 @@ class CreateEventPage {
       if (categories.length === 0) {
         app.showNotification('Please add at least one category', 'error');
         isValid = false;
+      } else {
+        // Validate each category has all required fields
+        const categoryItems = document.querySelectorAll('.category-item');
+        let hasEmptyCategory = false;
+        categoryItems.forEach((item, index) => {
+          const title = item.querySelector('.category-title')?.value.trim();
+          const seats = item.querySelector('.category-seats')?.value;
+          const price = item.querySelector('.category-price')?.value;
+          
+          if (!title || !seats || !price) {
+            hasEmptyCategory = true;
+            app.showNotification(`Category ${index + 1}: Please fill in all fields (title, seats, and price)`, 'error');
+            isValid = false;
+          }
+        });
       }
     }
 
@@ -366,12 +392,35 @@ class CreateEventPage {
     if (this.currentStep === 4) {
       const termsCheckbox = document.querySelector('input[name="agreeToTerms"]');
       if (termsCheckbox && !termsCheckbox.checked) {
-        app.showNotification('Please agree to the Terms of Service', 'error');
+        app.showNotification('Please agree to the Terms of Service to continue', 'error');
         isValid = false;
       }
     }
 
     return isValid;
+  }
+  
+  getFieldLabel(field) {
+    const fieldId = field.id || field.name;
+    const labelElement = document.querySelector(`label[for="${fieldId}"]`);
+    
+    if (labelElement) {
+      return labelElement.textContent.replace('*', '').trim();
+    }
+    
+    // Fallback to field name/id mapping
+    const fieldLabels = {
+      'name': 'Event Name',
+      'eventTitle': 'Event Name',
+      'startDate': 'Start Date & Time',
+      'endDate': 'End Date & Time',
+      'address': 'Event Address',
+      'eventLocation': 'Event Address',
+      'eventCategory': 'Event Category',
+      'eventImage': 'Event Photo'
+    };
+    
+    return fieldLabels[fieldId] || 'This field';
   }
 
   validateField(field) {
@@ -381,9 +430,8 @@ class CreateEventPage {
     let isValid = true;
     let errorMessage = '';
 
-    // Required field validation
+    // Required field validation - only show visual indicator, no error message
     if (field.hasAttribute('required') && !value) {
-      errorMessage = 'This field is required';
       isValid = false;
     }
 
@@ -439,6 +487,8 @@ class CreateEventPage {
 
     if (!isValid) {
       this.showFieldError(field, errorMessage);
+    } else {
+      this.showFieldSuccess(field);
     }
 
     return isValid;
@@ -455,8 +505,9 @@ class CreateEventPage {
     const existingErrors = parentGroup.querySelectorAll('.field-error');
     existingErrors.forEach(error => error.remove());
     
-    // Add error class
+    // Add error class and remove success class
     field.classList.add('error');
+    field.classList.remove('success');
     
     // Check if we already have an error for this specific field
     const existingErrorForField = parentGroup.querySelector(`[data-error-for="${fieldId}"]`);
@@ -480,9 +531,25 @@ class CreateEventPage {
     }
   }
 
+  showFieldSuccess(field) {
+    if (!field) return;
+    
+    // Remove error class and add success class
+    field.classList.remove('error');
+    field.classList.add('success');
+    
+    const parentGroup = field.closest('.form-group') || field.parentNode;
+    if (!parentGroup) return;
+    
+    // Remove ALL error messages in this form group
+    const errorElements = parentGroup.querySelectorAll('.field-error');
+    errorElements.forEach(error => error.remove());
+  }
+
   clearFieldError(field) {
     if (!field) return;
     
+    // Only remove error state, keep success state if field is valid
     field.classList.remove('error');
     
     const parentGroup = field.closest('.form-group') || field.parentNode;
@@ -496,6 +563,14 @@ class CreateEventPage {
     const fieldId = field.id || field.name;
     const specificErrors = document.querySelectorAll(`[data-error-for="${fieldId}"]`);
     specificErrors.forEach(error => error.remove());
+    
+    // Validate the field to see if it should be marked as success
+    if (field.value.trim()) {
+      this.validateField(field);
+    } else {
+      // If empty, remove success class too
+      field.classList.remove('success');
+    }
   }
 
   updateEventPreview() {
@@ -508,12 +583,28 @@ class CreateEventPage {
     // Get the selected category label
     const categorySelect = document.getElementById('eventCategory');
     const categoryLabel = categorySelect?.options[categorySelect.selectedIndex]?.text || 'Not selected';
-
-    previewContainer.innerHTML = `
-      <div style="display: flex; gap: var(--space-lg); margin-bottom: var(--space-lg); flex-wrap: wrap;">
+    
+    // Get uploaded image preview
+    const imageInput = document.getElementById('eventImage');
+    let imagePreviewHtml = '';
+    
+    if (imageInput && imageInput.files && imageInput.files[0]) {
+      const imageUrl = URL.createObjectURL(imageInput.files[0]);
+      imagePreviewHtml = `
+        <img src="${imageUrl}" alt="Event preview" 
+             style="width: 200px; height: 120px; object-fit: cover; border-radius: var(--radius-md);">
+      `;
+    } else {
+      imagePreviewHtml = `
         <div style="width: 200px; height: 120px; background: var(--accent); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
           🎉
         </div>
+      `;
+    }
+
+    previewContainer.innerHTML = `
+      <div style="display: flex; gap: var(--space-lg); margin-bottom: var(--space-lg); flex-wrap: wrap;">
+        ${imagePreviewHtml}
         
         <div style="flex: 1; min-width: 250px;">
           <h4 style="margin-bottom: var(--space-sm);">${formData.get('name') || 'Event Name'}</h4>
@@ -526,7 +617,7 @@ class CreateEventPage {
           </p>
           
           <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
-            ${categories.map(cat => `<span class="event-tag">${cat.title}: ${cat.seats} seats - $${cat.TicketPrice}</span>`).join('')}
+            ${categories.map(cat => `<span class="event-tag">${cat.title}: ${cat.seats} seats - ${cat.TicketPrice} EGP</span>`).join('')}
           </div>
         </div>
       </div>
@@ -548,7 +639,6 @@ class CreateEventPage {
     event.preventDefault();
     
     if (!this.validateCurrentStep()) {
-      app.showNotification('Please fix the errors before submitting', 'error');
       return;
     }
 
@@ -817,8 +907,15 @@ style.textContent = `
   .form-input.error,
   .form-select.error,
   .form-textarea.error {
-    border-color: var(--danger);
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+  }
+  
+  .form-input.success,
+  .form-select.success,
+  .form-textarea.success {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1) !important;
   }
   
   /* Category management styles */

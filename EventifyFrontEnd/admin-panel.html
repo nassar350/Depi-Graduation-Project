@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Eventify</title>
+  <meta name="description" content="Admin panel for managing users, events, and categories on Eventify.">
+  
+  <!-- Preload fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎉</text></svg>">
+  
+  <style>
+    .admin-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-lg);
+    }
+    
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+    
+    .admin-tabs {
+      display: flex;
+      gap: var(--space-sm);
+      border-bottom: 2px solid var(--border);
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+    }
+    
+    .admin-tab {
+      padding: var(--space-md) var(--space-lg);
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--muted);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .admin-tab:hover {
+      color: var(--accent);
+    }
+    
+    .admin-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    
+    .admin-content {
+      display: none;
+    }
+    
+    .admin-content.active {
+      display: block;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+    
+    .stat-card {
+      background: var(--card);
+      padding: var(--space-lg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+      margin-bottom: var(--space-sm);
+    }
+    
+    .stat-label {
+      color: var(--muted);
+      font-weight: 500;
+    }
+    
+    .table-container {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-lg);
+      border-bottom: 2px solid var(--border);
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+    
+    .search-box {
+      display: flex;
+      gap: var(--space-sm);
+      flex: 1;
+      max-width: 400px;
+    }
+    
+    .search-input {
+      flex: 1;
+      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      background: var(--bg);
+      color: var(--text);
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .data-table thead {
+      background: var(--bg);
+    }
+    
+    .data-table th,
+    .data-table td {
+      padding: var(--space-md);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .data-table th {
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    
+    .data-table tbody tr:hover {
+      background: var(--bg);
+    .role-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .role-admin {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .role-user {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .status-active {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .status-cancelled {
+      background: #fee2e2;
+      color: #991b1b;
+    } background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: var(--space-sm);
+    .btn-icon {
+      padding: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+      font-size: 1.2rem;
+      color: var(--text);
+    }
+    
+    .btn-icon:hover {
+      background: var(--border);
+    }btn-icon:hover {
+      background: var(--gray-200);
+    }
+    
+    .btn-edit:hover {
+      color: #2563eb;
+    }
+    
+    .btn-delete:hover {
+      color: #dc2626;
+    }
+    
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-xl);
+    }
+    
+    .modal-header {
+      padding: var(--space-lg);
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h3 {
+      margin: 0;
+      color: var(--text);
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    
+    .modal-body {
+      padding: var(--space-lg);
+    }
+    
+    .modal-footer {
+      padding: var(--space-lg);
+      border-top: 2px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-md);
+    } gap: var(--space-md);
+    }
+    
+    .form-group {
+      margin-bottom: var(--space-md);
+    .form-label {
+      display: block;
+      margin-bottom: var(--space-sm);
+      font-weight: 500;
+      color: var(--text);
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      background: var(--bg);
+      color: var(--text);
+    }
+    
+    .form-select {
+      width: 100%;
+      padding: var(--space-sm) var(--space-md);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      background: var(--bg);
+      color: var(--text);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: var(--space-xl);
+      color: var(--muted);
+    } padding: var(--space-xl);
+      color: var(--text-muted);
+    }
+    
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: var(--space-md);
+    }
+    
+    @media (max-width: 768px) {
+      .table-container {
+        overflow-x: auto;
+      }
+      
+      .data-table {
+        min-width: 800px;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <span class="text-gradient">Eventify</span>
+      </a>
+      
+      <div class="navbar-menu">
+        <ul class="navbar-nav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="explore.html">Explore</a></li>
+        </ul>
+        
+        <div class="user-info">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+      
+      <button class="navbar-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span>☰</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Admin Panel -->
+  <div class="admin-container">
+    <!-- Header -->
+    <div class="admin-header">
+      <div>
+        <h1>Admin Panel</h1>
+        <p class="text-muted">Manage users, events, organizers, and categories</p>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-value" id="totalUsers">0</span>
+        <span class="stat-label">Total Users</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="totalEvents">0</span>
+        <span class="stat-label">Total Events</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="totalCategories">0</span>
+        <span class="stat-label">Event Categories</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="totalBookings">0</span>
+        <span class="stat-label">Total Bookings</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="platformRevenue">$0</span>
+        <span class="stat-label">Platform Revenue</span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="users">👥 Users</button>
+      <button class="admin-tab" data-tab="events">📅 Events</button>
+      <button class="admin-tab" data-tab="bookings">🎫 Bookings</button>
+      <button class="admin-tab" data-tab="payments">💳 Payments</button>
+      <button class="admin-tab" data-tab="categories">🏷️ Event Categories</button>
+    </div>
+
+    <!-- Users Tab -->
+    <div class="admin-content active" id="users-content">
+      <div class="table-container">
+        <div class="table-header">
+          <h3>User Management</h3>
+          <div class="search-box">
+            <input type="text" class="search-input" id="userSearch" placeholder="Search users by name or email...">
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Events Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <!-- Will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Events Tab -->
+    <div class="admin-content" id="events-content">
+      <div class="table-container">
+        <div class="table-header">
+          <h3>Event Management</h3>
+          <div class="search-box">
+            <input type="text" class="search-input" id="eventSearch" placeholder="Search events...">
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Organizer</th>
+              <th>Date</th>
+              <th>Location</th>
+              <th>Bookings</th>
+              <th>Revenue</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="eventsTableBody">
+            <!-- Will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bookings Tab -->
+    <div class="admin-content" id="bookings-content">
+      <div class="table-container">
+        <div class="table-header">
+          <h3>Booking Management</h3>
+          <div class="search-box">
+            <input type="text" class="search-input" id="bookingSearch" placeholder="Search bookings...">
+            <select class="form-select" id="bookingStatusFilter" style="max-width: 200px;">
+              <option value="">All Status</option>
+              <option value="0">Booked</option>
+              <option value="1">Pending</option>
+              <option value="2">Cancelled</option>
+            </select>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>User</th>
+              <th>Event</th>
+              <th>Tickets</th>
+              <th>Total Price</th>
+              <th>Status</th>
+              <th>Booking Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="bookingsTableBody">
+            <!-- Will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Payments Tab -->
+    <div class="admin-content" id="payments-content">
+      <div class="table-container">
+        <div class="table-header">
+          <h3>Payment Management</h3>
+          <div class="search-box">
+            <input type="text" class="search-input" id="paymentSearch" placeholder="Search payments...">
+            <select class="form-select" id="paymentStatusFilter" style="max-width: 200px;">
+              <option value="">All Status</option>
+              <option value="0">Paid</option>
+              <option value="1">Pending</option>
+              <option value="2">Cancelled</option>
+              <option value="3">Rejected</option>
+              <option value="4">Refunded</option>
+            </select>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>User</th>
+              <th>Event</th>
+              <th>Amount</th>
+              <th>Payment Method</th>
+              <th>Status</th>
+              <th>Payment Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="paymentsTableBody">
+            <!-- Will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Categories Tab -->
+    <div class="admin-content" id="categories-content">
+      <div class="table-container">
+        <div class="table-header">
+          <h3>Event Category Statistics</h3>
+        </div>
+        <p style="color: var(--muted); padding: 0 var(--space-lg); margin-bottom: var(--space-md);">
+          View event distribution across categories (Music, Sports, Arts, Food, Technology, Business, Education, Entertainment, Health, Community, Other)
+        </p>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Category ID</th>
+              <th>Category Name</th>
+              <th>Events Count</th>
+            </tr>
+          </thead>
+          <tbody id="categoriesTableBody">
+            <!-- Will be populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div class="modal-overlay" id="editUserModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Edit User</h3>
+        <button class="modal-close" onclick="adminPanel.closeModal('editUserModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="editUserForm">
+          <input type="hidden" id="editUserId">
+          <div class="form-group">
+            <label class="form-label" for="editUserName">Name</label>
+            <input type="text" class="form-input" id="editUserName" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editUserEmail">Email</label>
+            <input type="email" class="form-input" id="editUserEmail" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editUserRole">Role</label>
+            <select class="form-select" id="editUserRole" required>
+              <option value="0">Admin</option>
+              <option value="1">User</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="adminPanel.closeModal('editUserModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="adminPanel.saveUser()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Confirm Delete</h3>
+        <button class="modal-close" onclick="adminPanel.closeModal('deleteModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="deleteMessage">Are you sure you want to delete this item? This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="adminPanel.closeModal('deleteModal')">Cancel</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

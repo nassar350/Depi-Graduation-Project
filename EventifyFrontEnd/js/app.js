@@ -262,6 +262,7 @@ class EventifyApp {
     const user = this.getCurrentUser();
     const authLinks = document.querySelectorAll('[data-auth-required]');
     const guestLinks = document.querySelectorAll('[data-guest-only]');
+    const adminLinks = document.querySelectorAll('[data-admin-only]');
     const userInfo = document.querySelector('.user-info');
 
     if (user) {
@@ -269,9 +270,22 @@ class EventifyApp {
       authLinks.forEach(link => link.style.display = '');
       guestLinks.forEach(link => link.style.display = 'none');
       
+      // Show admin links only for admin users (role === 0 or 'Admin')
+      const isAdmin = user.role === 0 || user.role === '0' || user.role === 'Admin' || user.role === 'admin';
+      if (isAdmin) {
+        adminLinks.forEach(link => link.style.display = '');
+      } else {
+        adminLinks.forEach(link => link.style.display = 'none');
+      }
+      
       if (userInfo) {
+        const adminButton = isAdmin
+          ? '<a href="admin-panel.html" class="btn btn-sm btn-warning" style="margin-right: 0.5rem;">Admin Panel</a>' 
+          : '';
+        
         userInfo.innerHTML = `
           <span>Welcome, ${user.name}</span>
+          ${adminButton}
           <a href="dashboard.html" class="btn btn-sm btn-primary">Dashboard</a>
           <button onclick="app.logout()" class="btn btn-sm btn-secondary">Logout</button>
         `;
@@ -280,6 +294,7 @@ class EventifyApp {
       // User is not logged in
       authLinks.forEach(link => link.style.display = 'none');
       guestLinks.forEach(link => link.style.display = '');
+      adminLinks.forEach(link => link.style.display = 'none');
       
       if (userInfo) {
         userInfo.innerHTML = `

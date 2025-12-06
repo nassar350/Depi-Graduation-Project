@@ -29,7 +29,7 @@
         <ul class="navbar-nav">
           <li><a href="index.html">Home</a></li>
           <li><a href="explore.html">Explore</a></li>
-          <li><a href="create-event.html" data-auth-required style="display: none;">Create Event</a></li>
+          <li><a href="create-event.html" data-auth-required>Create Event</a></li>
           <li><a href="about.html">About</a></li>
         </ul>
         
@@ -96,30 +96,6 @@
             <label for="endDate">End Date</label>
             <input type="date" id="endDate" class="form-input">
           </div>
-          
-          <!-- Price Range Filter -->
-          <div class="filter-group">
-            <label>Price Range</label>
-            <div class="price-range">
-              <input 
-                type="number" 
-                id="minPrice" 
-                class="form-input price-input" 
-                placeholder="Min $" 
-                min="0"
-                aria-label="Minimum price"
-              >
-              <span class="text-muted">to</span>
-              <input 
-                type="number" 
-                id="maxPrice" 
-                class="form-input price-input" 
-                placeholder="Max $" 
-                min="0"
-                aria-label="Maximum price"
-              >
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -140,8 +116,6 @@
           <select id="sortSelect" class="form-select" style="width: auto;">
             <option value="date-asc">Date (Earliest First)</option>
             <option value="date-desc">Date (Latest First)</option>
-            <option value="price-asc">Price (Low to High)</option>
-            <option value="price-desc">Price (High to Low)</option>
             <option value="title-asc">Title (A-Z)</option>
             <option value="title-desc">Title (Z-A)</option>
           </select>
