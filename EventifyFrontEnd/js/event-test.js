@@ -231,19 +231,41 @@ class EventPage {
     }
   }
   
+  isEventPast() {
+    if (!this.event || !this.event.startDate) return false;
+    const eventDate = new Date(this.event.startDate);
+    const now = new Date();
+    return eventDate < now;
+  }
+
   selectCategory(categoryId) {
     console.log('🚀 Category selected:', categoryId);
     
+    // Check if event is past
+    if (this.isEventPast()) {
+      app.showNotification('This event has already passed and cannot be booked', 'error');
+      return;
+    }
+
+    // Check if user is the organizer
+    const currentUser = app.getCurrentUser();
+    const eventOrganizerId = this.event.organizerID || this.event.organizerId || this.event.organizer_id;
+    
+    if (currentUser && eventOrganizerId && currentUser.id === eventOrganizerId) {
+      app.showNotification('You cannot book your own event', 'warning');
+      return;
+    }
+    
     if (!this.event || !this.event.categories) {
       console.error('🚀 No event or categories data available');
-      alert('Event data not available. Please refresh the page.');
+      app.showNotification('Event data not available. Please refresh the page.', 'error');
       return;
     }
     
     const category = this.event.categories.find(cat => cat.id === categoryId);
     if (!category) {
       console.error('🚀 Category not found:', categoryId);
-      alert('Selected category not found.');
+      app.showNotification('Selected category not found.', 'error');
       return;
     }
     
@@ -253,7 +275,7 @@ class EventPage {
     const availableSeats = categorySeats - categoryBooked;
     
     if (availableSeats <= 0) {
-      alert(`${categoryName} category is sold out`);
+      app.showNotification(`${categoryName} category is sold out`, 'warning');
       return;
     }
     
@@ -283,15 +305,30 @@ class EventPage {
   bookNow() {
     console.log('🚀 Book Now clicked');
     
+    // Check if event is past
+    if (this.isEventPast()) {
+      app.showNotification('This event has already passed and cannot be booked', 'error');
+      return;
+    }
+
+    // Check if user is the organizer
+    const currentUser = app.getCurrentUser();
+    const eventOrganizerId = this.event.organizerID || this.event.organizerId || this.event.organizer_id;
+    
+    if (currentUser && eventOrganizerId && currentUser.id === eventOrganizerId) {
+      app.showNotification('You cannot book your own event', 'warning');
+      return;
+    }
+    
     if (!this.event) {
       console.error('🚀 No event data available for booking');
-      alert('Event data not loaded. Please refresh the page.');
+      app.showNotification('Event data not loaded. Please refresh the page.', 'error');
       return;
     }
     
     // Check if there are available categories
     if (!this.event.categories || this.event.categories.length === 0) {
-      alert('No ticket categories available for this event');
+      app.showNotification('No ticket categories available for this event', 'error');
       return;
     }
     
@@ -307,7 +344,7 @@ class EventPage {
     });
     
     if (!availableCategory) {
-      alert('This event is sold out');
+      app.showNotification('This event is sold out', 'warning');
       return;
     }
     
@@ -385,6 +422,8 @@ class EventPage {
       })
     );
     
+    const isEventPast = this.isEventPast();
+    
     const categoriesHtml = categoriesWithAvailability.map(category => {
       return `
         <div class="ticket-category ${!category.isAvailable ? 'sold-out' : ''}" data-category-id="${category.id}">
@@ -396,17 +435,21 @@ class EventPage {
             <p class="category-description">${category.categoryDescription}</p>
             <div class="category-info">
               <span class="seats-available">
-                ${category.isAvailable ? 
-                  `${category.availableSeats} seats available` : 
-                  '<span class="sold-out-text">Sold Out</span>'
+                ${isEventPast ? 
+                  '<span class="sold-out-text">Event Has Passed</span>' :
+                  category.isAvailable ? 
+                    `${category.availableSeats} seats available` : 
+                    '<span class="sold-out-text">Sold Out</span>'
                 }
               </span>
             </div>
           </div>
           <div class="category-actions">
-            ${category.isAvailable ? 
-              `<button class="btn btn-primary category-select-btn" data-category-id="${category.id}">Select ${category.categoryName}</button>` : 
-              '<button class="btn btn-secondary" disabled>Sold Out</button>'
+            ${isEventPast ? 
+              '<button class="btn btn-secondary" disabled>Event Has Passed</button>' :
+              category.isAvailable ? 
+                `<button class="btn btn-primary category-select-btn" data-category-id="${category.id}">Select ${category.categoryName}</button>` : 
+                '<button class="btn btn-secondary" disabled>Sold Out</button>'
             }
           </div>
         </div>
